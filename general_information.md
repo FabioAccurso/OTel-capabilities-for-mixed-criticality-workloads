@@ -1,4 +1,0 @@
-- "traccia.md" refers to the plan for the project to be carried out, which outlines all the details regarding the work to be done and the expected objectives. It is written in English.
-- "rt-app-cpp" contains a README file and a folder. The README is from a project similar to the one I'm currently working on, created by a group from last year. The rt-app folder, on the other hand, contains the files in which last year's group ported rt-app to C++ (which was originally written in C).
-- My tutors told me that I can use the rt-app they gave me (the one from last year's students) since that is clearly not the focus of my project.
-- I already installed the required tools to work on this project and kernel linux 6.12.79-rt17 in dual boot on my laptop.

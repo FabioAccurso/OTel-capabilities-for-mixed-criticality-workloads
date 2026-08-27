@@ -1,0 +1,6 @@
+[rt-app] <notice> Calibrate ns per loop
+[rt-app] <notice> pLoad = 62ns : calib_cpu 2
+[rt-app] <notice> thread_data_set_unique_name 0 solo_task-0
+[rt-app] <notice> [0] starting thread ...
+
+[rt-app] <notice> [0] Starting with SCHED_OTHER policy with priority 0

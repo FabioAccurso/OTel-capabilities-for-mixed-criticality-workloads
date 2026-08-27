@@ -1,0 +1,97 @@
+[
+  {
+    "t_rel": 5.967,
+    "spans": [
+      {
+        "duration": 3049505,
+        "id": "96a326ed68c770d5",
+        "localEndpoint": {
+          "port": 9411,
+          "serviceName": "rt-app_zipkin"
+        },
+        "name": "calibration",
+        "parentId": "0a1282c53a71701e",
+        "tags": {
+          "otel.library.name": "rt-app-tracer",
+          "otel.library.version": ""
+        },
+        "timestamp": 1787764097498970,
+        "traceId": "d0c1e8c6c4615ed5b329ab822db152cc"
+      }
+    ]
+  },
+  {
+    "t_rel": 9.018,
+    "spans": [
+      {
+        "duration": 5000012,
+        "id": "d88a3da408bee621",
+        "localEndpoint": {
+          "port": 9411,
+          "serviceName": "rt-app_zipkin"
+        },
+        "name": "solo_task-0",
+        "parentId": "0a1282c53a71701e",
+        "tags": {
+          "cancellation": "force_terminate",
+          "config.cpuset": "-",
+          "config.delay": 0,
+          "config.duration": 5,
+          "config.forked": 0,
+          "config.index": 0,
+          "config.lock_pages": 1,
+          "config.loop": 1,
+          "config.name": "solo_task-0",
+          "config.nphases": 1,
+          "config.num_instances": 1,
+          "config.sched_data.policy": "SCHED_OTHER",
+          "config.sched_data.priority": 0,
+          "config.sched_data.util_max": -1,
+          "config.sched_data.util_min": -1,
+          "otel.library.name": "rt-app-tracer",
+          "otel.library.version": ""
+        },
+        "timestamp": 1787764100548650,
+        "traceId": "d0c1e8c6c4615ed5b329ab822db152cc"
+      },
+      {
+        "annotations": [
+          {
+            "timestamp": 1787764105550250,
+            "value": "{\"graceful-shutdown\":{}}"
+          }
+        ],
+        "duration": 8051318,
+        "id": "0a1282c53a71701e",
+        "localEndpoint": {
+          "port": 9411,
+          "serviceName": "rt-app_zipkin"
+        },
+        "name": "main",
+        "tags": {
+          "config.calib_cpu": 0,
+          "config.calib_ns_per_loop": 0,
+          "config.cumulative_slack": 0,
+          "config.die_on_dmiss": 0,
+          "config.duration": 5,
+          "config.gnuplot": 0,
+          "config.io_device": "/dev/null",
+          "config.lock_pages": 1,
+          "config.logbasename": "rtapp",
+          "config.logdir": "./",
+          "config.logsize": -2,
+          "config.mem_buffer_size": 4194304,
+          "config.nthreads": 1,
+          "config.num_tasks": 1,
+          "config.pi_enabled": 0,
+          "config.policy": 0,
+          "otel.library.name": "rt-app-tracer",
+          "otel.library.version": "",
+          "shutdown": "graceful"
+        },
+        "timestamp": 1787764097498947,
+        "traceId": "d0c1e8c6c4615ed5b329ab822db152cc"
+      }
+    ]
+  }
+]

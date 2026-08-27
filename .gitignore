@@ -1,0 +1,30 @@
+# build/install locale di opentelemetry-cpp (rigenerabili, ~240 MB)
+otel-src/
+otel-installdir/
+
+# artefatti autotools/build di rt-app
+rt-app/src/rt-app
+rt-app/src/*.o
+rt-app/src/.deps/
+rt-app/src/.libs/
+rt-app/src/config.h
+rt-app/src/stamp-h1
+rt-app/libdl/*.a
+rt-app/libdl/*.o
+rt-app/libdl/.deps/
+rt-app/autom4te.cache/
+rt-app/config.log
+rt-app/config.status
+rt-app/configure
+rt-app/aclocal.m4
+rt-app/libtool
+rt-app/Makefile
+rt-app/Makefile.in
+rt-app/src/Makefile
+rt-app/src/Makefile.in
+rt-app/libdl/Makefile
+rt-app/libdl/Makefile.in
+rt-app/build-aux/
+rt-app/m4/l*.m4
+rt-app/README
+rt-app/COPYING

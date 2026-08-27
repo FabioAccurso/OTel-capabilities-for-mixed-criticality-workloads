@@ -1,0 +1,20 @@
+{
+  "tasks": {
+    "solo_task": {
+      "policy": "SCHED_OTHER",
+      "loop": -1,
+      "run": 2000,
+      "sleep": 8000,
+      "cpus": [
+        2
+      ]
+    }
+  },
+  "global": {
+    "duration": 5,
+    "default_policy": "SCHED_OTHER",
+    "calibration": "CPU2",
+    "logdir": "./",
+    "log_basename": "rtapp"
+  }
+}

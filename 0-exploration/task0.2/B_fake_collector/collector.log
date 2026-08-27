@@ -1,0 +1,2 @@
+[  5.97] POST /api/v2/spans  302 byte  1 span: ['calibration']
+[  9.02] POST /api/v2/spans  1421 byte  2 span: ['solo_task-0', 'main']

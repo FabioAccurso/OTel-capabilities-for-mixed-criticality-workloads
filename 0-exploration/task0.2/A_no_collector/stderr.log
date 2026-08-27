@@ -1,0 +1,31 @@
+[rt-app] <notice> Calibrate ns per loop
+[rt-app] <notice> pLoad = 63ns : calib_cpu 0
+[rt-app] <notice> thread_data_set_unique_name 0 solo_task-0
+[rt-app] <notice> [0] starting thread ...
+
+[rt-app] <notice> [0] Starting with SCHED_OTHER policy with priority 0
+[Error] File: /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/otel-src/exporters/zipkin/src/zipkin_exporter.cc:111 ZIPKIN EXPORTER] Zipkin Exporter: Connection failed
+[Error] File: /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/otel-src/exporters/zipkin/src/zipkin_exporter.cc:111 ZIPKIN EXPORTER] Zipkin Exporter: Connection failed
+	Command being timed: "../../../rt-app/src/rt-app ../cfg_single.json"
+	User time (seconds): 1.86
+	System time (seconds): 0.01
+	Percent of CPU this job got: 14%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:13.15
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 13588
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 2
+	Minor (reclaiming a frame) page faults: 716
+	Voluntary context switches: 424
+	Involuntary context switches: 125
+	Swaps: 0
+	File system inputs: 632
+	File system outputs: 112
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
