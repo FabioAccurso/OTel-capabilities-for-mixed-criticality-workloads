@@ -4,10 +4,19 @@
 #
 # Usage: ./run_doe.sh <block1|block2|block3|all>
 #
-# EDIT THESE THREE PATHS FOR YOUR MACHINE before running:
+# EDIT THESE PATHS FOR YOUR MACHINE before running:
 RTAPP_SRC_DIR="${RTAPP_SRC_DIR:-$HOME/rtsia-project/project/rt-app/src}"
 BIN_CACHE="${BIN_CACHE:-$HOME/rtsia-project/project/bin}"
 DOE_ROOT="${DOE_ROOT:-$HOME/rtsia-project/project/2-DoE}"
+
+# ns per loop, hardcoded into every generated config so that rt-app skips its own
+# calibration (6-20 s per run, and a different value each time -> "run": 2000 would
+# mean a different amount of work in every cell of the DoE).
+# Valid only with the CPU frequency pinned. Re-measure with
+#   scripts/utils_freq/tune_calib.sh
+# after changing machine or pinned ratio, and re-pin after every reboot with
+#   pkexec /usr/bin/python3 scripts/utils_freq/cpu_freq.py pin
+CALIB_NS="${CALIB_NS:-139}"
 
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -15,6 +24,30 @@ GEN="$HERE/gen_config.py"
 TEST="$HERE/test.sh"
 DATA_TABLE="$DOE_ROOT/data_table.csv"
 INDEX_FILE="$DOE_ROOT/index.txt"
+
+# Refuse to run with the frequency unpinned: CALIB_NS was measured at a fixed
+# frequency, so with turbo back on rt-app would silently execute ~30% less work
+# per phase than the config asks for. Only checkable as root (no cpufreq sysfs on
+# this kernel); skipped otherwise with a warning.
+check_freq_pinned() {
+    if [[ ! -r /dev/cpu/0/msr ]]; then
+        echo "warning: cannot read /dev/cpu/0/msr, not verifying the frequency pin." >&2
+        echo "         Make sure you ran: pkexec /usr/bin/python3 $HERE/../utils_freq/cpu_freq.py pin" >&2
+        return 0
+    fi
+    local turbo_off
+    turbo_off=$(python3 -c "
+import struct
+f=open('/dev/cpu/0/msr','rb'); f.seek(0x1A0)
+print((struct.unpack('<Q', f.read(8))[0] >> 38) & 1)")
+    if [[ "$turbo_off" != "1" ]]; then
+        echo "ERROR: CPU frequency is NOT pinned (turbo still enabled), but CALIB_NS=$CALIB_NS" >&2
+        echo "       was measured with it pinned. Run:" >&2
+        echo "         pkexec /usr/bin/python3 $HERE/../utils_freq/cpu_freq.py pin" >&2
+        exit 1
+    fi
+}
+check_freq_pinned
 
 mkdir -p "$BIN_CACHE" "$DOE_ROOT"
 [ -f "$DATA_TABLE" ] || echo "run_id,block,trace_level,processor_type,sampler_type,sampler_ratio,n_lo,rep,run_dir" > "$DATA_TABLE"
@@ -47,7 +80,7 @@ run_cell() {
     local cell_dir="$DOE_ROOT/$block/t${trace}_p${proc}_s${samp}_r${ratio}_n${n_lo}"
     mkdir -p "$cell_dir"
     local cfg="$cell_dir/config.json"
-    python3 "$GEN" --n-lo "$n_lo" --duration "$duration" --out "$cfg"
+    python3 "$GEN" --n-lo "$n_lo" --duration "$duration" --calib "$CALIB_NS" --out "$cfg"
 
     for rep in $(seq 1 "$reps"); do
         local run_dir="$cell_dir/run_$(printf '%02d' "$rep")"

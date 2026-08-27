@@ -113,8 +113,13 @@ Risolto fuori dalla numerazione dei task, su richiesta esplicita, dopo i finding
   `scripts/utils_freq/tune_calib.sh` (inverte `load_count = exec*1000/p_load`,
   `rt-app.cpp:580`), non dalla calibrazione stessa.
 - **Valore per questa macchina a ~1800 MHz: `139` ns/loop.** Verificato identico sotto
-  `SCHED_OTHER` e `chrt -f 90`. Generare le config del DoE con
-  `gen_config.py --calib 139` (senza, lo script stampa un warning).
+  `SCHED_OTHER` e `chrt -f 90`. Cablato in `run_doe.sh` come `CALIB_NS=139` e passato a
+  `gen_config.py --calib`; generando config a mano senza `--calib` lo script avvisa.
+- `run_doe.sh` ha un guard che **rifiuta di partire** (exit 1) se il turbo è ancora
+  attivo, perché `CALIB_NS` è stato misurato a frequenza fissa: senza pin rt-app
+  eseguirebbe silenziosamente ~30% di lavoro in meno del richiesto. Da root il guard
+  legge `IA32_MISC_ENABLE` bit 38; da utente normale non può e stampa solo un warning.
+- **Il pin va rifatto a ogni riavvio**: gli MSR tornano ai valori di power-on.
 - Risultato: `run` misurato 1990-1991 µs su 5 run (spread **0,05%**, era 35%), wall time
   5,01 s contro 13,40 s. Il task 0.1 misurava ~4150 µs per 2000 configurati.
 - Resta aperto per il task 0.4: SMT attivo (cpu2 <-> cpu6 sono lo stesso core fisico) e
