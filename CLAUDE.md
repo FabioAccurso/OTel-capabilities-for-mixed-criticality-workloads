@@ -504,17 +504,36 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
       niente `t_next`, niente slack. Verificato: `slack = 0` su tutte le 1981 righe di HI e
       tutte le 9516 di LO. Vedi il rimedio verificato in `0-explore/0.5/NOTES.md`.
 
-- [ ] **0.6 (aperto, deciso al 0.5)** — Scegliere la costante di calibrazione prima del
-  Task 2. `loadwait()` fa `load_count = run * 1000 / p_load`, quindi il pLoad decide quante
-  iterazioni girano per la stessa `"run": 2000`: con pLoad 28 → 71428 iterazioni e
-  `run_med` 2054 us, con 29 → 68965 e 1984 us (rapporto atteso 29/28 = 1.0357, osservato
-  2054/1984 = 1.0353). **1 ns di differenza sposta il lavoro reale del 3.5 %.** Le config
-  del Task 2 devono usare `"calibration": <int>` fisso, mai `"CPU0"`, altrimenti due bracci
-  dell'esperimento eseguono lavoro diverso e l'overhead di OTel si confonde con il rumore
-  della calibrazione. Da decidere: **28** (misurato sulla CPU isolata dove il lavoro gira
-  davvero, piu' difendibile) oppure **29** (mantiene confrontabili le tabelle gia'
-  raccolte). `gen_config.py` va poi aggiornato di conseguenza.
-  Stato:
+- [x] **0.6** — Scegliere la costante di calibrazione prima del Task 2. `loadwait()` fa
+  `load_count = run * 1000 / p_load`, quindi il pLoad decide quante iterazioni girano per la
+  stessa `"run": 2000`: **1 ns di differenza sposta il lavoro reale del 3.5 %**, piu'
+  dell'overhead di OTel che il progetto deve misurare. Mai `"CPU0"`: fa partire
+  l'auto-calibrazione, che costa ~8 s non deterministici e dentro un cpuset senza la CPU 0
+  calibra altrove senza dirlo (finding (g) del task 0.5).
+  Stato: **FATTO. Scelto `"calibration": 29`**, applicato come default in `gen_config.py`
+  (nuova opzione `--calibration`, sovrascrivibile). Motivazione: due campagne indipendenti
+  danno lo stesso costo sottostante.
+
+  | campagna | pLoad usato | load_count | run misurato | ns/iterazione |
+  |---|---|---|---|---|
+  | task 0.5 | 28 (auto) | 71428 | 2054 us | **28.756** |
+  | task 0.4-post-boot | 29 (fisso) | 68965 | 1984 us | **28.768** |
+
+  Il costo reale e' quindi ~28.76 ns. Il parser accetta **solo interi**
+  (`rt-app_parse_config.cpp:1237`: un float finisce nel ramo `sscanf("CPU%d")` e provoca
+  `EXIT_INV_CONFIG`), percio' la scelta e' fra 28 e 29:
+
+  | | iterazioni | run risultante | errore sui 2000 nominali |
+  |---|---|---|---|
+  | `calibration: 28` | 71428 | 2054.3 us | +2.71 % |
+  | `calibration: 29` | 68965 | 1983.4 us | **-0.83 %** |
+
+  29 e' ~3x piu' vicino al nominale e **mantiene confrontabili** le tabelle di baseline di
+  `0-explore/0.4/` e `0-explore/0.4-post-boot/`, prese proprio con 29. Da non confondere:
+  28 e' il valore che l'*auto*-calibrazione produce quando gira sulla CPU isolata invece che
+  su CPU0 — e' un fatto su *dove* calibra, non su quale intero approssimi meglio il costo.
+  Per l'overhead di OTel conta comunque soprattutto che la costante sia **fissa e identica
+  in tutti i bracci**.
 
 ## Task 1.x-5.x — verso il deliverable finale
 
@@ -538,7 +557,8 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
      ```
      `mode: absolute` tiene la griglia di attivazione fissa, cosi' un'iterazione lunga erode
      lo slack invece di spostare le successive; `relative` (default) ri-ancora e perdona.
-  2. **`"calibration": "CPU0"` → `<int>` fisso** (vedi il task 0.6).
+  2. **`"calibration"`**: gia' fatto — `gen_config.py` ora emette l'intero fisso **29**
+     di default (task 0.6). Verificare solo che le config definitive non lo sovrascrivano.
   Nominare inoltre i task con prefisso `hi_*` / `lo_*` (finding (b) del task 0.3), cosi' il
   sampler custom del Task 6 puo' decidere sul nome dello span.
   Stato:

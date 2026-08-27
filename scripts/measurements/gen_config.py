@@ -15,6 +15,14 @@ unita' di esecuzione dello stesso core via SMT e l'interferenza misurata non e' 
 attribuibile a scheduling/telemetria. Default: HI su cpu2 (core 1), LO su cpu6 (core 3),
 coerenti con isolcpus=managed_irq,domain,2,3,6,7 sulla cmdline.
 
+Calibrazione: `"calibration"` e' un INTERO fisso (ns per iterazione), mai `"CPU0"`.
+`"CPU0"` fa partire l'auto-calibrazione, che costa ~8 s non deterministici e — dentro un
+cpuset che non contiene la CPU 0 — calibra su un'altra CPU senza dirlo (la
+`sched_setaffinity` fallisce e il valore di ritorno non e' controllato,
+`rt-app.cpp:2071-2082`). Il default 29 viene dal task 0.6: il costo reale misurato e'
+28.76 ns/iterazione, e fra i due interi possibili 29 sbaglia di -0.83 % sui 2000 us
+nominali contro il +2.71 % di 28.
+
 Usage:
   ./gen_config.py --n-lo 4 --duration 20 --out cfg_n4.json
   ./gen_config.py --n-lo 0 --duration 20 --out cfg_hi_only.json   # Block 1
@@ -66,7 +74,7 @@ def warn_if_smt_shared(hi_cpu, lo_cpus):
         )
 
 
-def build_config(n_lo, duration, hi_cpu, lo_cpus):
+def build_config(n_lo, duration, hi_cpu, lo_cpus, calibration):
     tasks = {
         "HI_task": {
             "policy": "SCHED_FIFO",
@@ -91,7 +99,7 @@ def build_config(n_lo, duration, hi_cpu, lo_cpus):
         "global": {
             "duration": duration,
             "default_policy": "SCHED_OTHER",
-            "calibration": "CPU0",
+            "calibration": calibration,
             "logdir": "./",
             "log_basename": "rtapp",
         },
@@ -106,14 +114,18 @@ if __name__ == "__main__":
     ap.add_argument("--hi-cpu", type=int, default=2, help="CPU pinned for HI_task")
     ap.add_argument("--lo-cpus", type=int, nargs="+", default=[6],
                      help="CPU(s) for LO_noise instances (core fisico diverso da --hi-cpu)")
+    ap.add_argument("--calibration", type=int, default=29,
+                     help="pLoad fisso in ns (INTERO: rt-app rifiuta i float). Mai \"CPU0\": "
+                          "vedi il task 0.6 in CLAUDE.md")
     ap.add_argument("--out", required=True, help="output JSON path")
     args = ap.parse_args()
 
     if args.n_lo > 0:
         warn_if_smt_shared(args.hi_cpu, args.lo_cpus)
 
-    cfg = build_config(args.n_lo, args.duration, args.hi_cpu, args.lo_cpus)
+    cfg = build_config(args.n_lo, args.duration, args.hi_cpu, args.lo_cpus,
+                       args.calibration)
     with open(args.out, "w") as f:
         json.dump(cfg, f, indent=2)
     print(f"wrote {args.out}  (n_lo={args.n_lo}, duration={args.duration}s, "
-          f"HI=cpu{args.hi_cpu}, LO=cpu{args.lo_cpus})")
+          f"HI=cpu{args.hi_cpu}, LO=cpu{args.lo_cpus}, calibration={args.calibration})")
