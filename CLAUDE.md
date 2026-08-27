@@ -226,10 +226,34 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   (max/med 1,02x) anche sotto carico pieno, mentre cpu0 arriva a max/med **12,96x**
   (20,5 ms contro 1,6 ms di mediana).
 
-- [ ] **0.5** — Generare a mano una config con `gen_config.py --n-lo 4` e lanciarla UNA
+- [x] **0.5** — Generare a mano una config con `gen_config.py --n-lo 4` e lanciarla UNA
   volta con `test.sh` (non `run_doe.sh`), ispezionando manualmente la cartella di output.
   Obiettivo: capire la struttura di un run prima di lanciarne centinaia in automatico.
-  Stato:
+  Stato: FATTO. Risultati in `0-exploration/task0.5/` (`NOTES.md`, `SPIEGAZIONE.md`,
+  `cfg_n4.json`, `run_n4/`, piu' la controprova `cfg_n4_timer.json` + `run_n4_timer/`;
+  i log `LO_noise` sono gzippati, quelli `HI_task` in chiaro). Binario senza tracing
+  (`RTAPP_TRACE_LEVEL=0`, verificato: zero simboli otel), shield `cset` su 2,3,6,7 attivo,
+  run da 20 s in 20,34 s di wall time (calibrazione saltata). Findings:
+  (a) struttura di un run — `test.sh` archivia la config eseguita dentro la cartella,
+  produce **un log per thread** (`instance: 4` -> 4 file) per **5,0 MB per run da 20 s**,
+  da tenere presente al Task 4; (b) documentate tutte le 11 colonne di `log_timing`
+  (`rt-app_utils.cpp:151`), fra cui `perf` = `exec/p_load` (`rt-app.cpp:563`) che e' una
+  quantita' **configurata**, non misurata (14 per HI, 3 per LO); (c) HI_task 1998 loop,
+  `run` 1979 us per 2000 configurati, periodo 9987 us con std **10,3 us** — questo e' il
+  rumore di fondo contro cui misurare OTel; LO_noise ha periodo 2022 us invece di 1000
+  perche' 4 istanze al 50% su una CPU sola chiedono il 200% (saturazione voluta);
+  (d) **finding principale**: `slack`, `c_period` e `wu_lat` sono **0 su tutte le 41321
+  righe**, perche' sono scritti solo nel ramo `case rtapp_timer:` (`rt-app.cpp:727-757`)
+  e `gen_config.py` genera `run`+`sleep`, non `timer`. `analyze_doe.py:62` calcola
+  `deadline_miss_ratio` da `slack<0` -> **sarebbe 0,000 in ogni cella del DoE**;
+  (e) controprova eseguita con `timer` (sintassi verificata in
+  `rt-app_parse_config.cpp:587-620`: `"timer":{"ref":"unique","period":10000}`): la
+  metrica si accende e dice la cosa giusta — HI_task 0 miss su 1997, LO_noise **53,8%**
+  di miss; compare la wake-up latency (HI: med 7 us, p99 12, **max 23 us**); e il jitter
+  del periodo scende da 10,3 a **3,3 us** perche' i risvegli sono su griglia assoluta;
+  (f) l'unico slack negativo di HI_task e' la **riga 1**, artefatto di avvio
+  (`t_next` inizializzato a `*t_first`, `rt-app.cpp:737`) -> `analyze_doe.py` deve
+  scartarla, altrimenti riporta 0,05% di miss come costante in ogni cella.
 
 ## Task 1.x-5.x — verso il deliverable finale
 
@@ -242,6 +266,10 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 
 - [ ] **Task 2** — Scrivere le config JSON definitive per il DoE (HI su SCHED_FIFO,
   LO_noise repliche via `instance`), verificandole con `gen_config.py`.
+  **Da fare qui (dal task 0.5)**: sostituire `"sleep"` con
+  `"timer": {"ref":"unique","period":<us>}` in `gen_config.py`, altrimenti
+  `deadline_miss_ratio` e `mean_wu_latency_us` restano 0 in ogni cella e
+  `period_jitter_std_us` ha 3x piu' rumore. `period` e' il periodo intero, non l'attesa.
   Stato:
 
 - [ ] **Task 3** — Introdurre una macro `RTAPP_EXPORTER_TYPE` (0=Zipkin default,
@@ -258,6 +286,8 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
   descrittive/confronti tra configurazioni.
+  **Da fare qui (dal task 0.5)**: scartare la prima riga di ogni log, e' un transitorio di
+  avvio che vale da solo 1 deadline miss su 1998 in ogni cella.
   Stato:
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della
