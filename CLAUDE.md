@@ -122,9 +122,12 @@ Risolto fuori dalla numerazione dei task, su richiesta esplicita, dopo i finding
 - **Il pin va rifatto a ogni riavvio**: gli MSR tornano ai valori di power-on.
 - Risultato: `run` misurato 1990-1991 µs su 5 run (spread **0,05%**, era 35%), wall time
   5,01 s contro 13,40 s. Il task 0.1 misurava ~4150 µs per 2000 configurati.
-- Resta aperto per il task 0.4: SMT attivo (cpu2 <-> cpu6 sono lo stesso core fisico) e
-  `cmdline` con `nohz_full=1,4-6` ma **nessun `isolcpus`**, per giunta su CPU diverse dalle
-  2,3 che `run_doe.sh` vuole isolare.
+- SMT e isolamento: **risolto nel task 0.4**. La cmdline ora e'
+  `isolcpus=domain,managed_irq,2,3,6,7 nohz_full=2,3,6,7 irqaffinity=0,1,4,5` (due core
+  fisici interi all'esperimento, due al sistema). `CALIB_NS=139` e' stato **riverificato**
+  in questa configurazione: rt-app misura 1982 us per 2000 configurati (-0,9%), quindi
+  resta valido. Attenzione: con il fratello SMT occupato scenderebbe a 1302 us (-35%),
+  vedi `0-exploration/task0.4/NOTES.md` §5.
 
 ## Task 0.x — esplorativi/didattici (NON producono deliverable, servono a capire il setup)
 
@@ -192,11 +195,36 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   conterebbe sempre gli stessi span; il Task 3 deve replicarci dentro gli `#if` di
   `InitTracerZipkin()`.
 
-- [ ] **0.4** — Provare `sudo scripts/utils_isolation/isolate_cpus.sh 2,3` e verificare a
+- [x] **0.4** — Provare `sudo scripts/utils_isolation/isolate_cpus.sh 2,3` e verificare a
   mano (es. `cat /proc/irq/*/smp_affinity_list`, `taskset -c 2 ...`) che l'isolamento
   abbia effetto reale, poi `reset_isolation.sh`. Obiettivo: capire cosa fa lo script prima
   di fidarsene dentro il DoE automatizzato.
-  Stato:
+  Stato: FATTO. Risultati in `0-exploration/task0.4/` (`NOTES.md`, `SPIEGAZIONE.md`,
+  `evidence/` con i micro-benchmark e i log rt-app). Svolto **dopo** che la cmdline GRUB
+  era gia' stata cambiata in `isolcpus=domain,managed_irq,2,3,6,7 nohz_full=2,3,6,7
+  irqaffinity=0,1,4,5`, quindi il task ha verificato sia il kernel sia lo script.
+  Findings: (a) `isolcpus` funziona — 8 spinner senza affinity si ammassano su 0,1,4,5 e
+  non toccano mai 2,3,6,7; `taskset -c 2` funziona comunque, come serve a rt-app;
+  (b) `nohz_full` funziona — 1000 Hz di tick su cpu0/1 contro **1 Hz** su cpu2/3/6/7;
+  (c) `cset` funziona nonostante cgroup v2 puro (si monta da solo una gerarchia v1 in
+  `/cpusets`), il confinamento con `cset shield --exec` e' reale (affinity 2,3), i 189
+  task rimasti in root sono **tutti** kthread; ma con `isolcpus` gia' attivo lo shield e'
+  in gran parte ridondante; (d) `reset_isolation.sh` funziona ma **non ripristina le
+  affinity IRQ** e lascia `/cpusets` montato; (e) **due bug corretti in
+  `isolate_cpus.sh`**: `nproc` letto *dopo* `cset shield` ritorna 6 invece di 8 (la shell
+  e' gia' nel cpuset `system`) e lo script enumerava indici invece di id CPU; una volta
+  corretto, portava gli IRQ su 6,7 cioe' sui fratelli SMT delle CPU RT — ora esclude anche
+  i fratelli e stampa un WARNING se isoli una CPU senza il suo gemello. **Va chiamato con
+  `2,3,6,7`, non `2,3`**; (f) **finding principale**: `waste_cpu_cycles()` di rt-app usa
+  `ldexp` e il suo throughput dipende dallo stato della FPU — con il fratello SMT occupato
+  lo stesso lavoro va il **36% piu' veloce** a frequenza identica (1800 MHz verificati via
+  APERF/MPERF), mentre un loop intero non cambia (0,3%). Su rt-app vero: `run` misurato
+  1982 us con cpu6 vuota contro 1302 us con cpu6 occupata, per 2000 us configurati, **senza
+  alcun errore nei log**. E' il motivo per cui isolare 2,3 senza 6,7 avrebbe reso
+  incomparabili le celle del DoE, ed e' un limite metodologico di rt-app da citare nella
+  relazione; (g) stabilita' ottenuta: cpu2 ripete 2171,8 us di mediana su run diversi
+  (max/med 1,02x) anche sotto carico pieno, mentre cpu0 arriva a max/med **12,96x**
+  (20,5 ms contro 1,6 ms di mediana).
 
 - [ ] **0.5** — Generare a mano una config con `gen_config.py --n-lo 4` e lanciarla UNA
   volta con `test.sh` (non `run_doe.sh`), ispezionando manualmente la cartella di output.
