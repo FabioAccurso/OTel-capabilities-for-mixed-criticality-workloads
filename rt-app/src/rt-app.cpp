@@ -118,18 +118,38 @@ void InitTracer() {
 	auto exporter = trace_exporter::OStreamSpanExporterFactory::Create();
 	
 	// SpanProcessor: processes spans and forwards them to an exporter. BatchSpanProcessor batches them and sends them in bulk to the exporter.
-	trace_sdk::BatchSpanProcessorOptions processor_options{};
-	auto processor = trace_sdk::BatchSpanProcessorFactory::Create(std::move(exporter), processor_options);
+	// NOTE: same #if chain as InitTracerZipkin() below, with the same parameters, on purpose:
+	// the two exporters must differ ONLY in the exporter, otherwise the ostream runs used to
+	// count exported spans (DoE block 2) would not be comparable with the Zipkin ones.
+	#if (RTAPP_PROCESSOR_TYPE == 0)
+	// Batch
+	trace_sdk::BatchSpanProcessorOptions batch_options{};
+	batch_options.max_queue_size = 2048;
+	batch_options.schedule_delay_millis = std::chrono::milliseconds(5000);
+	auto processor = trace_sdk::BatchSpanProcessorFactory::Create(std::move(exporter), batch_options);
+	#elif (RTAPP_PROCESSOR_TYPE == 1)
+	// Simple
+	auto processor = trace_sdk::SimpleSpanProcessorFactory::Create(std::move(exporter));
+	#endif
 	
-	// Sampler: mechanism to control/reducing the number of samples of traces collected and sent to the backend. AlwaysOnSampler samples every trace regardless of upstream sampling decisions
-	auto always_on_sampler = std::unique_ptr<trace_sdk::AlwaysOnSampler>(new trace_sdk::AlwaysOnSampler);
+	// Sampler: mechanism to control/reducing the number of samples of traces collected and sent to the backend.
+	#if (RTAPP_SAMPLER_TYPE == 0)
+	// AlwaysOn
+	auto sampler = std::unique_ptr<trace_sdk::Sampler>(new trace_sdk::AlwaysOnSampler);
+	#elif (RTAPP_SAMPLER_TYPE == 1)
+	// Ratio
+	auto sampler = std::unique_ptr<trace_sdk::Sampler>(new trace_sdk::TraceIdRatioBasedSampler(RTAPP_SAMPLER_RATIO));
+	#elif (RTAPP_SAMPLER_TYPE == 2)
+	// AlwaysOff
+	auto sampler = std::unique_ptr<trace_sdk::Sampler>(new trace_sdk::AlwaysOffSampler);
+	#endif
 
 	// TracerProvider instance holds the SDK configurations (Span Processors, Samplers, Resource). There is a single global TracerProvider instance
 	// for an application, and it is created at the start of application.
 
 	// TraceProvider (create)
 	std::shared_ptr<opentelemetry::trace::TracerProvider> provider =
-	trace_sdk::TracerProviderFactory::Create(std::move(processor), resource, std::move(always_on_sampler));
+	trace_sdk::TracerProviderFactory::Create(std::move(processor), resource, std::move(sampler));
 	// TraceProvider (set)
 	trace_api::Provider::SetTracerProvider(provider);
 }
@@ -1972,8 +1992,12 @@ int main(int argc, char* argv[])
 		new (&opts.threads_data[i].span) opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>(nullptr);
 	}
 	
-	// Initialize tracing framework
+	// Initialize tracing framework (exporter chosen at compile time, see rt-app_types.h)
+	#if (RTAPP_EXPORTER_TYPE == 0)
 	InitTracerZipkin();
+	#else
+	InitTracer();
+	#endif
 
 	// Create main span
 	auto tracer = get_tracer();

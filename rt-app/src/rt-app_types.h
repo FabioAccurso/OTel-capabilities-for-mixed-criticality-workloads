@@ -43,6 +43,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef RTAPP_SAMPLER_RATIO		// Used with Ratio Sampler (default to 50%)
 #define RTAPP_SAMPLER_RATIO 0.5
 #endif
+
+#ifndef RTAPP_EXPORTER_TYPE
+#define RTAPP_EXPORTER_TYPE 0	// Zipkin Exporter (1 = OStream, spans printed to stdout)
+#endif
 /************************************************************************/
 
 /************************** CGROUP - Defaults ***************************/

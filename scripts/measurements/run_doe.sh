@@ -71,9 +71,12 @@ block1() {
 # ============================ BLOCK 2 =======================================
 # Sampling granularity: can OTel's ratio sampler actually protect HI spans
 # when HI and LO share one trace? Fixed trace_level=2, processor=Batch,
-# mixed workload (1 HI + 4 LO). NOTE: for this block you must temporarily
-# switch main() to use the ostream exporter (InitTracer) instead of
-# InitTracerZipkin, so exported spans are visible/greppable in stdout.log.
+# mixed workload (1 HI + 4 LO). Questo blocco richiede l'exporter ostream, per
+# avere gli span contabili su stdout.log. NON serve piu' modificare main(): dal
+# Task 3 basta la macro -DRTAPP_EXPORTER_TYPE=1 (0 = Zipkin, default).
+# DA FARE nel Task 4: build_bin() non passa ancora quella macro — va aggiunto un
+# quinto parametro 'exporter', incluso nel tag del binario in cache, e block2 deve
+# invocare run_cell con exporter=1.
 # 6 cells x 25 reps = 150 runs.
 block2() {
     run_cell "block2" 2 0 2 0.0 4 25 20   # AlwaysOff  (sanity control)

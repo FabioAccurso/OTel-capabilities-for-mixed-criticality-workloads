@@ -627,11 +627,51 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   (d) `"calibration": 29` fisso (task 0.6) elimina anche gli ~8 s di startup non
       deterministico: `duration: 20` ora dura **20.2 s** invece di 28.3 s.
 
-- [ ] **Task 3** — Introdurre una macro `RTAPP_EXPORTER_TYPE` (0=Zipkin default,
+- [x] **Task 3** — Introdurre una macro `RTAPP_EXPORTER_TYPE` (0=Zipkin default,
   1=ostream) e in `main()` sostituire la chiamata diretta a `InitTracerZipkin()` con un
   `#if RTAPP_EXPORTER_TYPE == 0 ... #else InitTracer() ... #endif`. Serve al Blocco 2 del
   DoE per contare a video gli span esportati.
-  Stato:
+  Stato: **FATTO**. Tre modifiche, tutte additive (nessuna riscrittura di
+  `InitTracerZipkin()`):
+  (a) `rt-app_types.h:47-49` — la macro accanto alle altre quattro, default 0 = Zipkin;
+  (b) `rt-app.cpp` in `main()` — `#if (RTAPP_EXPORTER_TYPE == 0) InitTracerZipkin();
+      #else InitTracer(); #endif`;
+  (c) **`InitTracer()` non rispettava le macro.** Era hardcodata su `BatchSpanProcessor` +
+      `AlwaysOnSampler`, mentre `InitTracerZipkin()` onora `RTAPP_PROCESSOR_TYPE`,
+      `RTAPP_SAMPLER_TYPE` e `RTAPP_SAMPLER_RATIO`. Senza allinearla, **il Blocco 2 sarebbe
+      stato inutile**: varia il sampler in 6 modi ma avrebbe girato ogni cella con AlwaysOn.
+      Aggiunte le stesse catene `#if` con gli stessi parametri (`max_queue_size = 2048`,
+      `schedule_delay_millis = 5000`), cosi' i due exporter differiscono **solo**
+      nell'exporter. La duplicazione delle due catene e' deliberata, per non toccare
+      `InitTracerZipkin()`: c'e' un commento che lo segnala in entrambi i punti.
+
+  Verifica funzionale (necessaria: `strings` non distingue i binari, vedi task 0.3):
+
+  | build | macro | errori ZIPKIN | span su stdout |
+  |---|---|---|---|
+  | default | — | 1 | 0 |
+  | ostream | `EXPORTER_TYPE=1` | 0 | 3 |
+  | AlwaysOff | `EXPORTER_TYPE=1 SAMPLER_TYPE=2` | 0 | **0** |
+  | Simple | `EXPORTER_TYPE=1 PROCESSOR_TYPE=1` | 0 | 3 |
+
+  La riga AlwaysOff a 0 span e' la prova che il punto (c) serviva. Cache `bin/` rigenerata;
+  `bin/rt-app_T1_S0_ostream` non e' piu' il binario ottenuto con la modifica temporanea del
+  sorgente al task 0.3, ma quello prodotto dalla macro.
+
+  **Finding per il Task 5 — `count_exported_spans()` conta il doppio.** Il nome del task
+  compare **due volte per span** nell'output ostream: come `name          : HI_task-0` e
+  come attributo `config.name: HI_task-0` (rt-app lo imposta con `SetAttribute`).
+  `analyze_doe.py:70-77` fa un `grep` di sottostringa su tutto `stdout.log`, quindi
+  raddoppia. Misurato su `cfg_n4` (7 span reali: main, calibration, 1 HI, 4 LO):
+
+  | sottostringa | metodo attuale | corretto |
+  |---|---|---|
+  | `HI_task` | 2 | **1** |
+  | `LO_noise` | 8 | **4** |
+
+  E' un fattore 2 costante, quindi i *rapporti* fra celle sopravviverebbero, ma i conteggi
+  assoluti no — e il fattore cambierebbe se rt-app aggiungesse un altro attributo contenente
+  il nome. Contare invece le sole righe di intestazione: `grep -cE "^  name +: <nome>"`.
 
 - [ ] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
   RTAPP_SRC_DIR/BIN_CACHE/DOE_ROOT in cima allo script, **applicare `pin_cpu_freq.sh fix 0`**
@@ -639,6 +679,14 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   con `isolate_cpus.sh 2,3,6,7`, lanciare block1/block2/block3 (uno alla volta, su richiesta
   esplicita — non tutti insieme). Lo script deve dare a ogni ripetizione una cartella propria
   (rt-app sovrascrive il log a nome fisso) e registrare MHz + Tctl per ogni run.
+  **Da cablare in `run_doe.sh`** (elencato qui, non fatto nel Task 3):
+  - `build_bin()` non passa `RTAPP_EXPORTER_TYPE`: serve un quinto parametro `exporter`,
+    incluso nel tag del binario in cache, e `block2()` deve invocare `run_cell` con
+    `exporter=1` (il commento del blocco 2 e' gia' aggiornato);
+  - `sudo` in `test.sh:32` presuppone un terminale: pre-autenticare, usare `SUDO_ASKPASS` o
+    girare come root, e **verificare che il log esista e non sia vuoto** prima di contare il
+    run come valido (task 0.5, finding (c));
+  - `chown` dei log a fine run: `cset shield --exec` esegue come root.
   **Prerequisito**: baseline rifatta sulla cmdline attuale con un braccio `SCHED_FIFO`
   (vedi "Perche' NON conviene limitarsi a rieseguire la batteria 0.4"). La tabella di
   baseline attuale e' di una configurazione di piattaforma precedente.
