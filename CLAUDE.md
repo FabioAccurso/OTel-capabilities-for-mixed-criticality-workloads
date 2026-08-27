@@ -537,12 +537,65 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 
 ## Task 1.x-5.x — verso il deliverable finale
 
-- [ ] **Task 1** — Build completa: `autogen.sh && ./configure && make` in `rt-app/`;
+- [x] **Task 1** — Build completa: `autogen.sh && ./configure && make` in `rt-app/`;
   compilare `otel-installdir/` se assente (cmake -DWITH_ZIPKIN=ON -DBUILD_TESTING=OFF
   -DCMAKE_INSTALL_PREFIX=.../otel-installdir). Pacchetti apt: autoconf autoconf-archive
   automake libtool libcurl4-openssl-dev libnuma-dev libjson-c-dev cpuset cmake
   (`libjson-c-dev` obbligatorio, `configure` fallisce senza).
-  Stato:
+  Stato: **FATTO**. Ricostruzione **da zero** verificata il 2026-08-27, non solo un `make`
+  incrementale: `make distclean` + rimozione di tutto l'output di autotools
+  (`aclocal.m4 configure autom4te.cache m4 */Makefile.in`), poi i tre passi.
+
+  | passo | tempo | esito |
+  |---|---|---|
+  | `./autogen.sh` | 14.1 s | genera `configure` |
+  | `./configure` | 6.6 s | trova `numa` e `json-c`, crea `Makefile` e `src/Makefile` |
+  | `make -j8` | 8.6 s | 0 errori, 5 warning |
+  | `make CPPFLAGS="-DRTAPP_TRACE_LEVEL=1 -DRTAPP_SAMPLER_TYPE=0"` | 16.1 s | 0 errori, **0 undefined reference** |
+
+  Binari: **1 985 872 byte** a livello 0, **5 310 264** a livello 1. La differenza non viene
+  da `LDADD` (le librerie OTel sono linkate in entrambi i casi) ma dal linker statico, che a
+  livello 0 scarta gli oggetti mai referenziati. Smoke test superato da entrambi: `T0` non
+  stampa nulla di OTel, `T1_S0` stampa `ZIPKIN EXPORTER: Connection failed` ed esce
+  comunque con **0** — coerente col finding (b) del task 0.2. Cache `bin/` rigenerata.
+
+  Pacchetti verificati presenti: autoconf 2.71, autoconf-archive 20220903, automake 1.16.5,
+  libtool 2.4.7, libcurl4-openssl-dev 8.5.0, libnuma-dev 2.0.18, libjson-c-dev 0.17,
+  cpuset 1.6.2, cmake 3.28.3, build-essential 12.10, pkg-config 1.8.1.
+
+  I 5 warning sono tutti `"_GNU_SOURCE" redefined` da `libdl/dl_syscalls.h:20` (file del
+  docente): benigni, `_GNU_SOURCE` e' gia' definito dalla riga di comando di automake.
+
+  **Attenzione — `otel-installdir/` non e' ricostruibile senza rete.** E' presente e
+  autosufficiente (16 librerie statiche, 429 header, config cmake completa), ma **i sorgenti
+  di opentelemetry-cpp non esistono piu'**: la build era stata fatta in una directory
+  temporanea di sessione, ora cancellata (il path compare ancora dentro i messaggi
+  dell'exporter Zipkin). `otel-installdir/` e' inoltre gitignorato, quindi un clone pulito
+  del repo non ce l'ha. Per ricostruirlo:
+
+  ```bash
+  git clone --depth 1 -b v1.28.0 https://github.com/open-telemetry/opentelemetry-cpp.git
+  cd opentelemetry-cpp && mkdir build && cd build
+  cmake .. -DCMAKE_INSTALL_PREFIX=<repo>/otel-installdir \
+           -DWITH_ZIPKIN=ON -DBUILD_TESTING=OFF -DWITH_EXAMPLES=OFF \
+           -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=Release
+  make -j$(nproc) && make install
+  ```
+
+  La **v1.28.0 non e' negoziabile**: `src/Makefile.am:19` linka
+  `-lopentelemetry_exporter_ostream_span_builder`, target che non esiste prima della v1.24.0
+  (vedi la nota nel task 0.1). Questa ricetta e' quella usata all'epoca ma **non e' stata
+  rieseguita** in questa sessione: `otel-installdir/` era gia' presente e il Task 1 dice di
+  ricompilarlo solo se assente.
+
+  Due trappole di build risolte qui:
+  - **serve il tag git.** `AC_INIT` usa `m4_esyscmd_s([git describe --tags HEAD])`: senza il
+    tag `rtapp-doe-0.1` (creato nel task 0.1) `configure` fallisce. La versione risultante e'
+    oggi `rtapp-doe-0.1-5-gc9f5aa0`;
+  - **`rt-app/README` non e' piu' tracciato.** E' generato da `README.in` e incorpora la
+    stringa di versione, quindi risultava modificato dopo *ogni* commit. `COPYING` resta
+    tracciato perche' e' stabile. Aggiunto anche `*~` al `.gitignore` (backup di
+    `autoheader`).
 
 - [ ] **Task 2** — Scrivere le config JSON definitive per il DoE (HI su SCHED_FIFO,
   LO_noise repliche via `instance`), verificandole con `gen_config.py`.

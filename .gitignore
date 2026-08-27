@@ -28,6 +28,12 @@ rt-app/test-driver
 rt-app/m4/
 Makefile
 Makefile.in
+# README e' generato da README.in e incorpora `git describe`: cambierebbe a ogni
+# commit. COPYING resta tracciato perche' e' stabile (il testo della licenza).
+rt-app/README
+
+# backup di autoheader/autoconf
+*~
 
 # --- Cache dei binari compilati per combinazione di macro --------------------
 # Rigenerabili: make CPPFLAGS="-DRTAPP_TRACE_LEVEL=N -DRTAPP_SAMPLER_TYPE=M"
