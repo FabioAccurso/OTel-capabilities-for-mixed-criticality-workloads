@@ -1,0 +1,309 @@
+[build] t0_p0_s0_r0.0_e0
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_utils.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_parse_config.h:25,
+                 from rt-app_args.cpp:31:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app.cpp:46:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_parse_config.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_taskgroups.cpp:11:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/config.json  (n_lo=0, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_01/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_02/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_03/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_04/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_05/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_06/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_07/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_08/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_09/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_10/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_11/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_12/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_13/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_14/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_15/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_15
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_16/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_16
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_17/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_17
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_18/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_18
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_19/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_19
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_20/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t0_p0_s0_r0.0_n0/run_20
+[build] t1_p0_s0_r0.0_e0
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_utils.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_parse_config.h:25,
+                 from rt-app_args.cpp:31:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app.cpp:46:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_parse_config.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_taskgroups.cpp:11:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/config.json  (n_lo=0, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_01/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_02/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_03/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_04/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_05/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_06/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_07/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_08/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_09/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_10/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_11/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_12/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_13/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_14/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_15/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_15
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_16/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_16
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_17/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_17
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_18/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_18
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_19/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_19
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t1_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_20/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t1_p0_s0_r0.0_n0/run_20
+[build] t2_p0_s0_r0.0_e0
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_utils.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_parse_config.h:25,
+                 from rt-app_args.cpp:31:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app.cpp:46:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_parse_config.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_taskgroups.cpp:11:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/config.json  (n_lo=0, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_01/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_02/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_03/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_04/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_05/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_06/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_07/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_08/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_09/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_10/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_11/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_12/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_13/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_14/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_15/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_15
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_16/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_16
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_17/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_17
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_18/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_18
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_19/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_19
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t2_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_20/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t2_p0_s0_r0.0_n0/run_20
+[build] t3_p0_s0_r0.0_e0
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_utils.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_parse_config.h:25,
+                 from rt-app_args.cpp:31:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app.cpp:46:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_parse_config.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_taskgroups.cpp:11:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/config.json  (n_lo=0, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_01/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_02/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_03/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_04/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_05/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_06/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_07/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_08/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_09/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_10/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_11/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_12/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_13/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_14/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_15/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_15
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_16/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_16
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_17/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_17
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_18/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_18
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_19/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_19
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_20/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block1/t3_p0_s0_r0.0_n0/run_20
+[run_doe] finished 'block1'. Results under: /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE

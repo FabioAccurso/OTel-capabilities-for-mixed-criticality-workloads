@@ -355,10 +355,40 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   e le 6 celle di `block2` passano 1. Rimosso il commento che diceva di modificare a mano
   `main()`. Blocchi 1 e 3 invariati su Zipkin.
 
-- [ ] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
+- [~] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
   RTAPP_SRC_DIR/BIN_CACHE/DOE_ROOT in cima allo script, isolare le CPU, lanciare
   block1/block2/block3 (uno alla volta, su richiesta esplicita — non tutti insieme).
-  Stato:
+  Stato: **BLOCCO 1 FATTO**, blocchi 2 e 3 da lanciare. Percorsi risolti da
+  `PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"` invece che
+  hardcodati, quindi il repo funziona ovunque sia clonato. Risultati e analisi in
+  `2-DoE/NOTES-block1.md`, `SPIEGAZIONE-block1.md`, `analyze_block1.py`; dati grezzi in
+  `2-DoE/block1/` (80 run, 21 MB) e `data_table.csv`.
+  Blocco 1 eseguito il 2026-08-27 19:39-20:08, **29m01s**, exit 0, 80/80 run integri.
+  Condizioni: freq pinnata, shield `2,3,6,7`, `n_lo=0`, **nessun collector Zipkin**
+  (7,7 `Connection failed` per run al livello 3 -> misura la creazione degli span, non il
+  trasporto) e **thread di export non vincolato** (maschera `2-3,6-7`): entrambe scelte
+  confermate dall'utente, da dichiarare nella relazione.
+  Risultati: (a) **0,00% di deadline miss a ogni livello di tracing**, su ~160000 giri —
+  a 20% di utilizzazione l'overhead non e' mai fatale; (b) **il jitter cresce in modo
+  monotono**: `period_std` 7,6 -> 11,2 -> 10,8 -> 13,5 us (**+47%, +41%, +77%**); livelli
+  1 e 2 indistinguibili, coerente col task 3 (al livello 2 gli span di fase sono uno per
+  definizione, non per giro); (c) **wake-up latency +60%** (17 -> 27-28 us mediani, caso
+  peggiore 165 us al livello 2); (d) **costo per giro misurato sullo `slack`**: +30 us ai
+  livelli 1-2, **+56 us** al livello 3 (0,4% e 0,7% del budget di 8000 us; 1,5% e 2,8%
+  dei 2000 us di calcolo).
+  **ANOMALIA NON SPIEGATA, rilevante per il Task 5**: al livello 3 `run` **scende** a
+  1955 us contro 1989 del livello 0, con **IQR nullo** (tutti e 20 i run identici). Il
+  lavoro e' per costruzione identico e la finestra di misura esclude il codice degli span
+  (`rt-app.cpp:683-693`). Ipotesi SMT **testata e scartata**: rilanciando il livello 3 con
+  shield ristretto a `2,3` (thread di export escluso dal gemello di cpu2) il valore resta
+  **1955 identico**, quindi non e' l'effetto FPU/SMT del task 0.4. Resta un effetto di
+  stato del core non identificato. **Conseguenza**: `max_duration_us` e `mean_duration_us`
+  di `analyze_doe.py`, che derivano da `run`, **non sono affidabili per confrontare livelli
+  di tracing** — usare `slack`, `period_jitter_std_us` e `wu_latency`.
+  **Da decidere prima dei blocchi 2 e 3**: il blocco 1 occupa 21 MB con `n_lo=0`, i
+  blocchi 2 e 3 stimati ~750 MB ciascuno -> comprimere i log o tenere solo `HI_task`.
+  Nota: rilanciare un blocco sovrascrive i `run_NN` ma **aggiunge** righe a
+  `data_table.csv` -> svuotare prima `block*/`, `data_table.csv` e `index.txt`.
 
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
@@ -372,7 +402,10 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   per run** (8 span o 0, task 3) -> trattarlo come proporzione binomiale su 25 ripetizioni,
   non come conteggio continuo; (5) **correggere `count_exported_spans()`**, che conta la
   sottostringa in tutto il file e quindi raddoppia (`name` + attributo `config.name`):
-  contare solo le righe `name`, vedi `3-exporter/NOTES.md` §8.
+  contare solo le righe `name`, vedi `3-exporter/NOTES.md` §8; (6) **non usare
+  `max_duration_us`/`mean_duration_us` per confrontare livelli di tracing**: derivano da
+  `run`, che al livello 3 *scende* per un effetto microarchitetturale non spiegato
+  (blocco 1 §4) — usare `slack`, `period_jitter_std_us`, `wu_latency`.
   Stato:
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della

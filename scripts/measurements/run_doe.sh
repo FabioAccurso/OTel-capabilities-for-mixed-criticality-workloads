@@ -4,10 +4,12 @@
 #
 # Usage: ./run_doe.sh <block1|block2|block3|all>
 #
-# EDIT THESE PATHS FOR YOUR MACHINE before running:
-RTAPP_SRC_DIR="${RTAPP_SRC_DIR:-$HOME/rtsia-project/project/rt-app/src}"
-BIN_CACHE="${BIN_CACHE:-$HOME/rtsia-project/project/bin}"
-DOE_ROOT="${DOE_ROOT:-$HOME/rtsia-project/project/2-DoE}"
+# Resolved from this script's own location (scripts/measurements/ -> project root), so a
+# clone anywhere works without editing. Each is still overridable from the environment.
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+RTAPP_SRC_DIR="${RTAPP_SRC_DIR:-$PROJECT_ROOT/rt-app/src}"
+BIN_CACHE="${BIN_CACHE:-$PROJECT_ROOT/bin}"
+DOE_ROOT="${DOE_ROOT:-$PROJECT_ROOT/2-DoE}"
 
 # ns per loop, hardcoded into every generated config so that rt-app skips its own
 # calibration (6-20 s per run, and a different value each time -> "run": 2000 would
