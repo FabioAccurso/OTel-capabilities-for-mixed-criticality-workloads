@@ -57,6 +57,8 @@ project/
 ├── otel-installdir/     build+install locale di opentelemetry-cpp (WITH_ZIPKIN=ON)
 ├── scripts/
 │   ├── utils_isolation/ isolate_cpus.sh, reset_isolation.sh (cset shield)
+│   ├── utils_freq/      cpu_freq.py (pin/reset frequenza via MSR), measure_ploop.sh,
+│   │                    tune_calib.sh (ricava il ns-per-loop a ciclo chiuso)
 │   └── measurements/    gen_config.py, test.sh, run_doe.sh, analyze_doe.py
 ├── 2-DoE/               data_table.csv, index.txt, risultati dei run
 └── bin/                 cache dei binari rt-app compilati per combinazione di macro
@@ -80,6 +82,44 @@ project/
   livello di thread/criticità.
 - `InitTracerZipkin()` è la funzione chiamata in `main()`; `InitTracer()` (ostream) esiste
   nel codice ma non è invocata — serve per il Task 3.
+
+## Prerequisito di misura: frequenza fissa + calibrazione saltata (FATTO)
+
+Risolto fuori dalla numerazione dei task, su richiesta esplicita, dopo i finding di 0.1 e
+0.3. Documentazione ed evidenze in `0-exploration/freq-calibrazione/`
+(`NOTES.md` tecnico, `SPIEGAZIONE.md` discorsivo).
+
+- Il kernel RT è compilato **senza** `CONFIG_CPU_FREQ` e `CONFIG_CPU_IDLE`:
+  `/sys/.../cpufreq` non esiste, nessun governor, `cpupower` inutile. Unico canale: gli
+  MSR (`CONFIG_X86_MSR=m`). HWP è **disattivato**, quindi si usa l'interfaccia legacy
+  `IA32_PERF_CTL` + bit 38 di `IA32_MISC_ENABLE` per spegnere il turbo.
+- `sudo` non funziona senza TTY in questa sessione: i comandi privilegiati vanno lanciati
+  con **`pkexec`** (apre un popup grafico).
+
+  ```
+  pkexec /usr/bin/python3 scripts/utils_freq/cpu_freq.py pin      # prima del DoE
+  pkexec /usr/bin/python3 scripts/utils_freq/cpu_freq.py info     # verifica
+  pkexec /usr/bin/python3 scripts/utils_freq/cpu_freq.py reset    # a fine sessione
+  ```
+
+  Effetto misurato (APERF/MPERF, sotto carico): 2587-2652 MHz -> **1794-1805 MHz**,
+  spread tra CPU dal 2,5% allo 0,3%.
+- La frequenza fissa **non basta**: `calibrate_cpu_cycles_1()` (`rt-app.cpp:451`) usa una
+  media mobile che parte da 0 e un test di uscita al 2%, quindi richiede **k >= 6
+  iterazioni** per costruzione, ognuna preceduta da `clock_nanosleep` di 1 s. Pavimento
+  ~6 s anche a macchina ferma.
+- Soluzione: `"calibration": <intero>` in `global` (`rt-app_parse_config.cpp:1238`) salta
+  del tutto la calibrazione. Il valore si ricava a ciclo chiuso con
+  `scripts/utils_freq/tune_calib.sh` (inverte `load_count = exec*1000/p_load`,
+  `rt-app.cpp:580`), non dalla calibrazione stessa.
+- **Valore per questa macchina a ~1800 MHz: `139` ns/loop.** Verificato identico sotto
+  `SCHED_OTHER` e `chrt -f 90`. Generare le config del DoE con
+  `gen_config.py --calib 139` (senza, lo script stampa un warning).
+- Risultato: `run` misurato 1990-1991 µs su 5 run (spread **0,05%**, era 35%), wall time
+  5,01 s contro 13,40 s. Il task 0.1 misurava ~4150 µs per 2000 configurati.
+- Resta aperto per il task 0.4: SMT attivo (cpu2 <-> cpu6 sono lo stesso core fisico) e
+  `cmdline` con `nohz_full=1,4-6` ma **nessun `isolcpus`**, per giunta su CPU diverse dalle
+  2,3 che `run_doe.sh` vuole isolare.
 
 ## Task 0.x — esplorativi/didattici (NON producono deliverable, servono a capire il setup)
 

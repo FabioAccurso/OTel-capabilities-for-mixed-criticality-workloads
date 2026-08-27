@@ -11,12 +11,18 @@ Generate an rt-app mixed-criticality task-set JSON config.
 Usage:
   ./gen_config.py --n-lo 4 --duration 20 --out cfg_n4.json
   ./gen_config.py --n-lo 0 --duration 20 --out cfg_hi_only.json   # Block 1
+
+--calib takes an integer (ns per loop) instead of a CPU to calibrate on. rt-app
+then skips calibration entirely (rt-app_parse_config.cpp:1238), which removes
+3-10 s of dead time per run AND, more importantly, makes "run": 2000 mean the
+same amount of work in every cell of the DoE. Get the number from
+scripts/utils_freq/measure_ploop.sh, with the frequency pinned.
 """
 import argparse
 import json
 
 
-def build_config(n_lo, duration, hi_cpu, lo_cpus):
+def build_config(n_lo, duration, hi_cpu, lo_cpus, calib):
     tasks = {
         "HI_task": {
             "policy": "SCHED_FIFO",
@@ -41,7 +47,7 @@ def build_config(n_lo, duration, hi_cpu, lo_cpus):
         "global": {
             "duration": duration,
             "default_policy": "SCHED_OTHER",
-            "calibration": "CPU0",
+            "calibration": calib,
             "logdir": "./",
             "log_basename": "rtapp",
         },
@@ -56,10 +62,22 @@ if __name__ == "__main__":
     ap.add_argument("--hi-cpu", type=int, default=2, help="CPU pinned for HI_task")
     ap.add_argument("--lo-cpus", type=int, nargs="+", default=[3],
                      help="CPU(s) for LO_noise instances")
+    ap.add_argument("--calib", default="CPU0",
+                     help="ns-per-loop as an integer (skips calibration, recommended for "
+                          "the DoE) or 'CPUn' to calibrate on that CPU at every run")
     ap.add_argument("--out", required=True, help="output JSON path")
     args = ap.parse_args()
 
-    cfg = build_config(args.n_lo, args.duration, args.hi_cpu, args.lo_cpus)
+    calib = int(args.calib) if args.calib.isdigit() else args.calib
+    if not isinstance(calib, int):
+        print("WARNING: calibration is left to rt-app. That costs 6-20 s per run and\n"
+              "         makes 'run' mean a different amount of work in every cell of\n"
+              "         the DoE. Measure the value once with\n"
+              "           scripts/utils_freq/tune_calib.sh\n"
+              "         (frequency pinned via scripts/utils_freq/cpu_freq.py pin)\n"
+              "         and pass it as --calib <ns>.")
+    cfg = build_config(args.n_lo, args.duration, args.hi_cpu, args.lo_cpus, calib)
     with open(args.out, "w") as f:
         json.dump(cfg, f, indent=2)
-    print(f"wrote {args.out}  (n_lo={args.n_lo}, duration={args.duration}s)")
+    print(f"wrote {args.out}  (n_lo={args.n_lo}, duration={args.duration}s, "
+          f"calibration={calib!r})")
