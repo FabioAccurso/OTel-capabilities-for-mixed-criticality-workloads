@@ -673,24 +673,52 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   assoluti no — e il fattore cambierebbe se rt-app aggiungesse un altro attributo contenente
   il nome. Contare invece le sole righe di intestazione: `grep -cE "^  name +: <nome>"`.
 
-- [ ] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
-  RTAPP_SRC_DIR/BIN_CACHE/DOE_ROOT in cima allo script, **applicare `pin_cpu_freq.sh fix 0`**
-  (non sopravvive al reboot, vedi "Setup di determinismo della piattaforma"), isolare le CPU
-  con `isolate_cpus.sh 2,3,6,7`, lanciare block1/block2/block3 (uno alla volta, su richiesta
-  esplicita — non tutti insieme). Lo script deve dare a ogni ripetizione una cartella propria
-  (rt-app sovrascrive il log a nome fisso) e registrare MHz + Tctl per ogni run.
-  **Da cablare in `run_doe.sh`** (elencato qui, non fatto nel Task 3):
-  - `build_bin()` non passa `RTAPP_EXPORTER_TYPE`: serve un quinto parametro `exporter`,
-    incluso nel tag del binario in cache, e `block2()` deve invocare `run_cell` con
-    `exporter=1` (il commento del blocco 2 e' gia' aggiornato);
-  - `sudo` in `test.sh:32` presuppone un terminale: pre-autenticare, usare `SUDO_ASKPASS` o
-    girare come root, e **verificare che il log esista e non sia vuoto** prima di contare il
-    run come valido (task 0.5, finding (c));
-  - `chown` dei log a fine run: `cset shield --exec` esegue come root.
-  **Prerequisito**: baseline rifatta sulla cmdline attuale con un braccio `SCHED_FIFO`
-  (vedi "Perche' NON conviene limitarsi a rieseguire la batteria 0.4"). La tabella di
-  baseline attuale e' di una configurazione di piattaforma precedente.
-  Stato:
+- [~] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`). **Blocco 1 fatto**
+  (2026-08-27), blocchi 2 e 3 da fare, uno alla volta su richiesta esplicita.
+  `run_doe.sh` riscritto (originale in `run_doe.sh.orig`):
+  - **path derivati dalla posizione dello script**, non piu' `$HOME/rtsia-project/...`;
+  - **preflight che si ferma**: verifica shield attivo, `CpbDis=1` e `sudo` utilizzabile.
+    Serve perche' `test.sh:31`, senza shield, ricade **silenziosamente** su un run non
+    isolato: 80 run inutilizzabili scoperti a fine campagna;
+  - **ripetizioni interlacciate** (rep 1: t0 t1 t2 t3; rep 2: t0 t1 t2 t3; ...) invece di
+    tutte le ripetizioni di una cella e poi quelle della successiva. Con l'ordine a blocchi
+    la deriva lungo la campagna sarebbe un bias sistematico su una sola cella, confuso col
+    fattore in studio;
+  - `build_bin()` passa `RTAPP_EXPORTER_TYPE` e lo include nel tag della cache (cablaggio
+    lasciato in sospeso dal Task 3); `block2` usa `exporter=1`;
+  - **verifica che il log esista e non sia vuoto**, altrimenti interrompe; `chown` dei log
+    (nascono root da `cset shield --exec`);
+  - `data_table.csv` con tre colonne nuove: `mhz_med`, `tctl_pre_c`, `tctl_post_c`, piu'
+    `exporter_type`, `duration_s` e `hi_loops` (controllo di sanita' immediato);
+  - `REPS` e `DURATION` sovrascrivibili da ambiente, per validare lo script in 2 minuti
+    invece che in 28.
+  Stato blocco 1: **80/80 run**, frequenza 2295 MHz su tutti, Tctl 51.4 -> 50.0 C (la
+  macchina si raffredda: un solo task al 20 % su CPU isolata). Dati in `2-DoE/block1/`
+  (log gzippati, 21 MB -> 3.3 MB), analisi in `2-DoE/block1/NOTES.md`, script
+  `scripts/measurements/analyze_block1.py`. **Quattro risultati**:
+  (a) **0 deadline miss su 80 run** a ogni livello; delta fra `start` consecutivi esattamente
+      10 000 us ovunque, jitter 7.6-11.4 us. La strumentazione non degrada la periodicita';
+  (b) **la colonna `run` non misura l'overhead**: il livello 1 risulta *piu' veloce* del
+      livello 0 con intervalli disgiunti ([1953,1970] contro [1983,1996]), il che e'
+      impossibile per un overhead. E' un artefatto di **layout del binario** — ogni livello
+      e' un eseguibile diverso — e vale ~30 us (1.6 %), piu' di qualunque segnale;
+  (c) **la metrica giusta e' `slack + run`** (budget consumato per iterazione): costante
+      entro 1 us per i livelli 0/1/2 (9987.8 / 9988.4 / 9988.8), e **9974.5 per il livello 3**.
+      Quindi il livello 3 costa **~13 us per iterazione** (0.13 % del periodo, **0.7 % del
+      lavoro utile**); livelli 1 e 2 non misurabili;
+  (d) **rt-app sotto-riporta il proprio overhead.** La colonna `period` e' `end - start`
+      della stessa riga, e al livello 3 gli span si creano fuori da quella finestra: `period`
+      *si accorcia* di ~15-24 us proprio dove l'overhead cresce, mentre il ciclo reale resta
+      10 ms. Chi leggesse `period` concluderebbe che il livello 3 e' piu' veloce.
+      **Usare `slack` come variabile di risposta nei blocchi 2 e 3.**
+  Un outlier non spiegato: `trace=1` rep 2, prime 840 iterazioni a 3.7x, rientro istantaneo.
+  Esclusi deriva termica, frequenza e latenza di risveglio. Ipotesi non verificata: contesa
+  sul **sibling SMT cpu3**, dentro lo shield ma non controllato (il task 0.5 ha verificato
+  che il thread main, e quindi il worker del `BatchSpanProcessor`, ha
+  `Cpus_allowed_list = 2-3,6-7`). Da rendere un controllo esplicito nei blocchi successivi.
+  **Attenzione alla dimensione dei dati**: block1 e' 3.3 MB compressi; block2 e block3 sono
+  stimati ~37 e ~45 MB, e nel blocco 2 `stdout.log` conterra' anche gli span esportati. Da
+  decidere prima di lanciarli se committarli o tenerli fuori dal repo.
 
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
