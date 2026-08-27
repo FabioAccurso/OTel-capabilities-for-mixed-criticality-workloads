@@ -329,11 +329,20 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   `InstallTracerProvider(exporter, service_name)` — entrambe le factory restituiscono
   `std::unique_ptr<trace_sdk::SpanExporter>`, quindi cambia solo exporter e `service.name`;
   le due funzioni pubbliche restano entrambe (45 righe aggiunte, 41 rimosse).
-  Findings: (a) a `trace_level=2` un run campionato esporta **8 span fissi** (`main`,
-  `calibration`, `graceful-shutdown`, uno per thread, uno `phase` e uno `thread_loop` per
-  thread) **indipendentemente dalla durata**; a `trace_level=3` lo stesso run da 5 s passa
-  a **5508 span / 4,7 MB** di stdout; (b) i nomi degli span sono quelli univoci dei thread
-  (`HI_task-0`, `LO_noise-1`), quindi `analyze_doe.py:70` funziona senza modifiche;
+  Findings: (a) a `trace_level=2` un run campionato esporta **8 span fissi**
+  (`main`, `calibration`, e per ogni thread lo span del thread + `thread_loop` + `phase`)
+  **indipendentemente dalla durata**; a `trace_level=3` lo stesso run da 5 s passa a
+  **5508 span / 4,7 MB** di stdout. `graceful-shutdown` **non e' uno span**, e' un evento
+  dentro `main`; (b) **bug in `count_exported_spans()` (`analyze_doe.py:70`)**, segnalato
+  da un compagno di corso e verificato sui nostri stdout: `content.count("HI_task")` conta
+  la sottostringa in tutto il file, e lo span del thread porta il nome **due volte**
+  (campo `name` + attributo `config.name`) -> **fattore 2 esatto** a entrambi i livelli.
+  Problema piu' serio: solo lo span *del thread* si chiama come la task, i discendenti
+  (`thread_loop`, `phase`, e a livello 3 le migliaia di `phase_loop`) non ne portano il
+  nome e non vengono contati -> a livello 3 HI produce >2700 span e la funzione ne riporta
+  2. Ricaduta su questo DoE limitata: il blocco 2 e' l'unico su ostream ed e' a livello 2,
+  dove il valore resta un indicatore binario corretto (2 se campionato, 0 altrimenti).
+  Correzione proposta in `3-exporter/NOTES.md` §8.4;
   (c) le macro ora hanno effetto: AlwaysOn 8 span, AlwaysOff 0, Zipkin 0 su stdout;
   (d) **FINDING CENTRALE DEL PROGETTO, ora sperimentale e non piu' dedotto dal codice**:
   12 ripetizioni con `TraceIdRatioBasedSampler(0.5)` -> 4 run campionati su 12, e in
@@ -361,7 +370,9 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   `deadline_miss_ratio` di LO come misura lineare del carico, satura al ~53% — usare
   `wu_latency` e il periodo mediano; (4) `hi/lo_spans_exported` del blocco 2 e' **binario
   per run** (8 span o 0, task 3) -> trattarlo come proporzione binomiale su 25 ripetizioni,
-  non come conteggio continuo.
+  non come conteggio continuo; (5) **correggere `count_exported_spans()`**, che conta la
+  sottostringa in tutto il file e quindi raddoppia (`name` + attributo `config.name`):
+  contare solo le righe `name`, vedi `3-exporter/NOTES.md` §8.
   Stato:
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della

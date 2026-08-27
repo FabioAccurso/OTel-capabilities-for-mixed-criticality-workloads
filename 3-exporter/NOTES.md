@@ -59,16 +59,21 @@ pubbliche restano entrambe, quindi nessun chiamante esistente si rompe. Diff com
 Config di prova: 1 HI + 1 LO, 5 s, `trace_level=2`, Batch, AlwaysOn.
 
 ```
-      1 main
-      1 calibration
-      1 graceful-shutdown
-      1 HI_task-0
-      1 LO_noise-1
-      2 phase[N]
-      2 thread_loop[N]
-   -----
-      8 span in totale, tutti con lo STESSO trace_id
+main                                   (radice)
+├── calibration
+├── HI_task-0            attributo config.name: HI_task-0
+│   └── thread_loop[0]
+│       └── phase[0]
+└── LO_noise-1           attributo config.name: LO_noise-1
+    └── thread_loop[0]
+        └── phase[0]
+
+8 span in totale, tutti con lo STESSO trace_id
 ```
+
+Attenzione: `graceful-shutdown` **non è uno span**, è un *evento* dentro lo span `main`
+(riga 208-210 di `evidence/spans_alwayson_level2.log`). Compare fra i nomi se si conta con
+`grep name`, ma le graffe aperte sono 8.
 
 **Il conteggio non dipende dalla durata.** A `trace_level=2` gli span di fase sono uno per
 *definizione* di fase, non uno per giro. Un run da 5 s e uno da 20 s esportano entrambi 8
@@ -80,8 +85,7 @@ span. A `trace_level=3` compaiono invece gli span per-giro:
 | 3 | **5508** (di cui 5499 `phase_loop[N]`) | **4,7 MB** |
 
 Il nome degli span di thread è il nome **univoco** del thread (`HI_task-0`,
-`LO_noise-1`), quindi `analyze_doe.py:70` che cerca le sottostringhe `"HI_task"` e
-`"LO_noise"` funziona senza modifiche.
+`LO_noise-1`). **Ma `analyze_doe.py:70` non li conta correttamente**: vedi §8.
 
 Verifica incrociata: con `RTAPP_EXPORTER_TYPE=0` (Zipkin) lo `stdout.log` resta di 77 byte
 (solo il messaggio di `cset`), come deve essere — gli span vanno in rete.
@@ -116,6 +120,9 @@ Dodici ripetizioni dello stesso taskset con `TraceIdRatioBasedSampler(0.5)`:
 | r10 | 1 | 1 | 8 |
 | r11 | 0 | 0 | 0 |
 | r12 | 1 | 1 | 8 |
+
+(«span HI» = span il cui campo `name` è `HI_task-0`, cioè uno per run campionato.
+`analyze_doe.py` ne riporterebbe 2, vedi §8.)
 
 **In nessuna delle 12 ripetizioni HI e LO hanno avuto destini diversi.** O sono presenti
 entrambi, o è assente tutto. Mai HI senza LO, mai LO senza HI. Il totale è sempre 8 o 0,
@@ -163,3 +170,67 @@ Blocchi 1 e 3 restano su Zipkin (default 0), invariati.
   conteggi grezzi non hanno senso qui.
 - `analyze_doe.py` non richiede modifiche per il conteggio: i nomi degli span contengono
   già `HI_task` e `LO_noise`.
+
+## 8. Bug trovato in `count_exported_spans()` (`analyze_doe.py:70`)
+
+Segnalato da un compagno di corso e verificato sui nostri stdout reali. La funzione fa:
+
+```python
+content = f.read()
+return content.count(name_substr)     # name_substr = "HI_task" / "LO_noise"
+```
+
+Conta le occorrenze della **sottostringa in tutto il file**, non gli span. Due problemi.
+
+### 8.1 Conta doppio
+
+Lo span del thread porta il nome della task **due volte**: nel campo `name` e
+nell'attributo `config.name`.
+
+```
+  name          : HI_task-0
+	config.name: HI_task-0
+```
+
+Misurato sui file in `evidence/`:
+
+| livello | span veri con quel nome | `content.count()` | fattore |
+|---|---|---|---|
+| 2 | 1 | 2 | **2×** |
+| 3 | 1 | 2 | **2×** |
+
+Il fattore è esattamente 2 e costante, perché `config.name` è presente solo sullo span del
+thread e mai sugli altri.
+
+### 8.2 Problema più serio: non conta gli span della task
+
+Solo lo span *del thread* si chiama come la task. I suoi discendenti —
+`thread_loop[0]`, `phase[0]`, e a livello 3 le migliaia di `phase_loop[N]` — appartengono
+alla task ma non ne portano il nome, quindi non vengono contati affatto.
+
+A `trace_level=3`, HI_task produce **oltre 2700 span** e la funzione ne riporta **2**.
+
+Per attribuire correttamente gli span alla task bisogna risalire la catena
+`parent_span_id`, ricostruita in §3.
+
+### 8.3 Ricaduta reale su questo DoE
+
+Limitata, per fortuna. Il blocco 2 è l'unico che usa l'exporter ostream ed è a
+`trace_level=2`, dove per run campionato si ha un solo span per task. Quindi
+`hi_spans_exported` vale **2 se il run è stato campionato, 0 altrimenti**: sbagliato come
+conteggio, ma pur sempre un indicatore binario corretto di "questo run è stato
+campionato". La conclusione del §5 non cambia — HI e LO restano sempre entrambi 2 o
+entrambi 0.
+
+### 8.4 Correzione proposta (Task 5)
+
+Minima, sufficiente per il blocco 2:
+
+```python
+return sum(1 for line in content.splitlines()
+           if line.strip().startswith("name") and name_substr in line)
+```
+
+Restituisce 0 o 1 per run, cioè l'indicatore binario, senza il fattore 2. Se in futuro si
+volesse contare davvero gli span per task (necessario solo se si usasse ostream a
+`trace_level=3`), servirebbe risalire i `parent_span_id`.
