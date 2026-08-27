@@ -1,0 +1,5 @@
+[rt-app] <notice> pLoad = 29ns
+[rt-app] <notice> thread_data_set_unique_name 0 thread0-0
+[rt-app] <notice> [0] starting thread ...
+
+[rt-app] <notice> [0] Starting with SCHED_OTHER policy with priority 0

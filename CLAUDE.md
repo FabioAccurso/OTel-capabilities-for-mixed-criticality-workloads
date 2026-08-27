@@ -114,6 +114,38 @@ Limiti residui da tenere presenti:
   la deriva termica lungo la campagna colpisce entrambi i bracci invece di diventare un
   bias sistematico su uno solo.
 
+## Topologia SMT: HI e LO devono stare su core FISICI diversi
+
+Il Ryzen 7 3700U ha **4 core fisici e 8 thread SMT**, appaiati consecutivamente:
+
+```
+cpu0,1 -> core 0    cpu2,3 -> core 1    cpu4,5 -> core 2    cpu6,7 -> core 3
+```
+
+Tutti e 4 i core condividono la stessa L3 (`shared_cpu_list = 0-7`, un solo CCX), quindi
+*quali* due core si scelgono e' indifferente; conta solo che siano due core **interi**.
+
+Due conseguenze, entrambe gia' applicate agli script:
+
+1. **`gen_config.py` aveva `--hi-cpu 2 --lo-cpus 3`**, cioe' HI e LO sui due thread SMT
+   dello stesso core. I due si contendono unita' di esecuzione, L1 e L2: l'interferenza
+   misurata sarebbe stata in buona parte contesa hardware, non scheduling ne' telemetria —
+   esattamente l'effetto che l'elaborato deve isolare. Default ora **`--lo-cpus 6`**, e
+   `warn_if_smt_shared()` avvisa su stderr se HI e LO ricadono sullo stesso core.
+2. **Non isolare mai una CPU lasciando fuori il suo sibling** (es. `isolcpus=2,4`): il
+   carico di sistema sul sibling ruba risorse alla CPU "isolata", che quindi lo e' solo
+   sulla carta. `isolate_cpus.sh` ora ha un controllo di topologia che lo segnala, e il
+   suo default e' passato da `2,3` a **`2,3,6,7`**.
+
+Assegnazione prevista per il DoE: **HI su cpu2** (core 1), **LO su cpu6** (core 3). I
+sibling cpu3 e cpu7 restano liberi dentro lo shield ed e' li' che puo' finire il worker
+`SCHED_OTHER` del `BatchSpanProcessor` (vedi il finding del task 0.2) — placement da
+controllare esplicitamente ai Task 4-6.
+
+Prezzo pagato: l'housekeeping scende a 2 core fisici (cpu 0,1,4,5) per desktop, IRQ,
+workqueue e i callback RCU offloaded da 4 CPU. Sul 15 W si sente nell'uso quotidiano, non
+nei run a desktop scarico.
+
 ## Checklist post-reboot (lo stato di piattaforma NON è persistente)
 
 Dopo ogni riavvio, prima di qualunque misura:
@@ -125,36 +157,80 @@ sudo ./scripts/utils_isolation/pin_cpu_freq.sh fix 0
 sudo ./scripts/utils_isolation/pin_cpu_freq.sh status   # atteso: CpbDis=1, tutti P0, ~2300 MHz
 
 # 2. isolamento CPU (il cpuset non sopravvive al reboot)
-sudo ./scripts/utils_isolation/isolate_cpus.sh 2,3
+sudo ./scripts/utils_isolation/isolate_cpus.sh 2,3,6,7   # core fisici 1 e 3 interi
 sudo cset shield                        # stato
 # ... esperimenti con: sudo cset shield --exec -- <comando>
 sudo ./scripts/utils_isolation/reset_isolation.sh
 ```
 
-**Modifica GRUB in corso (2026-08-27)**: l'utente ha modificato a mano
-`/etc/default/grub` e lanciato `update-grub`, per mitigare i 26 kthread per-CPU e i 2 IRQ
-NVMe non spostabili trovati nel task 0.4. Al primo boot successivo **verificare**:
+**Parametri di boot.** La riga in `/etc/default/grub` e' ora:
+
+```
+isolcpus=managed_irq,domain,2,3,6,7  nohz_full=2,3,6,7  rcu_nocbs=2,3,6,7  irqaffinity=0,1,4,5
+```
+
+Aggiornata in `/etc/default/grub` + `update-grub` il 2026-08-27 (estensione a 6,7 e aggiunta
+di `irqaffinity`). **Entra in vigore al reboot successivo**: fino ad allora `/proc/cmdline`
+mostra ancora la versione con le sole 2,3, che è quella con cui sono state prese le misure
+in `0-explore/0.4-post-boot/`.
+
+Verifica da rifare al prossimo boot (**mai eseguita su questa cmdline**: gli esiti sotto
+sono l'attesa, non un risultato. La versione con le sole 2,3 e senza `irqaffinity` era
+stata verificata il 2026-08-27):
 
 ```bash
 cat /proc/cmdline
-cat /sys/devices/system/cpu/nohz_full        # atteso: 2-3 (se nohz_full=2,3)
-cat /sys/devices/system/cpu/isolated         # atteso: 2-3 (solo se c'e' isolcpus=)
-cat /sys/devices/virtual/workqueue/cpumask   # atteso: f3 invece di ff (solo con isolcpus=)
-cat /proc/irq/54/smp_affinity_list           # atteso: non piu' 2 (solo con isolcpus=managed_irq)
+cat /sys/devices/system/cpu/nohz_full        # atteso: 2-3,6-7
+cat /sys/devices/system/cpu/isolated         # atteso: 2-3,6-7
+cat /sys/devices/virtual/workqueue/cpumask   # atteso: 33 (= 0,1,4,5)
+cat /proc/irq/default_smp_affinity           # atteso: 33 — era ff con il solo isolcpus=
+grep -E "^\s*(54|55|58|59):" /proc/interrupts  # code NVMe: contatori a ZERO su tutte le CPU
 ```
 
-Attenzione a tre punti già verificati nel task 0.4 e nella discussione successiva:
-- i kthread per-CPU (`migration/N`, `ksoftirqd/N`, `ktimers/N`, `rcuc/N`, `cpuhp/N`,
-  `irq_work/N`, `kworker/N:*`) **continueranno a esistere**: sono per-CPU per costruzione e
-  nessun parametro di boot li rimuove. L'isolamento cambia *quanto* girano, non *se* esistono;
-- l'unica leva contro gli IRQ managed NVMe (`irq 54 → nvme0q3`, `irq 55 → nvme0q4`, che a
-  runtime rifiutano la riassegnazione con EPERM) è `isolcpus=managed_irq,...`;
-- `nohz_full` ferma il tick solo quando c'è **un solo task runnable**: il thread di rt-app
-  dorme 8 ms su 10, quindi il beneficio su questo workload va misurato, non assunto.
+**Correzione a un'attesa sbagliata annotata qui in precedenza**: `isolcpus=managed_irq`
+**non** cambia `/proc/irq/54/smp_affinity_list`, che resta `2`. Gli IRQ managed restano
+affini alla loro CPU; `managed_irq` agisce sul lato *submit* (blk-mq non usa le code il cui
+IRQ punta a una CPU isolata) e il risultato e' che la coda non spara mai. La verifica
+giusta e' quindi il **contatore in `/proc/interrupts`**, non l'affinity.
 
-Baseline con cui confrontare il dopo-reboot (task 0.4, shield attivo, senza parametri di
-boot): jitter `period max − p50` = **51-180 us** a macchina idle, **130-186 us** sotto
-rumore, 495 loop su 500, run medio 2008-2013 us su 2000 nominali.
+Tre punti da tenere presenti:
+- i kthread per-CPU (`migration/N`, `ksoftirqd/N`, `ktimers/N`, `rcuc/N`, `cpuhp/N`,
+  `irq_work/N`, `kworker/N:*`) **continuano a esistere**: sono per-CPU per costruzione e
+  nessun parametro di boot li rimuove. L'isolamento cambia *quanto* girano, non *se* esistono;
+- **i parametri di boot non sostituiscono `isolate_cpus.sh`, lo completano**: `managed_irq`
+  copre solo gli IRQ managed, mentre `amdgpu` (irq 67), `xhci_hcd` (39), `i8042` (1) e
+  `snd_hda_intel` (66) continuano a finire su 2,3 finche' lo script non ne riscrive
+  `smp_affinity` a runtime;
+- `nohz_full` **serve, ed e' stato misurato** (non piu' un'assunzione): delta di `LOC` in
+  5 s di run dentro lo shield = **106 tick su CPU2** (dove gira rt-app con 497 wakeup) e
+  **2 su CPU3**, contro 5000 di tick pieno a `CONFIG_HZ=1000` e 623-1216 sulle CPU
+  housekeeping. Nello stesso run `CAL`=1 e `IWI`=6 su CPU2.
+
+### Baseline di riferimento (shield attivo, `SCHED_OTHER` 2000/8000 us, 5 s, 3 rip.)
+
+| metrica, idle DENTRO lo shield | pre-boot | post-boot |
+|---|---|---|
+| loop completati /500 | 495 | **497** |
+| run_med (us) | 2012-2013 | 1984-1985 |
+| run_max (us) | 2057-2183 | **2016-2020** |
+| period p99 (us) | 10115-10122 | **10086-10089** |
+| period max (us) | 10133-10261 | **10099-10117** |
+| jitter `max - p50` (us) | 51-180 | **47-63** |
+
+I parametri di boot valgono **~30 us su p99 e ~150 us sul `run` peggiore**: poco in valore
+assoluto, ma `run_max`/`p99`/`period max` danno insiemi disgiunti e i loop passano da 495
+(6 rip. su 6) a 497 (6 su 6). Il guadagno vero e' sulla **riproducibilita'**: il jitter
+passa da un range 51-180 a 47-63, quindi meno varianza dello stimatore e meno ripetizioni
+necessarie nel Task 4. Sotto rumore, dentro lo shield: 497 loop, jitter 34-65 us.
+
+**Nota per il Task 2**: `run_med` post-boot e' 1984 us contro 2000 nominali, perche'
+`"calibration": 29` e' fisso e i 2012 us pre-boot contenevano ~28 us di interferenza ora
+sparita. Il costo per iterazione pulito e' ~28.8 ns: o si accetta il -0.8 % sistematico o
+si ritara la costante.
+
+Dati completi in `0-explore/0.4-post-boot/` (`NOTES.md`, `results.txt`, `logs/`,
+`metadata.txt` con MHz e Tctl per ogni run). Deriva termica sulla campagna (~3 min):
+nessun throttling, 2296 MHz inchiodati, Tctl 51 -> 61 C sotto rumore.
 
 ## Cosa già sappiamo del codice (rt-app_types.h, rt-app.cpp)
 
@@ -317,8 +393,9 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
       `irq_work/N`, `cpuhp/N`, `backlog_napi/N`, `kworker/N:*`, più `irq/25-AMD-Vi`).
       A 10 ms con SCHED_OTHER non si vedono, **ma vanno riverificati ai Task 4-6 con task HI
       in SCHED_FIFO**: `ktimers/N`, `ksoftirqd/N` e `rcuc/N` girano a priorità FIFO e possono
-      preemptare un task critico. Contromisura se serve: `isolcpus=2,3 nohz_full=2,3
-      rcu_nocbs=2,3` sulla cmdline GRUB + reboot;
+      preemptare un task critico. Contromisura **già applicata** il 2026-08-27
+      (`isolcpus=managed_irq,domain,2,3 nohz_full=2,3 rcu_nocbs=2,3` + reboot): batteria
+      rimisurata in `0-explore/0.4-post-boot/`, vedi la tabella di baseline sopra;
   (f) note operative: `cset shield --status` **non esiste** (usare `cset shield` nudo o
       `cset set -l`); i processi lanciati con `cset shield --exec` girano come **root**,
       quindi i log di rt-app risultano di proprietà di root → da gestire in `run_doe.sh`.
