@@ -28,3 +28,8 @@ rt-app/build-aux/
 rt-app/m4/l*.m4
 rt-app/README
 rt-app/COPYING
+
+# backup lasciati da autoconf/autoheader
+rt-app/configure~
+rt-app/src/config.h.in~
+rt-app/src/config.h.in

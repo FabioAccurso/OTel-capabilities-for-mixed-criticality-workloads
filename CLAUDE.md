@@ -257,12 +257,35 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 
 ## Task 1.x-5.x — verso il deliverable finale
 
-- [ ] **Task 1** — Build completa: `autogen.sh && ./configure && make` in `rt-app/`;
+- [x] **Task 1** — Build completa: `autogen.sh && ./configure && make` in `rt-app/`;
   compilare `otel-installdir/` se assente (cmake -DWITH_ZIPKIN=ON -DBUILD_TESTING=OFF
   -DCMAKE_INSTALL_PREFIX=.../otel-installdir). Pacchetti apt: autoconf autoconf-archive
   automake libtool libcurl4-openssl-dev libnuma-dev libjson-c-dev cpuset cmake
   (`libjson-c-dev` obbligatorio, `configure` fallisce senza).
-  Stato:
+  Stato: FATTO. Documentazione in `1-build/` (`NOTES.md`, `SPIEGAZIONE.md`). Tutti i 9
+  pacchetti apt gia' presenti; `otel-installdir/` gia' costruito nel task 0.2 (12 MB, le 7
+  librerie richieste da `src/Makefile.am` verificate una a una). Da albero pulito
+  (`make distclean`) la catena `./autogen.sh && ./configure && make` funziona **senza
+  override**: chiuso il workaround `rt_app_LDADD=...` del task 0.1. Findings:
+  (a) `autogen.sh` stampa 5 `fatal: Nessun nome trovato` ma esce 0 — e' `configure.ac:1`
+  che ricava la versione da `git describe --tags` e il repo non ha tag, quindi
+  `PACKAGE_VERSION` resta vuoto (innocuo, si risolve con un `git tag`); (b) 5 warning
+  identici `"_GNU_SOURCE" redefined` (`libdl/dl_syscalls.h:20`), uno per unita' di
+  compilazione, innocui; (c) il binario di default ha **zero** simboli otel (340 KB): la
+  guardia `#if (RTAPP_TRACE_LEVEL > 0)` funziona e la baseline "senza strumentazione" e'
+  davvero tale; (d) **tutte e 6 le combinazioni di macro** che i tre blocchi useranno
+  compilano; attivare il tracing costa **15x di binario** (340 K -> 5,2 M) e **7,5x di
+  compilazione** (5 s -> 38 s); (e) verificato che le macro abbiano effetto **a runtime**,
+  non solo in compilazione: stesso taskset, `SAMP=2` (AlwaysOff) fa **0** tentativi di
+  export, `SAMP=0` (AlwaysOn) ne fa 1 (`Connection failed`, nessun collector);
+  (f) **preventivo del Task 4** dai dati misurati: 22 celle, **410 run**, 13 binari
+  distinti -> ~2 h 30 min di macchina (di cui ~7 min di sole compilazioni) e **~1,5 GB**
+  di log, piu' gli span del blocco 2 non ancora stimabili. Da lanciare in tre sessioni.
+  **Resta aperto per il Task 4**: `RTAPP_SRC_DIR`/`BIN_CACHE`/`DOE_ROOT` in cima a
+  `run_doe.sh` puntano a `$HOME/rtsia-project/project/...` che non esiste su questa
+  macchina; `bin/` esiste ma e' di proprieta' di root. `2-DoE/data_table.csv` con la sola
+  intestazione e' invece corretto: e' un file di **output** che `run_doe.sh:88` riempie.
+  Albero lasciato con la build di default (`RTAPP_TRACE_LEVEL=0`).
 
 - [ ] **Task 2** — Scrivere le config JSON definitive per il DoE (HI su SCHED_FIFO,
   LO_noise repliche via `instance`), verificandole con `gen_config.py`.
