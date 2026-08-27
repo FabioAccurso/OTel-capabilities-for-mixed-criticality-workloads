@@ -47,6 +47,31 @@ Fork C++ di `scheduler-tools/rt-app` (https://github.com/scheduler-tools/rt-app)
 tracing OTel già parzialmente instrumentato dal docente. Non è un progetto da zero: è da
 completare/estendere/valutare.
 
+## Stato del repository (leggere prima di toccare git)
+
+Lavoro sul branch **`feat/setup-piattaforma-e-task-0x`**, pushato su
+`origin` (`github.com/FabioAccurso/OTel-capabilities-for-mixed-criticality-workloads`).
+
+**`origin/main` NON va merjato in questo branch, e questo branch non va merjato in main.**
+Il progetto e' di due persone e i due membri hanno svolto gli stessi task 0.1/0.2 in
+parallelo, con strutture di cartelle diverse. Decisione presa il 2026-08-27: **ognuno
+prosegue sul proprio ramo, nessun merge**. Concretamente:
+
+- `origin/main` contiene `a044566` (FabioAccurso, 2026-08-27), che ha la stessa
+  riorganizzazione `rt-app-cpp/rt-app` -> `rt-app/` piu' i *suoi* task 0.1/0.2 in
+  `0-exploration/task0.1/` e `0-exploration/task0.2/` (i nostri stanno in `0-explore/`);
+- un merge darebbe conflitti add/add su `CLAUDE.md`, `.gitignore`, `gen_config.py`,
+  `isolate_cpus.sh`, `reset_isolation.sh` e sui file di scaffolding (questi ultimi con
+  contenuto **identico**, differisce solo il bit di permesso 755/644);
+- sul suo ramo `rt-app/src/rt-app_types.h:60` ha una guardia
+  `#if (RTAPP_TRACE_LEVEL > 0)` attorno all'include OTel, che **da noi non c'e'**;
+- il suo `0-exploration/task0.2/B_fake_collector/fake_zipkin.py` e' un collector Zipkin
+  finto che salva gli span in `spans.json`: risolve lo stesso problema del nostro exporter
+  ostream (task 0.3) per un'altra strada. Da tenere presente come alternativa al Task 3,
+  non da importare.
+
+Non proporre merge, rebase o cherry-pick da `origin/main` senza che l'utente lo chieda.
+
 ## Layout del progetto
 
 ```
@@ -170,13 +195,11 @@ isolcpus=managed_irq,domain,2,3,6,7  nohz_full=2,3,6,7  rcu_nocbs=2,3,6,7  irqaf
 ```
 
 Aggiornata in `/etc/default/grub` + `update-grub` il 2026-08-27 (estensione a 6,7 e aggiunta
-di `irqaffinity`). **Entra in vigore al reboot successivo**: fino ad allora `/proc/cmdline`
-mostra ancora la versione con le sole 2,3, che è quella con cui sono state prese le misure
-in `0-explore/0.4-post-boot/`.
+di `irqaffinity`) e **in vigore dal reboot dello stesso giorno**. Attenzione: le misure in
+`0-explore/0.4-post-boot/` sono state prese con la cmdline *precedente* (sole 2,3, senza
+`irqaffinity`), quindi restano una baseline valida ma di un'altra configurazione.
 
-Verifica da rifare al prossimo boot (**mai eseguita su questa cmdline**: gli esiti sotto
-sono l'attesa, non un risultato. La versione con le sole 2,3 e senza `irqaffinity` era
-stata verificata il 2026-08-27):
+Verifica eseguita e **superata** su questa cmdline (2026-08-27, dopo reboot):
 
 ```bash
 cat /proc/cmdline
@@ -186,6 +209,16 @@ cat /sys/devices/virtual/workqueue/cpumask   # atteso: 33 (= 0,1,4,5)
 cat /proc/irq/default_smp_affinity           # atteso: 33 — era ff con il solo isolcpus=
 grep -E "^\s*(54|55|58|59):" /proc/interrupts  # code NVMe: contatori a ZERO su tutte le CPU
 ```
+
+Esito: `isolated` e `nohz_full` = `2-3,6-7`; `workqueue/cpumask` e
+`default_smp_affinity` entrambi a `33`. **`irqaffinity=` funziona**: `i8042` (irq 1),
+`xhci_hcd` (39), `snd_hda` (66) e `amdgpu` (67) nascono affini a `0-1,4-5` e hanno
+**zero conteggi** su 2,3,6,7 gia' prima di lanciare `isolate_cpus.sh` — il buco descritto
+sotto e' chiuso al boot. Le code NVMe managed che ricadrebbero sulle CPU isolate (q3, q4,
+q7, q8) sono tutte a zero; il traffico passa da q1, q2, q5, q6.
+
+Lo script a runtime resta comunque utile come rete di sicurezza per gli IRQ che un driver
+riassegni **dopo** l'allocazione, scavalcando la maschera di default.
 
 **Correzione a un'attesa sbagliata annotata qui in precedenza**: `isolcpus=managed_irq`
 **non** cambia `/proc/irq/54/smp_affinity_list`, che resta `2`. Gli IRQ managed restano
@@ -231,6 +264,34 @@ si ritara la costante.
 Dati completi in `0-explore/0.4-post-boot/` (`NOTES.md`, `results.txt`, `logs/`,
 `metadata.txt` con MHz e Tctl per ogni run). Deriva termica sulla campagna (~3 min):
 nessun throttling, 2296 MHz inchiodati, Tctl 51 -> 61 C sotto rumore.
+
+**Attenzione: questa tabella descrive una piattaforma che non esiste piu'.** Entrambe le
+colonne sono state misurate con la cmdline a sole 2,3 e senza `irqaffinity`, e con un solo
+thread `SCHED_OTHER`. Va rifatta prima del Task 4 (vedi sotto).
+
+### Perche' NON conviene limitarsi a rieseguire la batteria 0.4 (deciso il 2026-08-27)
+
+Nella campagna `0.4-post-boot` lo shield era attivo, e `isolate_cpus.sh` aveva gia' scritto
+`0,1,4,5,6,7` su tutte le `smp_affinity_list`: `amdgpu`, `xhci_hcd` e `snd_hda` erano
+**gia' fuori** dalle CPU isolate durante i run misurati. `irqaffinity=` quindi non migliora
+la finestra di misura — chiude quella *prima* dello shield e fa nascere su housekeeping gli
+IRQ allocati a caldo (es. una periferica USB collegata dopo). E' robustezza, non latenza.
+L'altra novita', cpu6,7 isolate, non tocca la CPU su cui girava rt-app (cpu2). Rifare gli
+stessi 12 run misurerebbe un delta atteso sotto il rumore.
+
+**Quello che invece non e' mai stato misurato**, e che blocca i task successivi:
+
+1. **`SCHED_FIFO`.** Ogni conclusione del task 0.4 porta la clausola "da riverificare con
+   task HI in SCHED_FIFO". `ktimers/N`, `ksoftirqd/N` e `rcuc/N` girano a priorita' FIFO e
+   possono preemptare un task critico; a `SCHED_OTHER` con 8 ms di sleep su 10 non si
+   vedono. E' il numero che conta di piu' per l'elaborato ed e' ignoto.
+2. **La topologia HI su cpu2 / LO su cpu6** non e' mai stata eseguita, nemmeno una volta.
+3. **`"calibration": 29` contro i ~28.8 ns misurati** (vedi la nota per il Task 2 sopra).
+
+Piano concordato: prima il **task 0.5** (che per costruzione e' il primo run con HI in
+`SCHED_FIFO` su cpu2 e le istanze LO su cpu6), poi una **baseline nuova sulla cmdline
+attuale con un braccio `SCHED_FIFO` accanto a quello `SCHED_OTHER`**, da fare prima del
+Task 4.
 
 ## Cosa già sappiamo del codice (rt-app_types.h, rt-app.cpp)
 
@@ -426,10 +487,13 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 
 - [ ] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
   RTAPP_SRC_DIR/BIN_CACHE/DOE_ROOT in cima allo script, **applicare `pin_cpu_freq.sh fix 0`**
-  (non sopravvive al reboot, vedi "Setup di determinismo della piattaforma"), isolare le CPU,
-  lanciare block1/block2/block3 (uno alla volta, su richiesta esplicita — non tutti insieme).
-  Lo script deve dare a ogni ripetizione una cartella propria (rt-app sovrascrive il log a
-  nome fisso) e registrare MHz + Tctl per ogni run.
+  (non sopravvive al reboot, vedi "Setup di determinismo della piattaforma"), isolare le CPU
+  con `isolate_cpus.sh 2,3,6,7`, lanciare block1/block2/block3 (uno alla volta, su richiesta
+  esplicita — non tutti insieme). Lo script deve dare a ogni ripetizione una cartella propria
+  (rt-app sovrascrive il log a nome fisso) e registrare MHz + Tctl per ogni run.
+  **Prerequisito**: baseline rifatta sulla cmdline attuale con un braccio `SCHED_FIFO`
+  (vedi "Perche' NON conviene limitarsi a rieseguire la batteria 0.4"). La tabella di
+  baseline attuale e' di una configurazione di piattaforma precedente.
   Stato:
 
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
