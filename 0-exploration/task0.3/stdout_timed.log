@@ -1,0 +1,100 @@
+[t+15s] {
+[t+15s]   name          : calibration
+[t+15s]   trace_id      : 092635f9d2efc476e4451e4687d44238
+[t+15s]   span_id       : 5e20e5dfe9c302c7
+[t+15s]   tracestate    : 
+[t+15s]   parent_span_id: 9109444f281eea2b
+[t+15s]   start         : 1787823835433473992
+[t+15s]   duration      : 10241367704
+[t+15s]   description   : 
+[t+15s]   span kind     : Internal
+[t+15s]   status        : Unset
+[t+15s]   attributes    : 
+[t+15s]   events        : 
+[t+15s]   links         : 
+[t+15s]   resources     : 
+[t+15s] 	telemetry.sdk.version: 1.28.0
+[t+15s] 	telemetry.sdk.name: opentelemetry
+[t+15s] 	telemetry.sdk.language: cpp
+[t+15s] 	service.name: rt-app_console
+[t+15s]   instr-lib     : rt-app-tracer
+[t+15s] }
+[t+15s] {
+[t+15s]   name          : solo_task-0
+[t+15s]   trace_id      : 092635f9d2efc476e4451e4687d44238
+[t+15s]   span_id       : 7f3e9737ec213afb
+[t+15s]   tracestate    : 
+[t+15s]   parent_span_id: 9109444f281eea2b
+[t+15s]   start         : 1787823845675078964
+[t+15s]   duration      : 4999989167
+[t+15s]   description   : 
+[t+15s]   span kind     : Internal
+[t+15s]   status        : Unset
+[t+15s]   attributes    : 
+[t+15s] 	cancellation: force_terminate
+[t+15s] 	config.sched_data.util_min: -1
+[t+15s] 	config.index: 0
+[t+15s] 	config.lock_pages: 1
+[t+15s] 	config.sched_data.priority: 0
+[t+15s] 	config.num_instances: 1
+[t+15s] 	config.loop: 1
+[t+15s] 	config.delay: 0
+[t+15s] 	config.forked: 0
+[t+15s] 	config.duration: 5
+[t+15s] 	config.sched_data.policy: SCHED_OTHER
+[t+15s] 	config.nphases: 1
+[t+15s] 	config.sched_data.util_max: -1
+[t+15s] 	config.name: solo_task-0
+[t+15s] 	config.cpuset: -
+[t+15s]   events        : 
+[t+15s]   links         : 
+[t+15s]   resources     : 
+[t+15s] 	telemetry.sdk.version: 1.28.0
+[t+15s] 	telemetry.sdk.name: opentelemetry
+[t+15s] 	telemetry.sdk.language: cpp
+[t+15s] 	service.name: rt-app_console
+[t+15s]   instr-lib     : rt-app-tracer
+[t+15s] }
+[t+15s] {
+[t+15s]   name          : main
+[t+15s]   trace_id      : 092635f9d2efc476e4451e4687d44238
+[t+15s]   span_id       : 9109444f281eea2b
+[t+15s]   tracestate    : 
+[t+15s]   parent_span_id: 0000000000000000
+[t+15s]   start         : 1787823835433444045
+[t+15s]   duration      : 15241825623
+[t+15s]   description   : 
+[t+15s]   span kind     : Internal
+[t+15s]   status        : Unset
+[t+15s]   attributes    : 
+[t+15s] 	shutdown: graceful
+[t+15s] 	config.io_device: /dev/null
+[t+15s] 	config.mem_buffer_size: 4194304
+[t+15s] 	config.lock_pages: 1
+[t+15s] 	config.calib_cpu: 0
+[t+15s] 	config.policy: 0
+[t+15s] 	config.logdir: ./
+[t+15s] 	config.duration: 5
+[t+15s] 	config.num_tasks: 1
+[t+15s] 	config.calib_ns_per_loop: 0
+[t+15s] 	config.logbasename: rtapp
+[t+15s] 	config.logsize: -2
+[t+15s] 	config.gnuplot: 0
+[t+15s] 	config.pi_enabled: 0
+[t+15s] 	config.cumulative_slack: 0
+[t+15s] 	config.nthreads: 1
+[t+15s] 	config.die_on_dmiss: 0
+[t+15s]   events        : 
+[t+15s] 	{
+[t+15s] 	  name          : graceful-shutdown
+[t+15s] 	  timestamp     : 1787823850675265998
+[t+15s] 	  attributes    : 
+[t+15s] 	}
+[t+15s]   links         : 
+[t+15s]   resources     : 
+[t+15s] 	telemetry.sdk.version: 1.28.0
+[t+15s] 	telemetry.sdk.name: opentelemetry
+[t+15s] 	telemetry.sdk.language: cpp
+[t+15s] 	service.name: rt-app_console
+[t+15s]   instr-lib     : rt-app-tracer
+[t+15s] }

@@ -121,13 +121,31 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   finestra di misura; (d) a livello 1 nessun overhead per-loop misurabile (differenze
   sotto il rumore DVFS), ma RSS ×3 (4.3 → 13.6 MB).
 
-- [ ] **0.3** — Aggiungere temporaneamente una chiamata a mano a `InitTracer()` (ostream)
+- [x] **0.3** — Aggiungere temporaneamente una chiamata a mano a `InitTracer()` (ostream)
   al posto di `InitTracerZipkin()` in `main()`, ricompilare, rilanciare lo stesso task
   singolo. Obiettivo: vedere per la prima volta uno span stampato a video e capirne la
   struttura (nome, trace_id, span_id, attributi) — SENZA ancora introdurre la macro
   `RTAPP_EXPORTER_TYPE` del Task 3 (quella è la versione "pulita" da fare dopo, questo è
   solo per guardare l'output).
-  Stato:
+  Stato: FATTO. Modifica temporanea di una riga (`rt-app.cpp:1976`,
+  `InitTracerZipkin()` → `InitTracer()`), build con
+  `make CPPFLAGS="-DRTAPP_TRACE_LEVEL=1 -DRTAPP_SAMPLER_TYPE=0"`, stesso task set di
+  0.1/0.2; sorgente poi **ripristinato** (`git diff` vuoto). Risultati in
+  `0-exploration/task0.3/` (`NOTES.md`, `SPIEGAZIONE.md`, `stdout.log`,
+  `stdout_timed.log` con l'istante di apparizione di ogni riga, `stderr.log`,
+  `rtapp-solo_task-0.log`). Findings: (a) anatomia dello span letta sul campo — `status`
+  non è mai impostato (una deadline miss oggi NON è visibile in OTel) mentre
+  `config.sched_data.policy`/`priority` sono già negli attributi, materiale pronto per il
+  Task 6; (b) i 3 span (`main` radice, `calibration` e thread suoi figli) condividono un
+  solo `trace_id` — riconferma dell'ipotesi centrale, stavolta letta direttamente;
+  (c) tutte le righe escono a `t+15s`, cioè nel flush di shutdown del BatchSpanProcessor:
+  contare gli span da stdout è affidabile, misurarne la latenza no; (d) lo span
+  `calibration` dura 10.3 s contro i 5.0 s del workload (era 3.0 s in 0.2) → è setup, non
+  carico: va escluso dalle misure o eliminato fissando `calib_ns_per_loop`;
+  (e) **da tenere presente per il Task 3**: `InitTracer()` ha AlwaysOn e Batch **cablati**
+  e ignora `RTAPP_SAMPLER_TYPE`/`_RATIO`/`RTAPP_PROCESSOR_TYPE` → così com'è il Blocco 2
+  conterebbe sempre gli stessi span; il Task 3 deve replicarci dentro gli `#if` di
+  `InitTracerZipkin()`.
 
 - [ ] **0.4** — Provare `sudo scripts/utils_isolation/isolate_cpus.sh 2,3` e verificare a
   mano (es. `cat /proc/irq/*/smp_affinity_list`, `taskset -c 2 ...`) che l'isolamento
