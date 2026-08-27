@@ -461,9 +461,59 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
       `cset set -l`); i processi lanciati con `cset shield --exec` girano come **root**,
       quindi i log di rt-app risultano di proprietà di root → da gestire in `run_doe.sh`.
 
-- [ ] **0.5** — Generare a mano una config con `gen_config.py --n-lo 4` e lanciarla UNA
+- [x] **0.5** — Generare a mano una config con `gen_config.py --n-lo 4` e lanciarla UNA
   volta con `test.sh` (non `run_doe.sh`), ispezionando manualmente la cartella di output.
   Obiettivo: capire la struttura di un run prima di lanciarne centinaia in automatico.
+  Stato: **FATTO**. Config in `0-explore/0.5/cfg_n4.json`, run in `0-explore/0.5/run1/`,
+  analisi in `0-explore/0.5/NOTES.md`.
+  (a) **Struttura di un run**: `test.sh` non esegue la config originale — la rilegge, ci
+      riscrive `global.logdir` sulla cartella del run e salva `<run_dir>/config.json`, che
+      e' quella eseguita. Ogni run e' quindi autocontenuto e la config usata resta accanto
+      ai dati (risolve la sovrascrittura del log a nome fisso vista al task 0.2). Dentro:
+      `config.json`, **un log per thread** `rtapp-<task>-<istanza>.log` (5 file con
+      `--n-lo 4`), `stdout.log`, `stderr.log`. Pesi: HI 246 KB, ogni LO ~1.18 MB → il Task 4
+      con 30 ripetizioni produrra' qualche GB;
+  (b) **i log sono di proprieta' di root**, il resto della cartella no, perche'
+      `cset shield --exec` esegue come root → `run_doe.sh` deve fare `chown` a fine run;
+  (c) **trappola in `test.sh:32`**: invoca `sudo` dando per scontato un terminale. Senza tty
+      fallisce in 0.15 s **dopo** aver creato la cartella e due file vuoti — sembra un run
+      riuscito e vuoto. Aggirato con `SUDO_ASKPASS`. `run_doe.sh` deve gestirlo e comunque
+      **verificare che il log esista e non sia vuoto** prima di contare il run come valido;
+  (d) **prima misura di sempre con `SCHED_FIFO`, e risponde alla domanda aperta del task
+      0.4**: HI a FIFO prio 90 su cpu2 da jitter **37 us**, cioe' *meglio* del baseline
+      `SCHED_OTHER` (47-63 us), con `run_max - run_med` = 33 us. I kthread RT per-CPU
+      (`ktimers/N`, `ksoftirqd/N`, `rcuc/N`) **non si vedono**. n=1, quindi indizio forte e
+      non prova: da confermare con ripetizioni;
+  (e) le 4 istanze LO saturano cpu6 per costruzione (200 % di richiesta): 9500 loop su
+      20000 e periodo mediano 2093 us invece di 1000. **HI resta indisturbato** — conferma
+      sul campo che HI e LO su core fisici diversi funziona;
+  (f) **pinning verificato a runtime** (`/proc/<pid>/task/*/status`): `HI_task-0`
+      `Cpus_allowed_list = 2`, i 4 `LO_noise` `= 6`, il thread main `= 2-3,6-7`. Quindi il
+      worker `SCHED_OTHER` del `BatchSpanProcessor` ereditera' `2-3,6-7` e potra' girare sui
+      sibling liberi cpu3/cpu7: **placement da decidere esplicitamente ai Task 4-6**;
+  (g) **`"calibration": "CPU0"` non fa quello che dice.** In `rt-app.cpp:2071-2082` la
+      `sched_setaffinity` verso la sola CPU0 **non ha il controllo del valore di ritorno**:
+      dentro un cpuset che non contiene la CPU 0 fallisce, la calibrazione avviene sulla CPU
+      corrente e il log stampa comunque `calib_cpu 0`. Misurato: 28 ns dentro lo shield,
+      29 ns fuori. Inoltre costa **~8 s** non deterministici (28.3 s totali per
+      `duration: 20`);
+  (h) **il `deadline_miss_ratio` del Task 5 sarebbe stato sempre 0, per costruzione.**
+      `analyze_doe.py:62` conta le righe con `slack < 0`, ma `rt-app.cpp:727-746` calcola lo
+      `slack` **solo** dentro `case rtapp_timer:`. Le config di `gen_config.py` usano
+      `"sleep": 8000` (evento `rtapp_sleep`, `clock_nanosleep` relativa dopo il `run`):
+      niente `t_next`, niente slack. Verificato: `slack = 0` su tutte le 1981 righe di HI e
+      tutte le 9516 di LO. Vedi il rimedio verificato in `0-explore/0.5/NOTES.md`.
+
+- [ ] **0.6 (aperto, deciso al 0.5)** — Scegliere la costante di calibrazione prima del
+  Task 2. `loadwait()` fa `load_count = run * 1000 / p_load`, quindi il pLoad decide quante
+  iterazioni girano per la stessa `"run": 2000`: con pLoad 28 → 71428 iterazioni e
+  `run_med` 2054 us, con 29 → 68965 e 1984 us (rapporto atteso 29/28 = 1.0357, osservato
+  2054/1984 = 1.0353). **1 ns di differenza sposta il lavoro reale del 3.5 %.** Le config
+  del Task 2 devono usare `"calibration": <int>` fisso, mai `"CPU0"`, altrimenti due bracci
+  dell'esperimento eseguono lavoro diverso e l'overhead di OTel si confonde con il rumore
+  della calibrazione. Da decidere: **28** (misurato sulla CPU isolata dove il lavoro gira
+  davvero, piu' difendibile) oppure **29** (mantiene confrontabili le tabelle gia'
+  raccolte). `gen_config.py` va poi aggiornato di conseguenza.
   Stato:
 
 ## Task 1.x-5.x — verso il deliverable finale
@@ -477,6 +527,20 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 
 - [ ] **Task 2** — Scrivere le config JSON definitive per il DoE (HI su SCHED_FIFO,
   LO_noise repliche via `instance`), verificandole con `gen_config.py`.
+  **Due correzioni obbligatorie emerse dal task 0.5**, entrambe da applicare a
+  `gen_config.py`:
+  1. **`"sleep"` → evento `timer`**, altrimenti lo `slack` resta 0 e il
+     `deadline_miss_ratio` del Task 5 e' sempre 0 per costruzione (finding (h) del 0.5).
+     Sintassi verificata (`rt-app_parse_config.cpp:587-618`), con il periodo **completo**:
+     ```json
+     "run": 2000,
+     "timer": { "ref": "unique", "period": 10000, "mode": "absolute" }
+     ```
+     `mode: absolute` tiene la griglia di attivazione fissa, cosi' un'iterazione lunga erode
+     lo slack invece di spostare le successive; `relative` (default) ri-ancora e perdona.
+  2. **`"calibration": "CPU0"` → `<int>` fisso** (vedi il task 0.6).
+  Nominare inoltre i task con prefisso `hi_*` / `lo_*` (finding (b) del task 0.3), cosi' il
+  sampler custom del Task 6 puo' decidere sul nome dello span.
   Stato:
 
 - [ ] **Task 3** — Introdurre una macro `RTAPP_EXPORTER_TYPE` (0=Zipkin default,
@@ -499,6 +563,12 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
   descrittive/confronti tra configurazioni.
+  **Prerequisito**: le config del Task 2 devono usare l'evento `timer`, altrimenti
+  `deadline_miss_ratio` e' 0.0 a prescindere (vedi finding (h) del task 0.5).
+  **Da correggere in `analyze_doe.py`**: scartare la **prima iterazione**. Con il `timer`
+  la prima riga ha sempre slack negativo (`t_next` inizializzato a `t_first`, prima
+  attivazione gia' passata: misurato -2582 us), che e' un transitorio di avvio e non una
+  deadline persa — su 300 iterazioni darebbe un `deadline_miss_ratio` fasullo dello 0.33 %.
   Stato:
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della
