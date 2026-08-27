@@ -2,11 +2,21 @@
 """
 Generate an rt-app mixed-criticality task-set JSON config.
 
-- HI_task: SCHED_FIFO, prio 90, period ~10ms (2ms run + 8ms sleep) -> the
-  critical task whose WCET/jitter/deadline-miss we track as response variable.
-- LO_noise: SCHED_OTHER, period ~1ms (0.5ms run + 0.5ms sleep), replicated
-  N times via "instance" -> best-effort background load that also generates
-  OTel telemetry, used to stress the exporter/sampler/processor.
+- HI_task: SCHED_FIFO, prio 90, 2ms run on a 10ms period -> the critical task
+  whose WCET/jitter/deadline-miss we track as response variable.
+- LO_noise: SCHED_OTHER, 0.5ms run on a 1ms period, replicated N times via
+  "instance" -> best-effort background load that also generates OTel telemetry,
+  used to stress the exporter/sampler/processor. N instances on one CPU demand
+  N*50% of it, so the load is deliberately oversubscribed for N >= 2.
+
+Pacing is a "timer" event, NOT "sleep". Measured in task 0.5: with run+sleep
+there is no absolute deadline to miss, so rt-app leaves slack, c_period and
+wu_latency at 0 on every single row (rt-app.cpp:727-757 writes them only in
+case rtapp_timer). analyze_doe.py:62 derives deadline_miss_ratio from slack<0,
+so the whole DoE would have reported 0.000 in every cell. With a timer the
+metric works (HI 0 misses, LO 53.8%), wake-up latency appears, and period
+jitter drops from 10.3 to 3.3 us because wake-ups sit on an absolute grid.
+--pacing sleep restores the old behaviour for comparison only.
 
 Usage:
   ./gen_config.py --n-lo 4 --duration 20 --out cfg_n4.json
@@ -22,15 +32,31 @@ import argparse
 import json
 
 
-def build_config(n_lo, duration, hi_cpu, lo_cpus, calib):
+# run time and full period, in microseconds. With a timer the period is the
+# whole cycle (run included), not the time spent waiting: HI computes for 2 ms
+# and is woken 10 ms after the START of the previous loop.
+HI_RUN, HI_PERIOD = 2000, 10000
+LO_RUN, LO_PERIOD = 500, 1000
+
+
+def pace(pacing, run_us, period_us):
+    """Emit the phase that closes a loop: an absolute timer, or a relative sleep."""
+    if pacing == "timer":
+        # ref "unique" -> one timer per thread (rtapp_timer_unique), so the four
+        # LO_noise instances do not share a deadline.
+        return {"timer": {"ref": "unique", "period": period_us}}
+    return {"sleep": period_us - run_us}
+
+
+def build_config(n_lo, duration, hi_cpu, lo_cpus, calib, pacing):
     tasks = {
         "HI_task": {
             "policy": "SCHED_FIFO",
             "priority": 90,
             "cpus": [hi_cpu],
             "loop": -1,
-            "run": 2000,
-            "sleep": 8000,
+            "run": HI_RUN,
+            **pace(pacing, HI_RUN, HI_PERIOD),
         }
     }
     if n_lo > 0:
@@ -39,8 +65,8 @@ def build_config(n_lo, duration, hi_cpu, lo_cpus, calib):
             "policy": "SCHED_OTHER",
             "cpus": lo_cpus,
             "loop": -1,
-            "run": 500,
-            "sleep": 500,
+            "run": LO_RUN,
+            **pace(pacing, LO_RUN, LO_PERIOD),
         }
     return {
         "tasks": tasks,
@@ -65,6 +91,10 @@ if __name__ == "__main__":
     ap.add_argument("--calib", default="CPU0",
                      help="ns-per-loop as an integer (skips calibration, recommended for "
                           "the DoE) or 'CPUn' to calibrate on that CPU at every run")
+    ap.add_argument("--pacing", choices=["timer", "sleep"], default="timer",
+                     help="how a loop closes: 'timer' (absolute deadline, gives a real "
+                          "deadline_miss_ratio and wake-up latency) or 'sleep' (relative "
+                          "wait, leaves slack/wu_latency at 0 -- comparison only)")
     ap.add_argument("--out", required=True, help="output JSON path")
     args = ap.parse_args()
 
@@ -76,8 +106,14 @@ if __name__ == "__main__":
               "           scripts/utils_freq/tune_calib.sh\n"
               "         (frequency pinned via scripts/utils_freq/cpu_freq.py pin)\n"
               "         and pass it as --calib <ns>.")
-    cfg = build_config(args.n_lo, args.duration, args.hi_cpu, args.lo_cpus, calib)
+    if args.pacing == "sleep":
+        print("WARNING: --pacing sleep leaves slack/c_period/wu_latency at 0 on every\n"
+              "         row, so deadline_miss_ratio and mean_wu_latency_us are constant\n"
+              "         zeros for this config. Use it for comparison only, never for a\n"
+              "         DoE cell. See 0-exploration/task0.5/NOTES.md section 6.")
+    cfg = build_config(args.n_lo, args.duration, args.hi_cpu, args.lo_cpus, calib,
+                       args.pacing)
     with open(args.out, "w") as f:
         json.dump(cfg, f, indent=2)
     print(f"wrote {args.out}  (n_lo={args.n_lo}, duration={args.duration}s, "
-          f"calibration={calib!r})")
+          f"calibration={calib!r}, pacing={args.pacing})")

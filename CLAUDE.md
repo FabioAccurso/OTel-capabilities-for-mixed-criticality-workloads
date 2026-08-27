@@ -287,13 +287,33 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   intestazione e' invece corretto: e' un file di **output** che `run_doe.sh:88` riempie.
   Albero lasciato con la build di default (`RTAPP_TRACE_LEVEL=0`).
 
-- [ ] **Task 2** — Scrivere le config JSON definitive per il DoE (HI su SCHED_FIFO,
+- [x] **Task 2** — Scrivere le config JSON definitive per il DoE (HI su SCHED_FIFO,
   LO_noise repliche via `instance`), verificandole con `gen_config.py`.
-  **Da fare qui (dal task 0.5)**: sostituire `"sleep"` con
-  `"timer": {"ref":"unique","period":<us>}` in `gen_config.py`, altrimenti
-  `deadline_miss_ratio` e `mean_wu_latency_us` restano 0 in ogni cella e
-  `period_jitter_std_us` ha 3x piu' rumore. `period` e' il periodo intero, non l'attesa.
-  Stato:
+  Stato: FATTO. Documentazione in `2-DoE/NOTES-task2.md` e `SPIEGAZIONE-task2.md`,
+  config in `2-DoE/configs/` (`cfg_n{0,1,4,8}.json`), log di validazione gzippati in
+  `2-DoE/validation/`. `gen_config.py` ora emette
+  `"timer": {"ref":"unique","period":<us>}` invece di `"sleep"`, con le costanti esplicite
+  (`HI_RUN,HI_PERIOD = 2000,10000` -> util 20%; `LO_RUN,LO_PERIOD = 500,1000` -> 50% per
+  istanza) e una nuova opzione **`--pacing {timer,sleep}`** (default `timer`; `sleep`
+  riproduce il vecchio comportamento per il solo confronto e stampa un WARNING).
+  `run_doe.sh:83` non passa `--pacing` quindi eredita il default: **nessuna modifica a
+  `run_doe.sh`**. Validazione (un run da 20 s per config, dentro lo shield):
+  (a) **HI_task non manca mai una scadenza** — 0,0% di miss con n_lo 0/1/4/8, cioe' anche
+  con 8 thread best-effort che chiedono il 400% di cpu3; `run` mediano 1979 us contro 2000
+  configurati a ogni livello di carico -> `CALIB_NS=139` regge e il carico su cpu3 non
+  ruba lavoro a cpu2; (b) `LO_noise` manca il 53% delle scadenze appena e' sovrascritto;
+  (c) **avvertenza per il Task 5**: il `miss%` di LO **satura** (53,0% a n4, 52,9% a n8)
+  perche' il timer in `mode` default `"relative"` riaggancia `t_next` all'istante corrente
+  dopo uno sforo (`rt-app.cpp:752-756`) -> non e' una misura lineare del carico; cio' che
+  cresce in modo monotono e' `wu_latency` (154 us -> 7135 -> 19425) e il periodo mediano
+  (984 -> 2021 -> 2519 us). Se servisse un miss ratio crescente si passa a
+  `"mode":"absolute"`, ma va deciso **prima** della campagna; (d) **un singolo run non e'
+  rappresentativo**: ripetendo n0 e n1 tre volte ciascuno, 4 run su 10 mostrano jitter
+  elevato (std 18-30 us invece di 4-5) **indipendentemente da `n_lo`** (compare anche a
+  carico zero); causa non identificata (cpu2 isolata, freq fissa, fratello SMT vuoto ->
+  resta qualcosa a livello di package). Il `miss%` di HI resta 0,0% in tutti e 10. Quindi
+  le 15-25 ripetizioni per cella servono davvero, e nel Task 5 i confronti vanno fatti su
+  **mediane fra ripetizioni**, mai fra run singoli.
 
 - [ ] **Task 3** — Introdurre una macro `RTAPP_EXPORTER_TYPE` (0=Zipkin default,
   1=ostream) e in `main()` sostituire la chiamata diretta a `InitTracerZipkin()` con un
@@ -309,8 +329,12 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
   descrittive/confronti tra configurazioni.
-  **Da fare qui (dal task 0.5)**: scartare la prima riga di ogni log, e' un transitorio di
-  avvio che vale da solo 1 deadline miss su 1998 in ogni cella.
+  **Da fare qui (dai task 0.5 e 2)**: (1) scartare la prima riga di ogni log, e' un
+  transitorio di avvio che vale da solo 1 deadline miss su 1998 in ogni cella;
+  (2) aggregare per **mediana fra ripetizioni**, mai confrontare run singoli: 4 run su 10
+  mostrano jitter elevato in modo casuale (task 2); (3) non leggere il
+  `deadline_miss_ratio` di LO come misura lineare del carico, satura al ~53% — usare
+  `wu_latency` e il periodo mediano.
   Stato:
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della
