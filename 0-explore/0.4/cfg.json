@@ -1,0 +1,4 @@
+{
+    "tasks": { "thread0": { "policy": "SCHED_OTHER", "loop": -1, "run": 2000, "sleep": 8000 } },
+    "global": { "duration": 5, "default_policy": "SCHED_OTHER", "calibration": 29, "logdir": "./", "log_basename": "rtapp" }
+}

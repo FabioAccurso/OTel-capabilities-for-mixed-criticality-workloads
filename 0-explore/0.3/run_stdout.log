@@ -1,0 +1,100 @@
+{
+  name          : calibration
+  trace_id      : 9a7fad0c0711fe571400addf9a6c60ed
+  span_id       : 73663e34c894da12
+  tracestate    : 
+  parent_span_id: b4d917053bd322dd
+  start         : 1787824624343537480
+  duration      : 4039313698
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : thread0-0
+  trace_id      : 9a7fad0c0711fe571400addf9a6c60ed
+  span_id       : 1ac0382bb378666a
+  tracestate    : 
+  parent_span_id: b4d917053bd322dd
+  start         : 1787824628383222828
+  duration      : 4999942919
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	cancellation: force_terminate
+	config.sched_data.util_min: -1
+	config.index: 0
+	config.lock_pages: 1
+	config.sched_data.priority: 0
+	config.num_instances: 1
+	config.loop: 1
+	config.delay: 0
+	config.forked: 0
+	config.duration: 5
+	config.sched_data.policy: SCHED_OTHER
+	config.nphases: 1
+	config.sched_data.util_max: -1
+	config.name: thread0-0
+	config.cpuset: -
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : main
+  trace_id      : 9a7fad0c0711fe571400addf9a6c60ed
+  span_id       : b4d917053bd322dd
+  tracestate    : 
+  parent_span_id: 0000000000000000
+  start         : 1787824624343514036
+  duration      : 9041359911
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	shutdown: graceful
+	config.io_device: /dev/null
+	config.mem_buffer_size: 4194304
+	config.lock_pages: 1
+	config.calib_cpu: 0
+	config.policy: 0
+	config.logdir: ./
+	config.duration: 5
+	config.num_tasks: 1
+	config.calib_ns_per_loop: 0
+	config.logbasename: rtapp
+	config.logsize: -2
+	config.gnuplot: 0
+	config.pi_enabled: 0
+	config.cumulative_slack: 0
+	config.nthreads: 1
+	config.die_on_dmiss: 0
+  events        : 
+	{
+	  name          : graceful-shutdown
+	  timestamp     : 1787824633384870129
+	  attributes    : 
+	}
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}

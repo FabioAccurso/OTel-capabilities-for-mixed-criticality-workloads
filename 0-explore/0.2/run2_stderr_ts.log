@@ -1,0 +1,8 @@
+[ +0.017s] [rt-app] <notice> Calibrate ns per loop
+[ +7.076s] [rt-app] <notice> pLoad = 27ns : calib_cpu 0
+[ +7.079s] [rt-app] <notice> thread_data_set_unique_name 0 thread0-0
+[ +7.083s] [rt-app] <notice> [0] starting thread ...
+[ +7.086s] 
+[ +7.089s] [rt-app] <notice> [0] Starting with SCHED_OTHER policy with priority 0
+[+10.019s] [Error] File: /tmp/claude-1000/-home-benny-Scrivania-OTel-capabilities-for-mixed-criticality-workloads/d224c3b7-803f-4c7c-91f8-4af1e7bb3c3d/scratchpad/opentelemetry-cpp/exporters/zipkin/src/zipkin_exporter.cc:111 ZIPKIN EXPORTER] Zipkin Exporter: Connection failed
+[+12.078s] [Error] File: /tmp/claude-1000/-home-benny-Scrivania-OTel-capabilities-for-mixed-criticality-workloads/d224c3b7-803f-4c7c-91f8-4af1e7bb3c3d/scratchpad/opentelemetry-cpp/exporters/zipkin/src/zipkin_exporter.cc:111 ZIPKIN EXPORTER] Zipkin Exporter: Connection failed

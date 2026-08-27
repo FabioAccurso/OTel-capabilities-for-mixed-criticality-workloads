@@ -1,0 +1,41 @@
+# --- Build output di rt-app (autotools) -------------------------------------
+# Rigenerabili con: ./autogen.sh && ./configure && make CPPFLAGS="-DRTAPP_..."
+*.o
+*.lo
+*.la
+.deps/
+.libs/
+rt-app/src/rt-app
+rt-app/libdl/*.a
+rt-app/autom4te.cache/
+rt-app/aclocal.m4
+rt-app/configure
+rt-app/config.status
+rt-app/config.log
+rt-app/config.h
+rt-app/config.h.in
+rt-app/stamp-h1
+rt-app/src/config.h
+rt-app/src/config.h.in
+rt-app/src/stamp-h1
+rt-app/libtool
+rt-app/ltmain.sh
+rt-app/compile
+rt-app/depcomp
+rt-app/install-sh
+rt-app/missing
+rt-app/test-driver
+rt-app/m4/
+Makefile
+Makefile.in
+
+# --- Cache dei binari compilati per combinazione di macro --------------------
+# Rigenerabili: make CPPFLAGS="-DRTAPP_TRACE_LEVEL=N -DRTAPP_SAMPLER_TYPE=M"
+bin/
+
+# --- Build+install locale di opentelemetry-cpp ------------------------------
+# Rigenerabile con cmake, vedi "Task 1" in CLAUDE.md (v1.28.0, -DWITH_ZIPKIN=ON)
+otel-installdir/
+
+# --- Backup temporanei ------------------------------------------------------
+*.bak-*

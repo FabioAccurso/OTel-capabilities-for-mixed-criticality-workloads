@@ -1,0 +1,68 @@
+[rt-app] <info> [json] Reading JSON config from cfg_single.json
+[rt-app] <info> [json] Successfully parsed input JSON
+[rt-app] <info> [json] root     : { "tasks": { "thread0": { "policy": "SCHED_OTHER", "loop": -1, "run": 2000, "sleep": 8000 } }, "global": { "duration": 5, "default_policy": "SCHED_OTHER", "calibration": "CPU0", "logdir": ".\/", "log_basename": "rtapp" } }
+[rt-app] <info> [json] global   : { "duration": 5, "default_policy": "SCHED_OTHER", "calibration": "CPU0", "logdir": ".\/", "log_basename": "rtapp" }
+[rt-app] <info> [json] tasks    : { "thread0": { "policy": "SCHED_OTHER", "loop": -1, "run": 2000, "sleep": 8000 } }
+[rt-app] <info> [json] Parsing global
+[rt-app] <info> [json] Parsing global section
+[rt-app] <info> [json]     key: duration, value: 5, type <int>
+[rt-app] <info> [json]     key: gnuplot <default> 0
+[rt-app] <info> [json]     key: default_policy, value: SCHED_OTHER, type <string>
+[rt-app] <info> [json]     key: calibration, value: CPU0, type <string>
+[rt-app] <info> [json]     key: logdir, value: ./, type <string>
+[rt-app] <info> [json]     key: log_basename, value: rtapp, type <string>
+[rt-app] <info> [json]     key: ftrace <default> 
+[rt-app] <info> [json]     key: lock_pages <default> 1
+[rt-app] <info> [json]     key: pi_enabled <default> 0
+[rt-app] <info> [json]     key: io_device <default> /dev/null
+[rt-app] <info> [json]     key: mem_buffer_size <default> 4194304
+[rt-app] <info> [json]     key: cumulative_slack <default> 0
+[rt-app] <info> [json] Parsing resources
+[rt-app] <info> [json] Parsing resource section
+[rt-app] <info> [json] No resource section Found
+[rt-app] <info> [json] Parsing tasks
+[rt-app] <info> [json] Parsing tasks section
+[rt-app] <info> [json]     key: instance <default> 1
+[rt-app] <info> [json] Found 1 threads of 1 tasks
+[rt-app] <info> [json] Parsing task thread0 [-1]
+[rt-app] <info> [json]     key: cpus -
+[rt-app] <info> [json]     key: policy, value: SCHED_OTHER, type <string>
+[rt-app] <info> [json]     key: priority <default> 0
+[rt-app] <info> [json]     key: dl-runtime <default> 0
+[rt-app] <info> [json]     key: dl-period <default> 0
+[rt-app] <info> [json]     key: dl-deadline <default> 0
+[rt-app] <info> [json]     key: util_min <default> -1
+[rt-app] <info> [json]     key: util_max <default> -1
+[rt-app] <info> [json]     key: runtime <default> 0
+[rt-app] <info> [json]     key: period <default> 0
+[rt-app] <info> [json]     key: deadline <default> 0
+[rt-app] <info> [json]     key: taskgroup <default> 
+[rt-app] <info> [json]     key: delay <default> 0
+[rt-app] <info> [json]     key: instance <default> 1
+[rt-app] <info> [json] Parsing phase
+[rt-app] <info> [json]     key: loop, value: -1, type <int>
+[rt-app] <info> [json]     Found 2 events
+[rt-app] <info> [json]     Parsing event run
+[rt-app] <info> [json]         type 6 duration 2000
+[rt-app] <info> [json]     Parsing event sleep
+[rt-app] <info> [json]         type 5 duration 8000
+[rt-app] <info> [json]     key: cpus -
+[rt-app] <info> [json]     key: policy, value: SCHED_OTHER, type <string>
+[rt-app] <info> [json]     key: priority <default> 0
+[rt-app] <info> [json]     key: dl-runtime <default> 0
+[rt-app] <info> [json]     key: dl-period <default> 0
+[rt-app] <info> [json]     key: dl-deadline <default> 0
+[rt-app] <info> [json]     key: util_min <default> -1
+[rt-app] <info> [json]     key: util_max <default> -1
+[rt-app] <info> [json]     key: taskgroup <default> 
+[rt-app] <info> [json] Free json objects
+[rt-app] <notice> Calibrate ns per loop
+[rt-app] <notice> pLoad = 18ns : calib_cpu 0
+[rt-app] <notice> thread_data_set_unique_name 0 thread0-0
+[rt-app] <notice> [0] starting thread ...
+
+[rt-app] <notice> [0] Starting with SCHED_OTHER policy with priority 0
+
+real	0m19,098s
+user	0m1,392s
+sys	0m0,012s

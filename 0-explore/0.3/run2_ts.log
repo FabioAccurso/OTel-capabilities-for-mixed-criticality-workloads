@@ -1,0 +1,106 @@
+[  0.014s] [rt-app] <notice> Calibrate ns per loop
+[  5.186s] [rt-app] <notice> pLoad = 29ns : calib_cpu 0
+[  5.186s] [rt-app] <notice> thread_data_set_unique_name 0 thread0-0
+[  5.194s] [rt-app] <notice> [0] starting thread ...
+[  5.194s] 
+[  5.194s] [rt-app] <notice> [0] Starting with SCHED_OTHER policy with priority 0
+[ 10.194s] {
+[ 10.194s]   name          : calibration
+[ 10.194s]   trace_id      : 3e5e9fcfb0889ab44e780e0ae65dadfb
+[ 10.194s]   span_id       : 1af000b4a1e9eafe
+[ 10.194s]   tracestate    :
+[ 10.194s]   parent_span_id: 2ed8122ba3f9928a
+[ 10.194s]   start         : 1787824694950317987
+[ 10.194s]   duration      : 5171812723
+[ 10.194s]   description   :
+[ 10.194s]   span kind     : Internal
+[ 10.194s]   status        : Unset
+[ 10.194s]   attributes    :
+[ 10.194s]   events        :
+[ 10.194s]   links         :
+[ 10.194s]   resources     :
+[ 10.194s] 	telemetry.sdk.version: 1.28.0
+[ 10.194s] 	telemetry.sdk.name: opentelemetry
+[ 10.194s] 	telemetry.sdk.language: cpp
+[ 10.194s] 	service.name: rt-app_console
+[ 10.194s]   instr-lib     : rt-app-tracer
+[ 10.194s] }
+[ 10.194s] {
+[ 10.194s]   name          : thread0-0
+[ 10.194s]   trace_id      : 3e5e9fcfb0889ab44e780e0ae65dadfb
+[ 10.194s]   span_id       : 75d5c5c6cf690ac5
+[ 10.194s]   tracestate    :
+[ 10.194s]   parent_span_id: 2ed8122ba3f9928a
+[ 10.194s]   start         : 1787824700130027163
+[ 10.195s]   duration      : 4999935719
+[ 10.195s]   description   :
+[ 10.195s]   span kind     : Internal
+[ 10.195s]   status        : Unset
+[ 10.195s]   attributes    :
+[ 10.195s] 	cancellation: force_terminate
+[ 10.195s] 	config.sched_data.util_min: -1
+[ 10.195s] 	config.index: 0
+[ 10.195s] 	config.lock_pages: 1
+[ 10.195s] 	config.sched_data.priority: 0
+[ 10.195s] 	config.num_instances: 1
+[ 10.195s] 	config.loop: 1
+[ 10.195s] 	config.delay: 0
+[ 10.195s] 	config.forked: 0
+[ 10.195s] 	config.duration: 5
+[ 10.195s] 	config.sched_data.policy: SCHED_OTHER
+[ 10.195s] 	config.nphases: 1
+[ 10.195s] 	config.sched_data.util_max: -1
+[ 10.195s] 	config.name: thread0-0
+[ 10.195s] 	config.cpuset: -
+[ 10.195s]   events        :
+[ 10.195s]   links         :
+[ 10.195s]   resources     :
+[ 10.195s] 	telemetry.sdk.version: 1.28.0
+[ 10.195s] 	telemetry.sdk.name: opentelemetry
+[ 10.195s] 	telemetry.sdk.language: cpp
+[ 10.195s] 	service.name: rt-app_console
+[ 10.195s]   instr-lib     : rt-app-tracer
+[ 10.195s] }
+[ 10.195s] {
+[ 10.195s]   name          : main
+[ 10.195s]   trace_id      : 3e5e9fcfb0889ab44e780e0ae65dadfb
+[ 10.195s]   span_id       : 2ed8122ba3f9928a
+[ 10.195s]   tracestate    :
+[ 10.195s]   parent_span_id: 0000000000000000
+[ 10.195s]   start         : 1787824694950292399
+[ 10.195s]   duration      : 10179883634
+[ 10.195s]   description   :
+[ 10.195s]   span kind     : Internal
+[ 10.195s]   status        : Unset
+[ 10.195s]   attributes    :
+[ 10.195s] 	shutdown: graceful
+[ 10.195s] 	config.io_device: /dev/null
+[ 10.195s] 	config.mem_buffer_size: 4194304
+[ 10.195s] 	config.lock_pages: 1
+[ 10.195s] 	config.calib_cpu: 0
+[ 10.195s] 	config.policy: 0
+[ 10.195s] 	config.logdir: ./
+[ 10.195s] 	config.duration: 5
+[ 10.195s] 	config.num_tasks: 1
+[ 10.195s] 	config.calib_ns_per_loop: 0
+[ 10.195s] 	config.logbasename: rtapp
+[ 10.195s] 	config.logsize: -2
+[ 10.195s] 	config.gnuplot: 0
+[ 10.195s] 	config.pi_enabled: 0
+[ 10.195s] 	config.cumulative_slack: 0
+[ 10.195s] 	config.nthreads: 1
+[ 10.195s] 	config.die_on_dmiss: 0
+[ 10.195s]   events        :
+[ 10.195s] 	{
+[ 10.195s] 	  name          : graceful-shutdown
+[ 10.195s] 	  timestamp     : 1787824705130172757
+[ 10.195s] 	  attributes    :
+[ 10.195s] 	}
+[ 10.195s]   links         :
+[ 10.195s]   resources     :
+[ 10.195s] 	telemetry.sdk.version: 1.28.0
+[ 10.195s] 	telemetry.sdk.name: opentelemetry
+[ 10.195s] 	telemetry.sdk.language: cpp
+[ 10.195s] 	service.name: rt-app_console
+[ 10.195s]   instr-lib     : rt-app-tracer
+[ 10.195s] }
