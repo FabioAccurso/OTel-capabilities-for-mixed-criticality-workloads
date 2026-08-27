@@ -2,11 +2,27 @@
 """
 Generate an rt-app mixed-criticality task-set JSON config.
 
-- HI_task: SCHED_FIFO, prio 90, period ~10ms (2ms run + 8ms sleep) -> the
-  critical task whose WCET/jitter/deadline-miss we track as response variable.
-- LO_noise: SCHED_OTHER, period ~1ms (0.5ms run + 0.5ms sleep), replicated
-  N times via "instance" -> best-effort background load that also generates
-  OTel telemetry, used to stress the exporter/sampler/processor.
+- HI_task: SCHED_FIFO, prio 90, 2 ms di lavoro su un periodo di 10 ms scandito da un
+  evento `timer` ASSOLUTO -> il task critico di cui misuriamo WCET, jitter e deadline miss.
+- LO_noise: SCHED_OTHER, `run 500 / sleep 500`, replicato N volte via "instance" -> carico
+  best-effort di sottofondo, che genera anche telemetria per stressare
+  exporter/sampler/processor.
+
+Perche' HI usa `timer` e LO no
+------------------------------
+Lo `slack` (colonna 8 del log, da cui `analyze_doe.py` ricava il `deadline_miss_ratio`)
+viene calcolato da rt-app **solo** dentro `case rtapp_timer:` (`rt-app.cpp:727-746`), come
+differenza fra l'istante assoluto della prossima attivazione e adesso. Con `"sleep"` —
+una `clock_nanosleep` relativa eseguita dopo il `run` — lo slack resta 0 su ogni riga e il
+`deadline_miss_ratio` sarebbe 0 **per costruzione**, non perche' le deadline sono
+rispettate (task 0.5, finding (h)). Inoltre con `sleep` il periodo e' `run + sleep +
+overhead`, quindi eredita l'errore del run: non e' un task davvero periodico.
+
+LO invece resta su `sleep` di proposito. E' volutamente sovraccarico (con --n-lo 4 sono
+4 x 50 % su una sola CPU), e con un timer `absolute` un task in ritardo non dorme mai piu':
+`t_next` resta indietro e ogni iterazione successiva salta l'attesa, trasformando il rumore
+da "duty cycle del 50 %" a busy loop puro. Cambierebbe la natura del carico. Sul task LO
+non misuriamo deadline, quindi lo slack non serve.
 
 Topologia (ASUS UX431DA, Ryzen 7 3700U: 4 core fisici, 8 thread SMT):
   cpu0,1 -> core 0    cpu2,3 -> core 1    cpu4,5 -> core 2    cpu6,7 -> core 3
@@ -82,7 +98,10 @@ def build_config(n_lo, duration, hi_cpu, lo_cpus, calibration):
             "cpus": [hi_cpu],
             "loop": -1,
             "run": 2000,
-            "sleep": 8000,
+            # periodo COMPLETO (non lo sleep): il timer attende fino al prossimo
+            # istante di attivazione assoluto. "absolute" tiene la griglia fissa, cosi'
+            # un'iterazione lunga erode lo slack invece di spostare le successive.
+            "timer": {"ref": "unique", "period": 10000, "mode": "absolute"},
         }
     }
     if n_lo > 0:

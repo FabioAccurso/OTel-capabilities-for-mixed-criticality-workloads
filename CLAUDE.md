@@ -84,6 +84,7 @@ project/
 │   ├── utils_isolation/ isolate_cpus.sh, reset_isolation.sh (cset shield),
 │   │                    pin_cpu_freq.sh (frequenza fissa via MSR)
 │   └── measurements/    gen_config.py, test.sh, run_doe.sh, analyze_doe.py
+├── 1-configs/           config JSON definitive del DoE (Task 2) + README con le scelte
 ├── 2-DoE/               data_table.csv, index.txt, risultati dei run
 └── bin/                 cache dei binari rt-app compilati per combinazione di macro
 ```
@@ -597,24 +598,34 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
     tracciato perche' e' stabile. Aggiunto anche `*~` al `.gitignore` (backup di
     `autoheader`).
 
-- [ ] **Task 2** — Scrivere le config JSON definitive per il DoE (HI su SCHED_FIFO,
+- [x] **Task 2** — Scrivere le config JSON definitive per il DoE (HI su SCHED_FIFO,
   LO_noise repliche via `instance`), verificandole con `gen_config.py`.
-  **Due correzioni obbligatorie emerse dal task 0.5**, entrambe da applicare a
-  `gen_config.py`:
-  1. **`"sleep"` → evento `timer`**, altrimenti lo `slack` resta 0 e il
-     `deadline_miss_ratio` del Task 5 e' sempre 0 per costruzione (finding (h) del 0.5).
-     Sintassi verificata (`rt-app_parse_config.cpp:587-618`), con il periodo **completo**:
-     ```json
-     "run": 2000,
-     "timer": { "ref": "unique", "period": 10000, "mode": "absolute" }
-     ```
-     `mode: absolute` tiene la griglia di attivazione fissa, cosi' un'iterazione lunga erode
-     lo slack invece di spostare le successive; `relative` (default) ri-ancora e perdona.
-  2. **`"calibration"`**: gia' fatto — `gen_config.py` ora emette l'intero fisso **29**
-     di default (task 0.6). Verificare solo che le config definitive non lo sovrascrivano.
-  Nominare inoltre i task con prefisso `hi_*` / `lo_*` (finding (b) del task 0.3), cosi' il
-  sampler custom del Task 6 puo' decidere sul nome dello span.
-  Stato:
+  Stato: **FATTO**. `gen_config.py` aggiornato, config materializzate in `1-configs/`
+  (`cfg_n0/1/4/8.json` + `README.md` con le motivazioni). `run_doe.sh` le rigenera comunque
+  da solo in ogni cella: quei file servono a rivedere il risultato senza lanciare la
+  campagna.
+  (a) **HI usa un evento `timer` assoluto al posto di `"sleep": 8000`**, con il periodo
+      **completo**: `"timer": {"ref": "unique", "period": 10000, "mode": "absolute"}`.
+      Verificato su un run reale (n_lo=4, 20 s, dentro lo shield):
+
+      | | iterazioni | period p50 | jitter | slack |
+      |---|---|---|---|---|
+      | `"sleep": 8000` | 1981/2000 | 10062 us | 37 us | **0 su tutte le righe** |
+      | `timer` absolute | **2000/2000** | **9999 us** | **10 us** | med 8008 us |
+
+      Oltre a sbloccare il `deadline_miss_ratio`, il jitter **scende da 37 a 10 us** e le
+      iterazioni tornano esatte: le attivazioni sono su griglia fissa invece di derivare da
+      `run + sleep`, che ne ereditava la varianza;
+  (b) **LO resta su `sleep`, di proposito.** E' volutamente sovraccarico; con un timer
+      `absolute` un task in ritardo non dorme mai piu' (`t_next` resta indietro, ogni
+      iterazione salta l'attesa) e il rumore diventerebbe un busy loop puro invece di un
+      duty cycle del 50 %. Su LO non misuriamo deadline;
+  (c) nomi dei task lasciati `HI_task` / `LO_noise`: soddisfano gia' la convenzione di
+      prefisso richiesta dal task 0.3 per il sampler del Task 6, e `analyze_doe.py:113-114`
+      cerca proprio quelle sottostringhe. Rinominarli in minuscolo avrebbe rotto l'analisi
+      senza guadagno;
+  (d) `"calibration": 29` fisso (task 0.6) elimina anche gli ~8 s di startup non
+      deterministico: `duration: 20` ora dura **20.2 s** invece di 28.3 s.
 
 - [ ] **Task 3** — Introdurre una macro `RTAPP_EXPORTER_TYPE` (0=Zipkin default,
   1=ostream) e in `main()` sostituire la chiamata diretta a `InitTracerZipkin()` con un
@@ -638,10 +649,27 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   descrittive/confronti tra configurazioni.
   **Prerequisito**: le config del Task 2 devono usare l'evento `timer`, altrimenti
   `deadline_miss_ratio` e' 0.0 a prescindere (vedi finding (h) del task 0.5).
-  **Da correggere in `analyze_doe.py`**: scartare la **prima iterazione**. Con il `timer`
-  la prima riga ha sempre slack negativo (`t_next` inizializzato a `t_first`, prima
-  attivazione gia' passata: misurato -2582 us), che e' un transitorio di avvio e non una
-  deadline persa — su 300 iterazioni darebbe un `deadline_miss_ratio` fasullo dello 0.33 %.
+  **Da correggere in `analyze_doe.py`**: scartare **tutto il transitorio di avvio**, non
+  solo la prima riga. Le prime iterazioni di HI hanno sempre slack negativo perche'
+  (`rt-app.cpp:1434-1449`) il thread `ind == 0` — cioe' HI — fissa `t_zero` e subito dopo si
+  blocca su `pthread_barrier_wait` finche' tutti i thread sono pronti; quando riparte,
+  `t_first = t_zero` e' gia' vecchio di tutto il tempo di avvio degli altri. **Il numero di
+  righe fasulle scala col numero di thread** (misurato):
+
+  | n_lo | thread | ritardo iniziale | iterazioni negative |
+  |---|---|---|---|
+  | 0 | 1 | 2 579 us | 1 |
+  | 1 | 2 | 11 080 us | 2 |
+  | 4 | 5 | 36 751 us | 5 |
+  | 8 | 9 | 76 972 us | 10 |
+
+  Block3 varia `n_lo` fra 0, 1, 4 e 8: uno scarto fisso di una riga lascerebbe 0, 1, 4 e 9
+  falsi miss nelle quattro celle, cioe' **un bias correlato proprio col fattore in studio**,
+  che si leggerebbe come "piu' carico di sottofondo -> piu' deadline perse". Regola giusta:
+  scartare le righe iniziali finche' lo slack non diventa >= 0 la prima volta, e registrare
+  quante ne sono state scartate. Dopo il recupero, uno slack negativo e' un miss vero.
+  L'opzione `delay` di rt-app **non** risolve (provata a 100 e 200 ms): sposta `t_first` e
+  l'avvio insieme, quindi il divario resta. Dettagli in `1-configs/README.md`.
   Stato:
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della
