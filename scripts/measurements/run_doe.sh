@@ -55,9 +55,12 @@ touch "$INDEX_FILE"
 RUN_COUNTER=$(( $(wc -l < "$INDEX_FILE") + 1 ))
 
 # --- build (or reuse cached) binary for a given macro combination ---------
+# exporter: 0 = Zipkin (spans go to the network, stdout stays empty), 1 = ostream
+# (spans printed on stdout, which is how block 2 counts them). It is part of the cache
+# tag: two binaries differing only by exporter are different binaries.
 build_bin() {
-    local trace=$1 proc=$2 samp=$3 ratio=$4
-    local tag="t${trace}_p${proc}_s${samp}_r${ratio}"
+    local trace=$1 proc=$2 samp=$3 ratio=$4 exporter=${5:-0}
+    local tag="t${trace}_p${proc}_s${samp}_r${ratio}_e${exporter}"
     local bin_path="$BIN_CACHE/rtapp_${tag}"
     if [ -x "$bin_path" ]; then
         echo "$bin_path"
@@ -67,7 +70,7 @@ build_bin() {
     (
         cd "$RTAPP_SRC_DIR"
         make clean >/dev/null
-        make CPPFLAGS="-DRTAPP_TRACE_LEVEL=${trace} -DRTAPP_PROCESSOR_TYPE=${proc} -DRTAPP_SAMPLER_TYPE=${samp} -DRTAPP_SAMPLER_RATIO=${ratio}" >/dev/null
+        make CPPFLAGS="-DRTAPP_TRACE_LEVEL=${trace} -DRTAPP_PROCESSOR_TYPE=${proc} -DRTAPP_SAMPLER_TYPE=${samp} -DRTAPP_SAMPLER_RATIO=${ratio} -DRTAPP_EXPORTER_TYPE=${exporter}" >/dev/null
     ) >&2
     cp "$RTAPP_SRC_DIR/rt-app" "$bin_path"
     echo "$bin_path"
@@ -76,7 +79,8 @@ build_bin() {
 # --- run one cell: build once, execute REPS repetitions --------------------
 run_cell() {
     local block=$1 trace=$2 proc=$3 samp=$4 ratio=$5 n_lo=$6 reps=$7 duration=$8
-    local bin; bin=$(build_bin "$trace" "$proc" "$samp" "$ratio")
+    local exporter=${9:-0}
+    local bin; bin=$(build_bin "$trace" "$proc" "$samp" "$ratio" "$exporter")
     local cell_dir="$DOE_ROOT/$block/t${trace}_p${proc}_s${samp}_r${ratio}_n${n_lo}"
     mkdir -p "$cell_dir"
     local cfg="$cell_dir/config.json"
@@ -104,17 +108,25 @@ block1() {
 # ============================ BLOCK 2 =======================================
 # Sampling granularity: can OTel's ratio sampler actually protect HI spans
 # when HI and LO share one trace? Fixed trace_level=2, processor=Batch,
-# mixed workload (1 HI + 4 LO). NOTE: for this block you must temporarily
-# switch main() to use the ostream exporter (InitTracer) instead of
-# InitTracerZipkin, so exported spans are visible/greppable in stdout.log.
+# mixed workload (1 HI + 4 LO). The last argument selects the ostream exporter
+# (RTAPP_EXPORTER_TYPE=1), so exported spans are printed on stdout and
+# analyze_doe.py can count them -- no source edit needed any more.
+#
+# At trace_level=2 a sampled run exports a FIXED 8 spans regardless of duration
+# (main, calibration, graceful-shutdown, one per thread, one phase and one
+# thread_loop per thread); an unsampled run exports 0. The ratio sampler decides
+# on the trace_id, which the whole execution shares, so the count per run is
+# all-or-nothing and hi/lo_spans_exported is effectively a coin flip per run.
+# That is the measurement: over 25 reps the sampled fraction estimates the ratio,
+# and HI and LO are never sampled independently of each other.
 # 6 cells x 25 reps = 150 runs.
 block2() {
-    run_cell "block2" 2 0 2 0.0 4 25 20   # AlwaysOff  (sanity control)
-    run_cell "block2" 2 0 0 0.0 4 25 20   # AlwaysOn   (sanity control)
-    run_cell "block2" 2 0 1 0.1 4 25 20
-    run_cell "block2" 2 0 1 0.3 4 25 20
-    run_cell "block2" 2 0 1 0.5 4 25 20
-    run_cell "block2" 2 0 1 0.7 4 25 20
+    run_cell "block2" 2 0 2 0.0 4 25 20 1   # AlwaysOff  (sanity control)
+    run_cell "block2" 2 0 0 0.0 4 25 20 1   # AlwaysOn   (sanity control)
+    run_cell "block2" 2 0 1 0.1 4 25 20 1
+    run_cell "block2" 2 0 1 0.3 4 25 20 1
+    run_cell "block2" 2 0 1 0.5 4 25 20 1
+    run_cell "block2" 2 0 1 0.7 4 25 20 1
 }
 
 # ============================ BLOCK 3 =======================================

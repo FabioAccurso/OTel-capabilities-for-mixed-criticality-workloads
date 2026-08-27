@@ -107,46 +107,23 @@ opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span> main_span;
 
 /********************** OTEL - Telemetry initialization functions *********************/
 #if (RTAPP_TRACE_LEVEL > 0)
-/* OTEL - Initialization for debugging purposes, spans printed to console */
-void InitTracer() {
-	
-	// Resource: immutable representation of the entity producing telemetry as key-value pair. You can create a resource and associate it with telemetry
-	resource::ResourceAttributes attributes = { {"service.name", "rt-app_console"} };
-	auto resource = resource::Resource::Create(attributes);
-	
-	// SpanExporter: sends telemetry data to a backend
-	auto exporter = trace_exporter::OStreamSpanExporterFactory::Create();
-	
-	// SpanProcessor: processes spans and forwards them to an exporter. BatchSpanProcessor batches them and sends them in bulk to the exporter.
-	trace_sdk::BatchSpanProcessorOptions processor_options{};
-	auto processor = trace_sdk::BatchSpanProcessorFactory::Create(std::move(exporter), processor_options);
-	
-	// Sampler: mechanism to control/reducing the number of samples of traces collected and sent to the backend. AlwaysOnSampler samples every trace regardless of upstream sampling decisions
-	auto always_on_sampler = std::unique_ptr<trace_sdk::AlwaysOnSampler>(new trace_sdk::AlwaysOnSampler);
-
-	// TracerProvider instance holds the SDK configurations (Span Processors, Samplers, Resource). There is a single global TracerProvider instance
-	// for an application, and it is created at the start of application.
-
-	// TraceProvider (create)
-	std::shared_ptr<opentelemetry::trace::TracerProvider> provider =
-	trace_sdk::TracerProviderFactory::Create(std::move(processor), resource, std::move(always_on_sampler));
-	// TraceProvider (set)
-	trace_api::Provider::SetTracerProvider(provider);
-}
-
-/* OTEL - Tracing framework initialization based on preprocessor directives (see rt-app_types.h) */
-void InitTracerZipkin() {
+/* OTEL - Shared tail of the two initialization functions: resource, processor, sampler
+ * and provider. Both exporter factories return std::unique_ptr<trace_sdk::SpanExporter>,
+ * so only the exporter and the service name differ between Zipkin and ostream.
+ *
+ * Kept in one place on purpose. Before this existed, InitTracer() had AlwaysOn and Batch
+ * hardwired and silently ignored RTAPP_SAMPLER_TYPE, RTAPP_SAMPLER_RATIO and
+ * RTAPP_PROCESSOR_TYPE (see 0-exploration/task0.3). Since DoE block 2 counts the spans
+ * printed by the ostream exporter while varying exactly those macros, every cell would
+ * have exported the same spans and the block would have measured nothing. */
+static void InstallTracerProvider(std::unique_ptr<trace_sdk::SpanExporter> exporter,
+				  const char *service_name) {
 
 	// 1. Resource
-	resource::ResourceAttributes attributes = { {"service.name", "rt-app_zipkin"} };
+	resource::ResourceAttributes attributes = { {"service.name", service_name} };
 	auto resource = resource::Resource::Create(attributes);
 
-	// 2. Exporter
-	zipkin_exporter::ZipkinExporterOptions exporter_options;
-	exporter_options.service_name = "zipkin-exporter";
-	auto exporter = zipkin_exporter::ZipkinExporterFactory::Create(exporter_options);
-	
-	// 3. Processor
+	// 2. Processor
 	#if (RTAPP_PROCESSOR_TYPE == 0)
 	// Batch
 	trace_sdk::BatchSpanProcessorOptions batch_options{};
@@ -157,8 +134,8 @@ void InitTracerZipkin() {
 	// Simple
 	auto processor = trace_sdk::SimpleSpanProcessorFactory::Create(std::move(exporter));
 	#endif
-	
-	// 4. Sampler
+
+	// 3. Sampler
 	#if (RTAPP_SAMPLER_TYPE == 0)
 	// AlwaysOn
 	auto sampler = std::unique_ptr<trace_sdk::Sampler>(new trace_sdk::AlwaysOnSampler);
@@ -169,8 +146,8 @@ void InitTracerZipkin() {
 	// AlwaysOff
 	auto sampler = std::unique_ptr<trace_sdk::Sampler>(new trace_sdk::AlwaysOffSampler);
 	#endif
-		
-	// 5. Provider
+
+	// 4. Provider
 	std::shared_ptr<opentelemetry::trace::TracerProvider> provider =
 		trace_sdk::TracerProviderFactory::Create(
 			std::move(processor),
@@ -178,6 +155,23 @@ void InitTracerZipkin() {
 			std::move(sampler)
 		);
 	trace_api::Provider::SetTracerProvider(provider);
+}
+
+/* OTEL - Spans printed on stdout. Used by DoE block 2, where the exported spans are
+ * counted by grepping stdout.log, and for eyeballing span structure by hand. */
+void InitTracer() {
+
+	auto exporter = trace_exporter::OStreamSpanExporterFactory::Create();
+	InstallTracerProvider(std::move(exporter), "rt-app_console");
+}
+
+/* OTEL - Tracing framework initialization based on preprocessor directives (see rt-app_types.h) */
+void InitTracerZipkin() {
+
+	zipkin_exporter::ZipkinExporterOptions exporter_options;
+	exporter_options.service_name = "zipkin-exporter";
+	auto exporter = zipkin_exporter::ZipkinExporterFactory::Create(exporter_options);
+	InstallTracerProvider(std::move(exporter), "rt-app_zipkin");
 }
 
 /* OTEL - Tracing framework cleanup before exiting program */
@@ -1972,8 +1966,14 @@ int main(int argc, char* argv[])
 		new (&opts.threads_data[i].span) opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>(nullptr);
 	}
 	
-	// Initialize tracing framework
+	// Initialize tracing framework (exporter chosen at compile time, see rt-app_types.h)
+	#if (RTAPP_EXPORTER_TYPE == 0)
 	InitTracerZipkin();
+	#elif (RTAPP_EXPORTER_TYPE == 1)
+	InitTracer();
+	#else
+	#error "RTAPP_EXPORTER_TYPE must be 0 (Zipkin) or 1 (ostream)"
+	#endif
 
 	// Create main span
 	auto tracer = get_tracer();

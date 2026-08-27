@@ -315,11 +315,36 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   le 15-25 ripetizioni per cella servono davvero, e nel Task 5 i confronti vanno fatti su
   **mediane fra ripetizioni**, mai fra run singoli.
 
-- [ ] **Task 3** — Introdurre una macro `RTAPP_EXPORTER_TYPE` (0=Zipkin default,
+- [x] **Task 3** — Introdurre una macro `RTAPP_EXPORTER_TYPE` (0=Zipkin default,
   1=ostream) e in `main()` sostituire la chiamata diretta a `InitTracerZipkin()` con un
   `#if RTAPP_EXPORTER_TYPE == 0 ... #else InitTracer() ... #endif`. Serve al Blocco 2 del
   DoE per contare a video gli span esportati.
-  Stato:
+  Stato: FATTO. Documentazione ed evidenze in `3-exporter/` (`NOTES.md`,
+  `SPIEGAZIONE.md`, `evidence/` con gli stdout dei quattro binari + le 12 ripetizioni del
+  ratio sampler). Macro aggiunta in `rt-app_types.h` con default **0** (verificato con
+  `gcc -E -dM`: un `make` senza flag si comporta come prima) e switch con `#error` sul
+  caso invalido in `main()`. **Risolto il blocco del task 0.3**: `InitTracer()` aveva
+  AlwaysOn e Batch cablati e ignorava `RTAPP_SAMPLER_TYPE`/`_RATIO`/`RTAPP_PROCESSOR_TYPE`.
+  Invece di duplicare gli `#if` nelle due funzioni ho estratto la coda comune in
+  `InstallTracerProvider(exporter, service_name)` — entrambe le factory restituiscono
+  `std::unique_ptr<trace_sdk::SpanExporter>`, quindi cambia solo exporter e `service.name`;
+  le due funzioni pubbliche restano entrambe (45 righe aggiunte, 41 rimosse).
+  Findings: (a) a `trace_level=2` un run campionato esporta **8 span fissi** (`main`,
+  `calibration`, `graceful-shutdown`, uno per thread, uno `phase` e uno `thread_loop` per
+  thread) **indipendentemente dalla durata**; a `trace_level=3` lo stesso run da 5 s passa
+  a **5508 span / 4,7 MB** di stdout; (b) i nomi degli span sono quelli univoci dei thread
+  (`HI_task-0`, `LO_noise-1`), quindi `analyze_doe.py:70` funziona senza modifiche;
+  (c) le macro ora hanno effetto: AlwaysOn 8 span, AlwaysOff 0, Zipkin 0 su stdout;
+  (d) **FINDING CENTRALE DEL PROGETTO, ora sperimentale e non piu' dedotto dal codice**:
+  12 ripetizioni con `TraceIdRatioBasedSampler(0.5)` -> 4 run campionati su 12, e in
+  **nessuno** dei 12 HI e LO hanno avuto destini diversi (sempre 8 span o 0, mai un valore
+  intermedio, mai HI senza LO). Il ratio sampler decide sul `trace_id`, condiviso da tutta
+  l'esecuzione perche' ogni thread e' figlio di `main_span` -> **OTel standard non puo'
+  prioritizzare i task critici**. Materiale diretto per il Task 6.
+  **Cablato nel DoE**: `run_doe.sh` `build_bin()` accetta un quinto argomento `exporter`
+  (default 0) **incluso nel tag della cache** (`..._e1`), `run_cell()` un nono argomento,
+  e le 6 celle di `block2` passano 1. Rimosso il commento che diceva di modificare a mano
+  `main()`. Blocchi 1 e 3 invariati su Zipkin.
 
 - [ ] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
   RTAPP_SRC_DIR/BIN_CACHE/DOE_ROOT in cima allo script, isolare le CPU, lanciare
@@ -329,12 +354,14 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
   descrittive/confronti tra configurazioni.
-  **Da fare qui (dai task 0.5 e 2)**: (1) scartare la prima riga di ogni log, e' un
+  **Da fare qui (dai task 0.5, 2 e 3)**: (1) scartare la prima riga di ogni log, e' un
   transitorio di avvio che vale da solo 1 deadline miss su 1998 in ogni cella;
   (2) aggregare per **mediana fra ripetizioni**, mai confrontare run singoli: 4 run su 10
   mostrano jitter elevato in modo casuale (task 2); (3) non leggere il
   `deadline_miss_ratio` di LO come misura lineare del carico, satura al ~53% — usare
-  `wu_latency` e il periodo mediano.
+  `wu_latency` e il periodo mediano; (4) `hi/lo_spans_exported` del blocco 2 e' **binario
+  per run** (8 span o 0, task 3) -> trattarlo come proporzione binomiale su 25 ripetizioni,
+  non come conteggio continuo.
   Stato:
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della

@@ -1,0 +1,807 @@
+cset: --> last message, executed args into cpuset "/user", new pid is: 14597
+{
+  name          : calibration
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 3ed3e52a62bcb251
+  tracestate    : 
+  parent_span_id: 846df7fd3678d164
+  start         : 1787847128527218460
+  duration      : 38272
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[0]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 705123b91ce07843
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128527665451
+  duration      : 936509
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 295
+	stats.period: 862
+	sched_data.util_min: -1
+	stats.run: 498
+	stats.c_run: 500
+	stats.wu_lat: 67
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[1]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 3e9aa352cc72a34c
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128528608088
+  duration      : 981846
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 404
+	stats.period: 960
+	sched_data.util_min: -1
+	stats.run: 489
+	stats.c_run: 500
+	stats.wu_lat: 67
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[2]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : f3fa3143acc0061b
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128529593346
+  duration      : 996776
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 420
+	stats.period: 976
+	sched_data.util_min: -1
+	stats.run: 489
+	stats.c_run: 500
+	stats.wu_lat: 66
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[3]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 3b9d31e5b0068c34
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128530593473
+  duration      : 997677
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 415
+	stats.period: 976
+	sched_data.util_min: -1
+	stats.run: 493
+	stats.c_run: 500
+	stats.wu_lat: 66
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[4]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : ee1a55c85881a363
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128531594944
+  duration      : 997205
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 414
+	stats.period: 975
+	sched_data.util_min: -1
+	stats.run: 493
+	stats.c_run: 500
+	stats.wu_lat: 67
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[5]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 1736750882b8e596
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128532597329
+  duration      : 993978
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 413
+	stats.period: 971
+	sched_data.util_min: -1
+	stats.run: 491
+	stats.c_run: 500
+	stats.wu_lat: 66
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[6]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 4d78203066d99d07
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128533595681
+  duration      : 995595
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 415
+	stats.period: 974
+	sched_data.util_min: -1
+	stats.run: 492
+	stats.c_run: 500
+	stats.wu_lat: 67
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[7]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : ac6693e12f62b3fd
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128534596105
+  duration      : 997140
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 412
+	stats.period: 975
+	sched_data.util_min: -1
+	stats.run: 494
+	stats.c_run: 500
+	stats.wu_lat: 68
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[8]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : b53aba23a5320d29
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128535597903
+  duration      : 995620
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 411
+	stats.period: 973
+	sched_data.util_min: -1
+	stats.run: 493
+	stats.c_run: 500
+	stats.wu_lat: 68
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[9]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 6092d4831a534884
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128536597756
+  duration      : 996211
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 412
+	stats.period: 974
+	sched_data.util_min: -1
+	stats.run: 492
+	stats.c_run: 500
+	stats.wu_lat: 69
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[10]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : cb19606f316bacb0
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128537604374
+  duration      : 988998
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 405
+	stats.period: 967
+	sched_data.util_min: -1
+	stats.run: 492
+	stats.c_run: 500
+	stats.wu_lat: 68
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[11]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 9bfe3c6d918c25fe
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128538598389
+  duration      : 995496
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 411
+	stats.period: 974
+	sched_data.util_min: -1
+	stats.run: 493
+	stats.c_run: 500
+	stats.wu_lat: 69
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[12]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : f65e19bc9bb5c0a8
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128539598046
+  duration      : 998319
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 411
+	stats.period: 976
+	sched_data.util_min: -1
+	stats.run: 493
+	stats.c_run: 500
+	stats.wu_lat: 71
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[13]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : f3a9b7f82868615f
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128540600881
+  duration      : 990680
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 408
+	stats.period: 969
+	sched_data.util_min: -1
+	stats.run: 493
+	stats.c_run: 500
+	stats.wu_lat: 67
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[14]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 8071e96e2ceafe68
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128541595859
+  duration      : 990412
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 417
+	stats.period: 971
+	sched_data.util_min: -1
+	stats.run: 490
+	stats.c_run: 500
+	stats.wu_lat: 64
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[15]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 87fed160f74b2115
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128542589735
+  duration      : 995610
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 424
+	stats.period: 978
+	sched_data.util_min: -1
+	stats.run: 489
+	stats.c_run: 500
+	stats.wu_lat: 64
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[16]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 525c435cb3c7e8a1
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128543588699
+  duration      : 996165
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 425
+	stats.period: 978
+	sched_data.util_min: -1
+	stats.run: 489
+	stats.c_run: 500
+	stats.wu_lat: 64
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[17]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 51ab36c329015851
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128544588008
+  duration      : 998034
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 426
+	stats.period: 980
+	sched_data.util_min: -1
+	stats.run: 489
+	stats.c_run: 500
+	stats.wu_lat: 65
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[18]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 20f25cb219a221f5
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128545589090
+  duration      : 998590
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 425
+	stats.period: 980
+	sched_data.util_min: -1
+	stats.run: 489
+	stats.c_run: 500
+	stats.wu_lat: 65
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[0]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 78ddf23a0a052115
+  tracestate    : 
+  parent_span_id: 706c71229d6b430c
+  start         : 1787847128545359216
+  duration      : 2028337
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 10000
+	cpuset.cpus: [ 2 ]
+	sched_data.priority: 90
+	stats.c_period: 10000
+	event[1].name: timer:unique5b44debb6d40
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: -9857
+	stats.period: 1959
+	sched_data.util_min: -1
+	stats.run: 1958
+	stats.c_run: 2000
+	stats.wu_lat: 0
+	sched_data.policy: SCHED_FIFO
+	event[0].duration: 2000
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[19]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : 6ea34f2582032719
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128546590821
+  duration      : 996121
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 423
+	stats.period: 978
+	sched_data.util_min: -1
+	stats.run: 489
+	stats.c_run: 500
+	stats.wu_lat: 65
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase_loop[20]
+  trace_id      : e2f3d4011cdee5e7ee457e22f7c19717
+  span_id       : fdb0ec56a5995f09
+  tracestate    : 
+  parent_span_id: eb5a5e4077147536
+  start         : 1787847128547590083
+  duration      : 999205
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	event[1].duration: 1000
+	cpuset.cpus: [ 3 ]
+	sched_data.priority: 0
+	stats.c_period: 1000
+	event[1].name: timer:unique5b44debb6e30
+	event[0].name: run
+	sched_data.util_max: -1
+	stats.slack: 423
+	stats.period: 980
+	sched_data.util_min: -1
+	stats.run: 490
+	stats.c_run: 500
+	stats.wu_lat: 66
+	sched_data.policy: SCHED_OTHER
+	event[0].duration: 500
+  events        : 
+  li
