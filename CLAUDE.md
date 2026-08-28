@@ -867,33 +867,38 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   mediane su ~1974 iterazioni e il punto (a) verifica che il troncamento non introduca bias.
   L'header del `data_table.csv` e' passato da 16 a 17 colonne, con migrazione automatica.
 
-- [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
-  max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
-  descrittive/confronti tra configurazioni.
-  **Prerequisito**: le config del Task 2 devono usare l'evento `timer`, altrimenti
-  `deadline_miss_ratio` e' 0.0 a prescindere (vedi finding (h) del task 0.5).
-  **Da correggere in `analyze_doe.py`**: scartare **tutto il transitorio di avvio**, non
-  solo la prima riga. Le prime iterazioni di HI hanno sempre slack negativo perche'
-  (`rt-app.cpp:1434-1449`) il thread `ind == 0` — cioe' HI — fissa `t_zero` e subito dopo si
-  blocca su `pthread_barrier_wait` finche' tutti i thread sono pronti; quando riparte,
-  `t_first = t_zero` e' gia' vecchio di tutto il tempo di avvio degli altri. **Il numero di
-  righe fasulle scala col numero di thread** (misurato):
+- [x] **Task 5** — Analisi aggregata. **FATTO (2026-08-28)**. `analyze_doe.py` riscritto
+  (originale in `analyze_doe.py.orig`) produce `2-DoE/results.csv` (**485 run**, una riga per
+  run) e `2-DoE/results_summary.csv` (25 celle); `report_doe.py` (nuovo) genera
+  `2-DoE/REPORT.md`, le statistiche descrittive e i confronti fra configurazioni.
 
-  | n_lo | thread | ritardo iniziale | iterazioni negative |
-  |---|---|---|---|
-  | 0 | 1 | 2 579 us | 1 |
-  | 1 | 2 | 11 080 us | 2 |
-  | 4 | 5 | 36 751 us | 5 |
-  | 8 | 9 | 76 972 us | 10 |
+  **Quattro correzioni ad `analyze_doe.py`, tutte necessarie: senza, i numeri sarebbero
+  sbagliati in silenzio.**
+  (a) **i log sono gzippati** — la versione originale apriva solo `.log` e avrebbe trovato
+      zero run su tutte e quattro le campagne;
+  (b) **`count_exported_spans()` contava il doppio**: faceva `content.count(nome)` su tutto
+      `stdout.log`, ma l'exporter ostream scrive il nome del task due volte per span (come
+      `name : HI_task-0` e come attributo `config.name`). Ora conta solo le righe di
+      intestazione. Verificato: **1 HI / 4 LO / 17 totali** per run campionato del blocco 2,
+      contro i 2 e 8 del metodo vecchio;
+  (c) **si scarta tutto il transitorio di avvio**, non solo la prima riga. Verificato che il
+      numero di righe scartate scala col numero di thread: **1.8 / 2.8 / 5.9 / 10.5** per
+      n_lo 0/1/4/8, contro gli attesi 1/2/5/10. Con lo scarto fisso di una riga il blocco 3
+      avrebbe mostrato 0, 1, 4 e 9 falsi miss, cioe' un bias correlato col fattore in studio;
+  (d) **`period` e `duration` non misurano l'overhead** (blocchi 1 e 3): restano in output
+      per continuita', ma la metrica primaria e' `budget_med_us` = mediana di
+      `duration + slack`, e il periodo vero e' il delta fra `start` consecutivi
+      (`act_period_med_us`).
 
-  Block3 varia `n_lo` fra 0, 1, 4 e 8: uno scarto fisso di una riga lascerebbe 0, 1, 4 e 9
-  falsi miss nelle quattro celle, cioe' **un bias correlato proprio col fattore in studio**,
-  che si leggerebbe come "piu' carico di sottofondo -> piu' deadline perse". Regola giusta:
-  scartare le righe iniziali finche' lo slack non diventa >= 0 la prima volta, e registrare
-  quante ne sono state scartate. Dopo il recupero, uno slack negativo e' un miss vero.
-  L'opzione `delay` di rt-app **non** risolve (provata a 100 e 200 ms): sposta `t_first` e
-  l'avvio insieme, quindi il divario resta. Dettagli in `1-configs/README.md`.
-  Stato:
+  Colonne nuove utili all'elaborato: `warmup_rows`, `budget_med_us`, `slack_min_us`,
+  `act_period_med_us`, `hi/lo_spans_exported`, `spans_exported_total`, `export_attempts`
+  (righe ZIPKIN su stderr: distingue Batch da Simple), `aborted`.
+
+  **Esito complessivo, in `2-DoE/REPORT.md`**: OTel **non** prioritizza i task critici (zero
+  run parziali su 150, decisione per-trace); l'overhead e' ~13 us/iterazione con Batch a
+  qualunque carico e ~300 us con Simple (23x, il 15 % del lavoro utile); i deadline miss
+  totali della campagna sono **22 su 485 run**, di cui 21 nel solo braccio Simple e 1 isolato
+  nel blocco 2; con Simple 40 run su 180 terminano con SIGABRT.
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della
   consegna): sketch di un `Sampler` custom che decide su nome/attributi dello span
