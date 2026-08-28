@@ -1,0 +1,19 @@
+rdmsr: CPU 0 cannot read MSR 0x00000034
+rdmsr: CPU 0 cannot read MSR 0x00000034
+hwlatdetect:  test duration 300 seconds
+   detector: tracer
+   parameters:
+        CPU list:          2
+        Latency threshold: 10us
+        Sample window:      1000000us
+        Sample width:      500000us
+     Non-sampling period:  500000us
+        Output File:       /tmp/claude-1000/-home-benny-Scrivania-OTel-capabilities-for-mixed-criticality-workloads/7d936b1e-f6a7-47aa-a9cf-a14e6b8a3d14/scratchpad/hwlat_cpu2.txt
+
+Starting test
+test finished
+Max Latency: Below threshold
+Samples recorded: 0
+Samples exceeding threshold: 0
+SMIs during run: 0
+report saved to /tmp/claude-1000/-home-benny-Scrivania-OTel-capabilities-for-mixed-criticality-workloads/7d936b1e-f6a7-47aa-a9cf-a14e6b8a3d14/scratchpad/hwlat_cpu2.txt (0 samples)

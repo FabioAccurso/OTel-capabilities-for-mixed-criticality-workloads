@@ -787,11 +787,33 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   Il valore acquisito e' che la strumentazione ora c'e': al prossimo run anomalo la risposta
   arriva subito, senza doverlo riprodurre a comando.
 
-  **Resta da fare**: `hwlatdetect` (pacchetto `rt-tests`, disponibile ma **non installato**),
-  che misura le finestre in cui la CPU sparisce senza che il kernel se ne accorga (SMI del
-  firmware). E' l'unica ipotesi rimasta che spieghi sia il regime a 3.5x sia il deadline miss
-  isolato del blocco 2, e non richiede di aspettare che il fenomeno ricapiti. Da eseguire a
-  sistema fermo, fuori da qualunque campagna.
+  **`hwlatdetect` — FATTO (2026-08-28): 0 latenze hardware su 435 s.** `rt-tests` 2.5-1
+  installato; kernel con `CONFIG_HWLAT_TRACER=y`. Due run a sistema fermo, shield rimosso:
+  5 min su cpu2 a duty 50 % (~150 s campionati) e 5 min su cpu2,6 a duty 95 % (~285 s), soglia
+  10 us. **`Max Latency: Below threshold`, 0 campioni in entrambi**, report vuoti. Dati e
+  analisi in `2-DoE/diag/hwlat/`.
+
+  Due avvertenze, entrambe necessarie per non sovrainterpretare il risultato:
+  - **la riga `SMIs during run: 0` non e' una misura.** `hwlatdetect` la ricava da
+    `rdmsr 0x34` (`MSR_SMI_COUNT`), registro **Intel** che su questo Ryzen non esiste: stampa
+    `rdmsr: CPU 0 cannot read MSR 0x00000034` e poi riporta 0. Il conteggio SMI su questa
+    piattaforma **non e' disponibile**; vale solo la misura diretta dei salti temporali;
+  - **`hwlatdetect` risponde sul deadline miss, non sul regime a 3.5x.** Il miss del blocco 2
+    (una iterazione a 11 093 us contro 1953) e' un *buco*: la CPU sparisce per ~9 ms, ed e'
+    cio' che il tracer sa vedere. Il regime a 3.5x **non e' un buco**: la CPU continua a
+    eseguire, solo piu' lentamente, per run interi — un rallentamento sostenuto non produce
+    salti temporali ed e' invisibile a questo tracer *per costruzione*. La proposta iniziale
+    di usarlo per entrambi i fenomeni era quindi sbagliata a meta'.
+
+  Lettura corretta: **nessuna evidenza di SMI su 435 s**, il che indebolisce l'ipotesi
+  firmware per il miss isolato **senza escluderla** (tasso del miss ~1 ogni 50 min di
+  esecuzione, campionati 7 min). Sul regime a 3.5x il test non dice nulla.
+
+  **Stato della diagnosi**: il regime a 3.5x e' in carico ad `aperf_mhz`, gia' armato in
+  `run_doe.sh`, che rispondera' al prossimo evento senza doverlo riprodurre. Se allora
+  `aperf_mhz` riportasse ~2296 invece di ~626, l'ipotesi frequenza sarebbe falsificata e
+  resterebbero contesa SMT sul sibling cpu3 o pressione sulla memoria, da misurare con i
+  contatori IPC di `perf stat`.
 
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
