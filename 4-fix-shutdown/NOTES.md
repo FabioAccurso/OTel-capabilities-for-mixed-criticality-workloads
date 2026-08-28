@@ -216,6 +216,119 @@ blocco 2 e' crashato.
 
 ---
 
+## 3bis. Bug C — SIGABRT da `pthread_cancel()` dentro il codice OpenTelemetry
+
+Trovato il 2026-08-28 alle 13:43, quando il **blocco 3** si e' interrotto con
+**exit 134 = SIGABRT** dopo 27 minuti, a 6 celle su 12 (92 run su 180). Messaggio:
+
+```
+terminate called without an active exception
+```
+
+Backtrace completo in `evidence/gdb_abort_simple_zipkin.log`, catturato sotto `gdb`
+al secondo tentativo su dieci.
+
+### 3bis.1 La catena, letta dal basso
+
+```
+#19 thread_body                     rt-app.cpp:1760   <- chiusura degli span di fine thread
+#18 sdk::trace::Span::End()
+#17 MultiSpanProcessor::OnEnd()
+#16 SimpleSpanProcessor::OnEnd()                      <- export SINCRONO
+#15 __GI___nanosleep                                  <- attesa dopo l'export fallito
+#14 __GI___clock_nanosleep
+#13 __GI___pthread_enable_asynccancel                 <- PUNTO DI CANCELLAZIONE
+#12 __do_cancel
+#11 __GI___pthread_unwind
+#10 _Unwind_ForcedUnwind                              <- srotolamento forzato
+#7  std::terminate()
+#4  __GI___abort
+```
+
+Il thread e' `HI_task-0`, stato **`(Exiting)`**: aveva gia' finito il lavoro.
+
+Meccanismo: `__shutdown()` chiama `pthread_cancel()` (`rt-app.cpp:909`), che non uccide
+subito ma lascia una cancellazione **pendente**, destinata a scattare al primo punto di
+cancellazione. Il thread entra in `Span::End()`; il `SimpleSpanProcessor` esporta in
+linea, la connessione a Zipkin fallisce e il codice chiama `nanosleep()` — **che e' un
+punto di cancellazione**. La cancellazione scatta, glibc avvia uno srotolamento forzato
+attraverso i frame C++ di OpenTelemetry, lo srotolamento non puo' completare,
+`std::terminate()` chiama `abort()`.
+
+**Causa radice: `pthread_cancel()` su un thread che esegue codice C++ non
+cancellation-safe.**
+
+### 3bis.2 Perche' proprio in quella cella
+
+La probabilita' scala col tempo passato dentro il codice OTel, cioe' col numero di
+export sincroni. `SimpleSpanProcessor` ne fa uno per span; a `trace_level=3` c'e' uno
+span per giro:
+
+| cella | connessioni fallite / run | esito |
+|---|---|---|
+| t3 Batch, `n_lo=0` | 8 | 15/15 |
+| t3 Batch, `n_lo=1` | 157 | 15/15 |
+| t3 Simple, `n_lo=0` | 2007 | 15/15 |
+| t3 Simple, `n_lo=1` | **21943** | morto al 2° run |
+
+A `n_lo=4` e `n_lo=8` sarebbero ~80000 e ~160000: quelle celle erano ineseguibili.
+
+### 3bis.3 Fix
+
+Il loop **esce gia' da solo**: `while (continue_running && ...)` (`rt-app.cpp:1581`), e
+`__shutdown()` azzera `continue_running` *prima* di cancellare. La `pthread_cancel()` e'
+ridondante. Quindi in `thread_body()`, subito dopo `pthread_setname_np()`:
+
+```c
+#if (RTAPP_TRACE_LEVEL > 0)
+ret = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+if (ret != 0) { errno = ret; perror("pthread_setcancelstate"); }
+#endif
+```
+
+Due scelte deliberate:
+- **la guardia `#if RTAPP_TRACE_LEVEL > 0`** lascia le build non strumentate con
+  semantica di shutdown **identica**: le celle di controllo e tutto il blocco 1 restano
+  confrontabili con quanto gia' misurato, senza doverlo argomentare;
+- **caveat dichiarato**: un thread parcheggiato in `pthread_cond_wait()` (evento
+  `rtapp_suspend`) non sarebbe piu' interrompibile via cancellazione. Le config di questo
+  DoE non usano `suspend`. Uscita comunque garantita entro un periodo (10 ms HI, 1 ms LO).
+
+### 3bis.4 Verifica
+
+Due binari con macro identiche (`t3 p1 s0 r0.0 e0`, `-g -O2`), stessa config
+(`n_lo=1`, 10 s), 20 esecuzioni ciascuno, come root:
+
+| variante | crash |
+|---|---|
+| `evidence/rtapp_t3_simple_debug` (senza fix) | **9 / 20** |
+| `evidence/rtapp_t3_simple_FIXED` | **0 / 20** |
+
+Un tasso del 45%, molto piu' alto dell'1-su-32 del Bug B: questo si riproduce facilmente.
+
+### 3bis.5 Ricaduta scientifica, non solo tecnica
+
+Il conteggio delle connessioni fallite dice una cosa che vale per la relazione, oltre il
+bug: **il `BatchSpanProcessor` isola il task critico da un backend irraggiungibile, il
+`SimpleSpanProcessor` gliene propaga addosso il costo.** Otto tentativi per run contro
+21943, e con la cancellazione non protetta il processo muore. E' una conclusione
+architetturale robusta, indipendente da quanto sia veloce un collector.
+
+**Conseguenza sulla lettura delle misure**: i −346 us/giro misurati sulla cella Simple
+**non sono "il costo di esportare"**, sono il costo di *tentare* un export verso un
+backend irraggiungibile. Le celle Simple vanno descritte come "comportamento a backend
+irraggiungibile", non come costo dell'export.
+
+Perche' non si e' aggiunto un collector: `SimpleSpanProcessor` a `n_lo=8` chiederebbe
+**~8100 POST sincrone al secondo**; il `fake_zipkin.py` del task 0.2 e' un `HTTPServer`
+Python monothread che riscrive un file a ogni POST e diventerebbe il collo di bottiglia,
+propagando la propria lentezza nel percorso critico. Misureremmo il collector, non OTel.
+I blocchi 1 e 2 non ne sono toccati: 8 e 2 connessioni per run il primo, zero il secondo
+(ostream). Limite dichiarato dello studio: **non abbiamo un numero per il costo di un
+export riuscito**.
+
+---
+
 ## 4. Perche' il blocco 1 non era mai crashato
 
 Il blocco 1 girava con `n_lo=0`: **un thread solo**. Il blocco 2 ne ha **cinque**.

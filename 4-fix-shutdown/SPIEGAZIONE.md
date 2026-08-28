@@ -158,6 +158,122 @@ completamente spento**. Con il sampler disattivato gli span non vengono registra
 il codice che li distrugge male viene eseguito lo stesso. Ed e' esattamente nella cella
 di controllo "campionamento spento" che il blocco 2 e' morto.
 
+## Un terzo bug, trovato lanciando il blocco 3
+
+Qualche ora dopo, il blocco 3 si e' fermato a meta' — sei celle su dodici — con un errore
+diverso: non un segmentation fault ma un **abort**, con il messaggio
+
+```
+terminate called without an active exception
+```
+
+Stavolta il difetto e' piu' sottile e piu' interessante, perche' non e' un errore di
+distrazione: e' l'incontro fra due meccanismi che presi da soli sono corretti.
+
+### Il primo meccanismo: come rt-app ferma i suoi thread
+
+Quando l'esperimento finisce, rt-app deve fermare i thread. Lo fa in **due** modi
+contemporaneamente. Alza una bandierina (`continue_running` va a zero) che i thread
+controllano a ogni giro e che li fa uscire spontaneamente; e in piu' chiama
+`pthread_cancel()`, che e' il modo brutale: "termina, adesso".
+
+La bandierina da sola basterebbe. I nostri thread la controllano ogni millisecondo o
+ogni dieci, quindi escono comunque quasi subito.
+
+### Il secondo meccanismo: come funziona davvero `pthread_cancel`
+
+Qui c'e' la sottigliezza. `pthread_cancel()` **non uccide sul colpo**: lascia una
+richiesta in sospeso, che viene eseguita quando il thread arriva a un cosiddetto "punto
+di cancellazione" — tipicamente una chiamata che aspetta qualcosa: dormire, leggere,
+scrivere sulla rete.
+
+E quando quella richiesta scatta, Linux non fa semplicemente sparire il thread: **srotola
+lo stack**, cioe' ripercorre a ritroso tutte le funzioni aperte per chiuderle per bene.
+Usa lo stesso identico meccanismo delle eccezioni C++.
+
+### Lo scontro
+
+Mettiamo insieme i pezzi. Il thread ha finito il lavoro e sta chiudendo i suoi span. Con
+il processore "Simple", chiudere uno span significa spedirlo *subito* al collector. Ma il
+collector non c'e', la connessione fallisce, e il codice di OpenTelemetry si mette ad
+aspettare un attimo prima di rinunciare.
+
+Quell'attesa e' un punto di cancellazione. La richiesta in sospeso scatta proprio li', e
+lo srotolamento parte **da dentro il codice di OpenTelemetry** — codice che non e' stato
+scritto per essere interrotto in quel modo. Lo srotolamento non riesce a completare, e il
+runtime C++ fa l'unica cosa che sa fare quando non sa cosa fare: chiama `abort()`.
+
+L'ho visto letteralmente, col debugger, riga per riga. Il thread era `HI_task-0` e il suo
+stato era `(Exiting)`: aveva gia' finito, stava solo mettendo in ordine.
+
+### Perche' proprio quella cella e non le altre
+
+Perche' la probabilita' dipende da **quanto tempo il thread passa dentro il codice di
+OpenTelemetry**, e quello dipende da quanti span deve spedire uno per uno:
+
+| configurazione | tentativi di connessione falliti, per esecuzione | esito |
+|---|---|---|
+| Batch, nessun disturbo | 8 | 15 su 15 |
+| Batch, un disturbo | 157 | 15 su 15 |
+| Simple, nessun disturbo | 2007 | 15 su 15 |
+| Simple, un disturbo | **21943** | morto alla seconda |
+
+Ventiduemila tentativi falliti in venti secondi, e quattro megabyte di messaggi d'errore.
+Con quattro e otto task di disturbo sarebbero stati ottantamila e centosessantamila: quelle
+celle non avevano speranza.
+
+### La correzione
+
+Tre righe: dire al thread che **non e' cancellabile**, quando il tracing e' compilato.
+La bandierina basta gia', quindi non perdiamo nulla.
+
+La cosa di cui vado piu' contento e' la condizione `quando il tracing e' compilato`:
+significa che le esecuzioni **senza** telemetria mantengono un comportamento identico a
+prima, quindi tutti i dati di controllo gia' raccolti restano confrontabili senza bisogno
+di giustificazioni.
+
+Verifica, con due programmi identici a meno di quelle tre righe, venti esecuzioni ciascuno:
+
+| | crash |
+|---|---|
+| senza la correzione | **9 su 20** |
+| con la correzione | **0 su 20** |
+
+Il 45% di fallimenti: stavolta il difetto era facile da riprodurre, al contrario del
+precedente che si vedeva una volta su trentadue.
+
+### Quello che questo bug ci insegna sul progetto
+
+Al di la' della correzione, il conteggio dei tentativi falliti dice una cosa importante e
+generale.
+
+Il **Batch** accumula gli span e li spedisce ogni cinque secondi: se il collector non
+risponde, se ne accorge otto volte in venti secondi e il task critico non se ne accorge
+affatto. Il **Simple** spedisce ogni span appena e' pronto, dentro il percorso critico: se
+il collector non risponde, il task critico paga ventiduemila fallimenti.
+
+Detto in una frase: **il Batch isola il task critico da un guasto del backend, il Simple
+glielo scarica addosso.** Per un sistema mixed-criticality e' esattamente la proprieta'
+che conta, perche' i collector cadono davvero e non e' accettabile che il guasto di un
+sistema di monitoraggio si propaghi a un task con scadenze rigide.
+
+C'e' pero' una conseguenza da dichiarare con onesta': i numeri che misuriamo sulle celle
+Simple **non dicono "quanto costa esportare"**, dicono "quanto costa provare a esportare
+verso un backend irraggiungibile". Sono due cose diverse, e la relazione deve chiamarle
+col nome giusto.
+
+Verrebbe da dire: allora accendiamo un collector. Ci abbiamo pensato e la conclusione e'
+stata no. Con Simple e otto task di disturbo servirebbero **ottomila richieste HTTP al
+secondo**; il collector finto che abbiamo e' un server Python a thread singolo che
+riscrive un file a ogni richiesta, quindi diventerebbe lui il collo di bottiglia — e
+siccome Simple aspetta la risposta *dentro* il percorso critico, staremmo misurando la
+lentezza del nostro server invece del costo di OpenTelemetry. Una misura falsata in modo
+piu' insidioso, perche' sembrerebbe legittima.
+
+I blocchi 1 e 2 non sono toccati dalla questione: il primo fa otto connessioni per
+esecuzione, il secondo non usa affatto la rete. Resta un limite dichiarato dello studio:
+**non abbiamo un numero per il costo di un export che riesce.**
+
 ## Perche' questo conta per la tesi del progetto
 
 Il progetto chiede di valutare OpenTelemetry su carichi mixed-criticality, e in

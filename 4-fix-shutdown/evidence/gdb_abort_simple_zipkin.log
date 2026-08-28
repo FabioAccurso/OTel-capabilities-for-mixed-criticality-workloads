@@ -1,0 +1,68 @@
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7ffff68ca6c0 (LWP 12782)]
+[New Thread 0x7ffff60c96c0 (LWP 12783)]
+[Thread 0x7ffff60c96c0 (LWP 12783) exited]
+
+Thread 2 "HI_task-0" received signal SIGABRT, Aborted.
+[Switching to Thread 0x7ffff68ca6c0 (LWP 12782)]
+__pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+
+===== BACKTRACE DEL THREAD CORRENTE =====
+#0  __pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+#1  __pthread_kill_internal (signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:78
+#2  __GI___pthread_kill (threadid=<optimized out>, signo=signo@entry=6) at ./nptl/pthread_kill.c:89
+#3  0x00007ffff796527e in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+#4  0x00007ffff79488ff in __GI_abort () at ./stdlib/abort.c:79
+#5  0x00007ffff7cf0ff5 in ?? () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#6  0x00007ffff7d060da in ?? () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007ffff7cf0a55 in std::terminate() () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#8  0x00007ffff7cf092a in ?? () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#9  0x00007ffff7b54ce5 in ?? () from /lib/x86_64-linux-gnu/libgcc_s.so.1
+#10 0x00007ffff7b553c0 in _Unwind_ForcedUnwind () from /lib/x86_64-linux-gnu/libgcc_s.so.1
+#11 0x00007ffff79c5884 in __GI___pthread_unwind (buf=<optimized out>) at ./nptl/unwind.c:130
+#12 0x00007ffff79b86a6 in __do_cancel () at ../sysdeps/nptl/pthreadP.h:271
+#13 __GI___pthread_enable_asynccancel () at ./nptl/cancellation.c:48
+#14 0x00007ffff7a0cbc9 in __GI___clock_nanosleep (clock_id=clock_id@entry=0, flags=flags@entry=0, req=0x7ffff68c9590, rem=0x7ffff68c9590) at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:78
+#15 0x00007ffff7a19b27 in __GI___nanosleep (req=<optimized out>, rem=<optimized out>) at ../sysdeps/unix/sysv/linux/nanosleep.c:25
+#16 0x00005555555b7cff in opentelemetry::v1::sdk::trace::SimpleSpanProcessor::OnEnd(std::unique_ptr<opentelemetry::v1::sdk::trace::Recordable, std::default_delete<opentelemetry::v1::sdk::trace::Recordable> >&&) ()
+#17 0x00005555555c1571 in opentelemetry::v1::sdk::trace::MultiSpanProcessor::OnEnd(std::unique_ptr<opentelemetry::v1::sdk::trace::Recordable, std::default_delete<opentelemetry::v1::sdk::trace::Recordable> >&&) ()
+#18 0x00005555555b71ae in opentelemetry::v1::sdk::trace::Span::End(opentelemetry::v1::trace::EndSpanOptions const&) ()
+#19 0x0000555555570650 in thread_body (arg=<optimized out>) at rt-app.cpp:1760
+#20 0x00007ffff79bcb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#21 0x00007ffff7a49d6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+===== TUTTI I THREAD =====
+
+Thread 2 (Thread 0x7ffff68ca6c0 (LWP 12782) "HI_task-0" (Exiting)):
+#0  __pthread_kill_implementation (no_tid=0, signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:44
+#1  __pthread_kill_internal (signo=6, threadid=<optimized out>) at ./nptl/pthread_kill.c:78
+#2  __GI___pthread_kill (threadid=<optimized out>, signo=signo@entry=6) at ./nptl/pthread_kill.c:89
+#3  0x00007ffff796527e in __GI_raise (sig=sig@entry=6) at ../sysdeps/posix/raise.c:26
+#4  0x00007ffff79488ff in __GI_abort () at ./stdlib/abort.c:79
+#5  0x00007ffff7cf0ff5 in ?? () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#6  0x00007ffff7d060da in ?? () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#7  0x00007ffff7cf0a55 in std::terminate() () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#8  0x00007ffff7cf092a in ?? () from /lib/x86_64-linux-gnu/libstdc++.so.6
+#9  0x00007ffff7b54ce5 in ?? () from /lib/x86_64-linux-gnu/libgcc_s.so.1
+#10 0x00007ffff7b553c0 in _Unwind_ForcedUnwind () from /lib/x86_64-linux-gnu/libgcc_s.so.1
+#11 0x00007ffff79c5884 in __GI___pthread_unwind (buf=<optimized out>) at ./nptl/unwind.c:130
+#12 0x00007ffff79b86a6 in __do_cancel () at ../sysdeps/nptl/pthreadP.h:271
+#13 __GI___pthread_enable_asynccancel () at ./nptl/cancellation.c:48
+#14 0x00007ffff7a0cbc9 in __GI___clock_nanosleep (clock_id=clock_id@entry=0, flags=flags@entry=0, req=0x7ffff68c9590, rem=0x7ffff68c9590) at ../sysdeps/unix/sysv/linux/clock_nanosleep.c:78
+#15 0x00007ffff7a19b27 in __GI___nanosleep (req=<optimized out>, rem=<optimized out>) at ../sysdeps/unix/sysv/linux/nanosleep.c:25
+#16 0x00005555555b7cff in opentelemetry::v1::sdk::trace::SimpleSpanProcessor::OnEnd(std::unique_ptr<opentelemetry::v1::sdk::trace::Recordable, std::default_delete<opentelemetry::v1::sdk::trace::Recordable> >&&) ()
+#17 0x00005555555c1571 in opentelemetry::v1::sdk::trace::MultiSpanProcessor::OnEnd(std::unique_ptr<opentelemetry::v1::sdk::trace::Recordable, std::default_delete<opentelemetry::v1::sdk::trace::Recordable> >&&) ()
+#18 0x00005555555b71ae in opentelemetry::v1::sdk::trace::Span::End(opentelemetry::v1::trace::EndSpanOptions const&) ()
+#19 0x0000555555570650 in thread_body (arg=<optimized out>) at rt-app.cpp:1760
+#20 0x00007ffff79bcb84 in start_thread (arg=<optimized out>) at ./nptl/pthread_create.c:447
+#21 0x00007ffff7a49d6c in clone3 () at ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+Thread 1 (Thread 0x7ffff68cd9c0 (LWP 12779) "rtapp_t3_simple"):
+#0  0x00007ffff79b8e51 in __futex_abstimed_wait_common64 (private=128, cancel=true, abstime=0x0, op=265, expected=12782, futex_word=0x7ffff68ca990) at ./nptl/futex-internal.c:57
+#1  __futex_abstimed_wait_common (cancel=true, private=128, abstime=0x0, clockid=0, expected=12782, futex_word=0x7ffff68ca990) at ./nptl/futex-internal.c:87
+#2  __GI___futex_abstimed_wait_cancelable64 (futex_word=futex_word@entry=0x7ffff68ca990, expected=12782, clockid=clockid@entry=0, abstime=abstime@entry=0x0, private=private@entry=128) at ./nptl/futex-internal.c:139
+#3  0x00007ffff79be883 in __pthread_clockjoin_ex (threadid=140737329800896, thread_return=0x0, clockid=0, abstime=0x0, block=<optimized out>) at ./nptl/pthread_join_common.c:102
+#4  0x000055555556d189 in __shutdown (force_terminate=force_terminate@entry=true) at rt-app.cpp:938
+#5  0x0000555555567bf3 in __shutdown (force_terminate=true) at rt-app.cpp:881
+#6  main (argc=<optimized out>, argv=<optimized out>) at rt-app.cpp:2171

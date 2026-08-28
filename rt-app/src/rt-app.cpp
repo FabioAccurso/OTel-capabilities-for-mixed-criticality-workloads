@@ -1428,6 +1428,40 @@ void *thread_body(void *arg)
 		perror("pthread_setname_np thread name over 16 characters");
 	}
 
+	/****************** OTEL - Make this thread immune to pthread_cancel ****************/
+	/*
+	 * __shutdown() zeroes continue_running AND calls pthread_cancel() on every
+	 * thread. The first mechanism is enough: the thread_loop at the bottom of this
+	 * function tests continue_running, so a thread leaves on its own within one
+	 * period (10 ms for HI, 1 ms for LO). The second is not merely redundant, it is
+	 * actively unsafe once OpenTelemetry is linked in.
+	 *
+	 * pthread_cancel() leaves a PENDING cancellation that fires at the next
+	 * cancellation point. With the SimpleSpanProcessor and an unreachable Zipkin
+	 * collector, Span::End() -> SimpleSpanProcessor::OnEnd() ends up in nanosleep(),
+	 * which IS a cancellation point. glibc then starts a forced stack unwind
+	 * (_Unwind_ForcedUnwind) straight through OpenTelemetry's C++ frames, the unwind
+	 * cannot complete, and std::terminate() aborts the process:
+	 *   "terminate called without an active exception"
+	 * Captured under gdb, backtrace in 4-fix-shutdown/evidence/.
+	 *
+	 * The probability scales with the time spent inside OTel code: block 3 survived
+	 * 15/15 runs at 2007 failed exports per run and died on the 2nd at 21943.
+	 *
+	 * Guarded so that RTAPP_TRACE_LEVEL=0 keeps byte-identical shutdown semantics --
+	 * the uninstrumented control cells stay exactly as they were measured.
+	 * Caveat: a thread parked in pthread_cond_wait() (rtapp_suspend) would no longer
+	 * be interruptible by cancellation; the configs used by this DoE never suspend.
+	 */
+	#if (RTAPP_TRACE_LEVEL > 0)
+	ret = pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+	if (ret != 0) {
+		errno = ret;
+		perror("pthread_setcancelstate");
+	}
+	#endif
+	/***********************************************************************************/
+
 	/* Get the 1st phase's data */
 	pdata = &data->phases[0];
 
