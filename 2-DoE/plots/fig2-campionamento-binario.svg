@@ -1,0 +1,199 @@
+<svg id="fig2-campionamento-binario" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="100%" role="img" aria-label="Span esportati per esecuzione: sempre 17 oppure 0, mai una via di mezzo">
+<style>
+#fig2-campionamento-binario{--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#7b7a75;--grid:#e6e5e1;--axis:#c9c8c3;--s1:#2a78d6;--s2:#eb6834;--crit:#d03b3b;--q1:#86b6ef;--q2:#5598e7;--q3:#2a78d6;--q4:#1c5cab;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #fig2-campionamento-binario{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+}
+:root[data-theme="dark"] #fig2-campionamento-binario{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+#fig2-campionamento-binario .bg{fill:var(--surface)}
+#fig2-campionamento-binario .grid{stroke:var(--grid);stroke-width:1}
+#fig2-campionamento-binario .axis{stroke:var(--axis);stroke-width:1}
+#fig2-campionamento-binario .t{fill:var(--ink);font-size:13px}
+#fig2-campionamento-binario .t2{fill:var(--ink2);font-size:12px}
+#fig2-campionamento-binario .t3{fill:var(--ink3);font-size:11px}
+#fig2-campionamento-binario .ttl{fill:var(--ink);font-size:15px;font-weight:600}
+#fig2-campionamento-binario .sub{fill:var(--ink2);font-size:12px}
+#fig2-campionamento-binario .val{fill:var(--ink);font-size:12px;font-weight:600}
+</style>
+<rect class="bg" x="0" y="0" width="720" height="400"/>
+<text class="ttl" x="16" y="26">Span esportati per esecuzione: sempre 17 oppure 0, mai una via di mezzo</text>
+<text class="sub" x="16" y="45">Blocco 2 — un punto per esecuzione, 25 per cella.</text>
+<line class="grid" x1="78" y1="318.0" x2="696" y2="318.0"/>
+<text class="t3" x="68" y="322.0" text-anchor="end">0</text>
+<line class="grid" x1="78" y1="259.0" x2="696" y2="259.0"/>
+<text class="t3" x="68" y="263.0" text-anchor="end">5</text>
+<line class="grid" x1="78" y1="200.0" x2="696" y2="200.0"/>
+<text class="t3" x="68" y="204.0" text-anchor="end">10</text>
+<line class="grid" x1="78" y1="141.0" x2="696" y2="141.0"/>
+<text class="t3" x="68" y="145.0" text-anchor="end">15</text>
+<line class="grid" x1="78" y1="117.4" x2="696" y2="117.4" stroke-dasharray="3 3"/>
+<text class="t3" x="68" y="121.4" text-anchor="end">17</text>
+<line class="grid" x1="78" y1="82.0" x2="696" y2="82.0"/>
+<text class="t3" x="68" y="86.0" text-anchor="end">20</text>
+<text class="t3" x="16" y="68">span esportati</text>
+<text class="t3" x="692" y="109.4" text-anchor="end">esecuzione campionata = 17 span (2 + 5 thread × 3)</text>
+<line class="axis" x1="78" y1="318" x2="696" y2="318"/>
+<circle cx="98.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="101.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="103.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="106.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="109.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="111.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="114.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="116.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="119.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="121.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="124.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="126.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="129.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="132.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="134.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="137.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="139.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="142.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="144.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="147.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="150.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="152.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="155.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="157.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="160.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="129.5" y="342.0" text-anchor="middle">AlwaysOff</text>
+<text class="t3" x="129.5" y="359.0" text-anchor="middle">0/25 campionati</text>
+<circle cx="201.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="204.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="206.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="209.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="212.0" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="214.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="217.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="219.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="222.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="224.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="227.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="229.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="232.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="235.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="237.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="240.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="242.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="245.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="247.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="250.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="253.0" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="255.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="258.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="260.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="263.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="232.5" y="342.0" text-anchor="middle">AlwaysOn</text>
+<text class="t3" x="232.5" y="359.0" text-anchor="middle">25/25 campionati</text>
+<circle cx="304.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="307.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="310.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="313.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="316.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="318.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="321.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="324.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="327.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="329.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="332.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="335.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="332.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="338.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="341.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="343.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="346.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="349.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="352.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="355.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="357.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="360.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="338.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="363.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="366.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="335.5" y="342.0" text-anchor="middle">ratio 0.1</text>
+<text class="t3" x="335.5" y="359.0" text-anchor="middle">2/25 campionati</text>
+<circle cx="408.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="411.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="412.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="417.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="421.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="425.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="430.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="434.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="417.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="423.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="438.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="442.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="429.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="447.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="435.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="441.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="447.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="453.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="451.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="455.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="459.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="465.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="459.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="464.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="468.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="438.5" y="342.0" text-anchor="middle">ratio 0.3</text>
+<text class="t3" x="438.5" y="359.0" text-anchor="middle">10/25 campionati</text>
+<circle cx="511.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="512.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="518.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="524.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="516.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="520.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="529.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="525.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="530.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="534.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="535.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="539.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="543.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="541.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="547.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="548.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="552.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="557.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="553.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="562.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="566.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="559.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="564.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="571.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="570.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="541.5" y="342.0" text-anchor="middle">ratio 0.5</text>
+<text class="t3" x="541.5" y="359.0" text-anchor="middle">14/25 campionati</text>
+<circle cx="629.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="614.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="617.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="620.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="624.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="627.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="631.0" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="635.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="641.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="634.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="647.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="637.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="641.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="653.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="644.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="647.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="651.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="654.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="658.0" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="659.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="661.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="664.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="668.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="671.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="674.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="644.5" y="342.0" text-anchor="middle">ratio 0.7</text>
+<text class="t3" x="644.5" y="359.0" text-anchor="middle">19/25 campionati</text>
+<text class="t3" x="360.0" y="388" text-anchor="middle">150 esecuzioni, 0 valori intermedi: il sampler decide sul trace_id, condiviso da tutti i thread</text>
+</svg>

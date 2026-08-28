@@ -1,0 +1,936 @@
+<title>Telemetria contro scadenze</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+:root{
+  --ground:#eeefec;
+  --surface:#fcfcfb;
+  --surface-2:#f6f6f3;
+  --ink:#14161a;
+  --ink-2:#52514e;
+  --ink-3:#7b7a75;
+  --rule:#dcddd7;
+  --rule-soft:#e8e9e3;
+  --accent:#2a78d6;
+  --accent-soft:#e6eefb;
+  --crit:#c0322f;
+  --crit-soft:#f8e7e6;
+  --good:#0a7d2e;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#121211;
+    --surface:#1a1a19;
+    --surface-2:#212120;
+    --ink:#f4f4f0;
+    --ink-2:#c3c2b7;
+    --ink-3:#94938b;
+    --rule:#33332f;
+    --rule-soft:#282826;
+    --accent:#3987e5;
+    --accent-soft:#182635;
+    --crit:#e46b68;
+    --crit-soft:#2e1c1b;
+    --good:#3fa85f;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#121211;
+  --surface:#1a1a19;
+  --surface-2:#212120;
+  --ink:#f4f4f0;
+  --ink-2:#c3c2b7;
+  --ink-3:#94938b;
+  --rule:#33332f;
+  --rule-soft:#282826;
+  --accent:#3987e5;
+  --accent-soft:#182635;
+  --crit:#e46b68;
+  --crit-soft:#2e1c1b;
+  --good:#3fa85f;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 96px}
+.col{max-width:660px}
+
+/* ---------- intestazione ---------- */
+header{
+  border-bottom:1px solid var(--rule);
+  padding:56px 0 34px;
+  margin-bottom:44px;
+}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:11.5px;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  margin:0 0 20px;
+}
+h1{
+  font-family:var(--sans);
+  font-weight:600;
+  font-size:clamp(34px,5.4vw,52px);
+  line-height:1.08;
+  letter-spacing:-.022em;
+  margin:0 0 20px;
+  text-wrap:balance;
+}
+.thesis{
+  font-size:20px;
+  line-height:1.5;
+  color:var(--ink-2);
+  margin:0 0 30px;
+  max-width:640px;
+  text-wrap:pretty;
+}
+.thesis strong{color:var(--ink);font-weight:600}
+.meta{
+  display:flex;flex-wrap:wrap;gap:8px 26px;
+  font-family:var(--mono);font-size:12px;color:var(--ink-3);
+}
+.meta span{white-space:nowrap}
+
+/* ---------- riga di cifre ---------- */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  border-radius:3px;
+  overflow:hidden;
+  margin:0 0 60px;
+}
+.stat{background:var(--surface);padding:22px 22px 20px}
+.stat .n{
+  font-family:var(--sans);
+  font-weight:600;
+  font-size:38px;
+  line-height:1;
+  letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+  display:block;
+  margin-bottom:9px;
+}
+.stat .n.bad{color:var(--crit)}
+.stat .n.ok{color:var(--good)}
+.stat .k{
+  font-family:var(--sans);
+  font-size:13.5px;
+  font-weight:500;
+  line-height:1.35;
+  display:block;
+  margin-bottom:5px;
+}
+.stat .d{font-family:var(--mono);font-size:11px;color:var(--ink-3);line-height:1.45;display:block}
+
+/* ---------- sezioni ---------- */
+section{margin-bottom:76px}
+.snum{
+  font-family:var(--mono);
+  font-size:11.5px;
+  letter-spacing:.13em;
+  color:var(--accent);
+  display:block;
+  margin-bottom:12px;
+}
+h2{
+  font-family:var(--sans);
+  font-weight:600;
+  font-size:clamp(24px,3.2vw,31px);
+  line-height:1.2;
+  letter-spacing:-.015em;
+  margin:0 0 8px;
+  max-width:20ch;
+  text-wrap:balance;
+}
+.lede{
+  font-family:var(--sans);
+  font-size:16px;
+  color:var(--ink-2);
+  margin:0 0 26px;
+  max-width:60ch;
+}
+p{margin:0 0 20px;max-width:660px;text-wrap:pretty}
+h3{
+  font-family:var(--sans);
+  font-weight:600;
+  font-size:17px;
+  letter-spacing:-.005em;
+  margin:36px 0 10px;
+}
+code{
+  font-family:var(--mono);
+  font-size:.87em;
+  background:var(--surface-2);
+  border:1px solid var(--rule-soft);
+  border-radius:3px;
+  padding:.08em .34em;
+}
+strong{font-weight:600}
+em{font-style:italic}
+
+/* ---------- figure ---------- */
+figure{
+  margin:32px 0;
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:3px;
+  overflow:hidden;
+}
+figure .plot{display:block;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;min-width:600px}
+figcaption{
+  font-family:var(--sans);
+  font-size:13px;
+  color:var(--ink-2);
+  padding:13px 18px 15px;
+  border-top:1px solid var(--rule-soft);
+  background:var(--surface-2);
+}
+figcaption b{color:var(--ink);font-weight:600}
+
+/* ---------- tabelle ---------- */
+.tw{overflow-x:auto;margin:26px 0;border:1px solid var(--rule);border-radius:3px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:13.5px}
+th,td{padding:9px 15px;text-align:left;border-bottom:1px solid var(--rule-soft);white-space:nowrap}
+th{
+  font-family:var(--mono);font-size:10.5px;font-weight:500;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  background:var(--surface-2);
+}
+td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:13px}
+tr:last-child td{border-bottom:none}
+tr.hl td{background:var(--crit-soft)}
+tr.hl td:first-child{font-weight:600}
+.bad{color:var(--crit);font-weight:600}
+.dim{color:var(--ink-3)}
+
+/* ---------- riquadro citazione ---------- */
+.pull{
+  border-left:2px solid var(--accent);
+  padding:4px 0 4px 22px;
+  margin:30px 0;
+  font-family:var(--sans);
+  font-size:19px;
+  line-height:1.45;
+  color:var(--ink);
+  max-width:600px;
+  text-wrap:pretty;
+}
+
+/* ---------- nota ---------- */
+.note{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-left:2px solid var(--ink-3);
+  border-radius:3px;
+  padding:18px 22px;
+  margin:30px 0;
+  font-size:15.5px;
+  line-height:1.55;
+}
+.note p{margin:0 0 12px}
+.note p:last-child{margin:0}
+.note .lbl{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:9px;
+}
+
+/* ---------- chiusura ---------- */
+footer{
+  border-top:1px solid var(--rule);
+  padding-top:26px;
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--ink-3);
+  line-height:1.7;
+}
+footer a{color:var(--accent)}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .wrap{padding:0 18px 64px}
+  header{padding:38px 0 26px}
+  .stat .n{font-size:31px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">RTSIA · Progetto A5 · campagna sperimentale</p>
+  <h1>Telemetria contro scadenze</h1>
+  <p class="thesis">Quattrocentodieci esecuzioni di <code>rt-app</code> su Linux PREEMPT-RT per rispondere a due domande: <strong>quanto costa</strong> osservare un task real-time con OpenTelemetry, e se OTel <strong>sappia proteggere</strong> i task critici da quelli best-effort.</p>
+  <div class="meta">
+    <span>27–28 agosto 2026</span>
+    <span>kernel 6.12.79-rt17</span>
+    <span>i7-8565U · 1800 MHz fissi</span>
+    <span>CPU 2,3,6,7 isolate</span>
+    <span>410 run · 3 blocchi</span>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat">
+    <span class="n">56<span style="font-size:20px"> µs</span></span>
+    <span class="k">costo massimo per giro</span>
+    <span class="d">0,7% del budget di 8000 µs</span>
+  </div>
+  <div class="stat">
+    <span class="n bad">0<span style="font-size:20px">/150</span></span>
+    <span class="k">volte che il sampler ha separato HI da LO</span>
+    <span class="d">mai, in nessuna configurazione</span>
+  </div>
+  <div class="stat">
+    <span class="n bad">51</span>
+    <span class="k">scadenze mancate dal task critico</span>
+    <span class="d">tutte con SimpleSpanProcessor</span>
+  </div>
+  <div class="stat">
+    <span class="n ok">0</span>
+    <span class="k">scadenze mancate con Batch</span>
+    <span class="d">a ogni livello di carico</span>
+  </div>
+</div>
+
+<div class="col">
+
+<section>
+  <span class="snum">BLOCCO 1</span>
+  <h2>Quanto costa guardare</h2>
+  <p class="lede">Un task critico da solo, senza disturbo, a quattro livelli crescenti di dettaglio della telemetria.</p>
+
+  <p>Il primo blocco misura l'overhead puro dell'instrumentazione. Il task critico gira ogni 10 ms e ne usa 2 per calcolare: il margine che gli resta è la grandezza che conta, e va misurata sullo <code>slack</code> — il tempo residuo alla scadenza — perché è l'unica presa a giro completato, quindi include tutto.</p>
+
+  <p>Il costo cresce in modo ordinato e resta piccolo. I primi due livelli sono indistinguibili perché gli span di fase sono uno <em>per definizione</em>, non per giro; solo al terzo livello se ne genera uno a ogni iterazione, e lì il costo raddoppia.</p>
+</section>
+</div>
+
+<figure>
+  <div class="plot"><svg id="fig1-overhead-per-livello" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" width="100%" role="img" aria-label="Costo dell'instrumentazione, per giro del task critico">
+<style>
+#fig1-overhead-per-livello{--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#7b7a75;--grid:#e6e5e1;--axis:#c9c8c3;--s1:#2a78d6;--s2:#eb6834;--crit:#d03b3b;--q1:#86b6ef;--q2:#5598e7;--q3:#2a78d6;--q4:#1c5cab;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #fig1-overhead-per-livello{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+}
+:root[data-theme="dark"] #fig1-overhead-per-livello{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+#fig1-overhead-per-livello .bg{fill:var(--surface)}
+#fig1-overhead-per-livello .grid{stroke:var(--grid);stroke-width:1}
+#fig1-overhead-per-livello .axis{stroke:var(--axis);stroke-width:1}
+#fig1-overhead-per-livello .t{fill:var(--ink);font-size:13px}
+#fig1-overhead-per-livello .t2{fill:var(--ink2);font-size:12px}
+#fig1-overhead-per-livello .t3{fill:var(--ink3);font-size:11px}
+#fig1-overhead-per-livello .ttl{fill:var(--ink);font-size:15px;font-weight:600}
+#fig1-overhead-per-livello .sub{fill:var(--ink2);font-size:12px}
+#fig1-overhead-per-livello .val{fill:var(--ink);font-size:12px;font-weight:600}
+</style>
+
+<text class="ttl" x="16" y="26">Costo dell'instrumentazione, per giro del task critico</text>
+<text class="sub" x="16" y="45">Blocco 1 — HI da solo, BatchSpanProcessor, AlwaysOn. Mediana su 20 ripetizioni, misurato sullo slack.</text>
+<line class="grid" x1="78" y1="306.0" x2="696" y2="306.0"/>
+<text class="t3" x="68" y="310.0" text-anchor="end">0</text>
+<line class="grid" x1="78" y1="230.0" x2="696" y2="230.0"/>
+<text class="t3" x="68" y="234.0" text-anchor="end">20</text>
+<line class="grid" x1="78" y1="154.0" x2="696" y2="154.0"/>
+<text class="t3" x="68" y="158.0" text-anchor="end">40</text>
+<line class="grid" x1="78" y1="78.0" x2="696" y2="78.0"/>
+<text class="t3" x="68" y="82.0" text-anchor="end">60</text>
+<text class="t3" x="16" y="64">µs per giro</text>
+<line class="axis" x1="78" y1="306" x2="696" y2="306"/>
+<path d="" fill="var(--q1)"/>
+<text class="val" x="155.2" y="297.0" text-anchor="middle">—</text>
+<text class="t" x="155.2" y="328.0" text-anchor="middle">0</text>
+<text class="t3" x="155.2" y="344.0" text-anchor="middle">nessuno</text>
+<path d="M265.8,306.0 V194.1 Q265.8,190.1 269.8,190.1 H349.8 Q353.8,190.1 353.8,194.1 V306.0 Z" fill="var(--q2)"/>
+<text class="val" x="309.8" y="181.1" text-anchor="middle">+30 µs</text>
+<text class="t" x="309.8" y="328.0" text-anchor="middle">1</text>
+<text class="t3" x="309.8" y="344.0" text-anchor="middle">main+thread</text>
+<path d="M420.2,306.0 V194.1 Q420.2,190.1 424.2,190.1 H504.2 Q508.2,190.1 508.2,194.1 V306.0 Z" fill="var(--q3)"/>
+<text class="val" x="464.2" y="181.1" text-anchor="middle">+30 µs</text>
+<text class="t" x="464.2" y="328.0" text-anchor="middle">2</text>
+<text class="t3" x="464.2" y="344.0" text-anchor="middle">+phase</text>
+<path d="M574.8,306.0 V99.1 Q574.8,95.1 578.8,95.1 H658.8 Q662.8,95.1 662.8,99.1 V306.0 Z" fill="var(--q4)"/>
+<text class="val" x="618.8" y="86.1" text-anchor="middle">+56 µs</text>
+<text class="t" x="618.8" y="328.0" text-anchor="middle">3</text>
+<text class="t3" x="618.8" y="344.0" text-anchor="middle">+phase_loop</text>
+<text class="t3" x="360.0" y="368" text-anchor="middle">RTAPP_TRACE_LEVEL — 0 deadline miss a ogni livello, su ~160000 giri</text>
+</svg></div>
+  <figcaption><b>Zero scadenze mancate a ogni livello</b>, su circa 160 000 giri. Cinquantasei microsecondi sono lo 0,7% del budget disponibile e il 2,8% del calcolo effettivo.</figcaption>
+</figure>
+
+<div class="col">
+<p>La conclusione onesta è che al livello di dettaglio normale <strong>OpenTelemetry non è un problema per un task real-time</strong>. È un risultato utile proprio perché negativo: sposta la domanda altrove.</p>
+</div>
+
+<div class="col">
+<section>
+  <span class="snum">BLOCCO 2</span>
+  <h2>Guardare non sa scegliere</h2>
+  <p class="lede">Un task critico e quattro di disturbo, con il campionamento probabilistico a sei impostazioni diverse. Venticinque ripetizioni ciascuna.</p>
+
+  <p>Qui sta il cuore del progetto. Se la telemetria costa, la si riduce campionando — ma la si vorrebbe ridurre <em>dove fa meno male</em>, cioè sui task non critici. La richiesta naturale sarebbe: «il task critico sempre, i disturbi al dieci per cento».</p>
+
+  <p>Abbiamo posto questa domanda centocinquanta volte, contando gli span effettivamente esportati da ogni esecuzione. Un'esecuzione completa ne produce diciassette: uno per il programma principale, uno per la calibrazione, tre per ciascuno dei cinque thread.</p>
+</section>
+</div>
+
+<figure>
+  <div class="plot"><svg id="fig2-campionamento-binario" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="100%" role="img" aria-label="Span esportati per esecuzione: sempre 17 oppure 0, mai una via di mezzo">
+<style>
+#fig2-campionamento-binario{--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#7b7a75;--grid:#e6e5e1;--axis:#c9c8c3;--s1:#2a78d6;--s2:#eb6834;--crit:#d03b3b;--q1:#86b6ef;--q2:#5598e7;--q3:#2a78d6;--q4:#1c5cab;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #fig2-campionamento-binario{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+}
+:root[data-theme="dark"] #fig2-campionamento-binario{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+#fig2-campionamento-binario .bg{fill:var(--surface)}
+#fig2-campionamento-binario .grid{stroke:var(--grid);stroke-width:1}
+#fig2-campionamento-binario .axis{stroke:var(--axis);stroke-width:1}
+#fig2-campionamento-binario .t{fill:var(--ink);font-size:13px}
+#fig2-campionamento-binario .t2{fill:var(--ink2);font-size:12px}
+#fig2-campionamento-binario .t3{fill:var(--ink3);font-size:11px}
+#fig2-campionamento-binario .ttl{fill:var(--ink);font-size:15px;font-weight:600}
+#fig2-campionamento-binario .sub{fill:var(--ink2);font-size:12px}
+#fig2-campionamento-binario .val{fill:var(--ink);font-size:12px;font-weight:600}
+</style>
+
+<text class="ttl" x="16" y="26">Span esportati per esecuzione: sempre 17 oppure 0, mai una via di mezzo</text>
+<text class="sub" x="16" y="45">Blocco 2 — un punto per esecuzione, 25 per cella.</text>
+<line class="grid" x1="78" y1="318.0" x2="696" y2="318.0"/>
+<text class="t3" x="68" y="322.0" text-anchor="end">0</text>
+<line class="grid" x1="78" y1="259.0" x2="696" y2="259.0"/>
+<text class="t3" x="68" y="263.0" text-anchor="end">5</text>
+<line class="grid" x1="78" y1="200.0" x2="696" y2="200.0"/>
+<text class="t3" x="68" y="204.0" text-anchor="end">10</text>
+<line class="grid" x1="78" y1="141.0" x2="696" y2="141.0"/>
+<text class="t3" x="68" y="145.0" text-anchor="end">15</text>
+<line class="grid" x1="78" y1="117.4" x2="696" y2="117.4" stroke-dasharray="3 3"/>
+<text class="t3" x="68" y="121.4" text-anchor="end">17</text>
+<line class="grid" x1="78" y1="82.0" x2="696" y2="82.0"/>
+<text class="t3" x="68" y="86.0" text-anchor="end">20</text>
+<text class="t3" x="16" y="68">span esportati</text>
+<text class="t3" x="692" y="109.4" text-anchor="end">esecuzione campionata = 17 span (2 + 5 thread × 3)</text>
+<line class="axis" x1="78" y1="318" x2="696" y2="318"/>
+<circle cx="98.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="101.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="103.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="106.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="109.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="111.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="114.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="116.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="119.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="121.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="124.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="126.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="129.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="132.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="134.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="137.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="139.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="142.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="144.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="147.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="150.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="152.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="155.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="157.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="160.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="129.5" y="342.0" text-anchor="middle">AlwaysOff</text>
+<text class="t3" x="129.5" y="359.0" text-anchor="middle">0/25 campionati</text>
+<circle cx="201.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="204.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="206.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="209.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="212.0" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="214.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="217.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="219.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="222.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="224.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="227.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="229.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="232.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="235.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="237.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="240.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="242.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="245.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="247.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="250.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="253.0" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="255.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="258.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="260.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="263.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="232.5" y="342.0" text-anchor="middle">AlwaysOn</text>
+<text class="t3" x="232.5" y="359.0" text-anchor="middle">25/25 campionati</text>
+<circle cx="304.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="307.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="310.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="313.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="316.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="318.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="321.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="324.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="327.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="329.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="332.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="335.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="332.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="338.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="341.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="343.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="346.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="349.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="352.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="355.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="357.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="360.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="338.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="363.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="366.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="335.5" y="342.0" text-anchor="middle">ratio 0.1</text>
+<text class="t3" x="335.5" y="359.0" text-anchor="middle">2/25 campionati</text>
+<circle cx="408.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="411.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="412.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="417.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="421.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="425.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="430.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="434.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="417.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="423.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="438.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="442.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="429.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="447.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="435.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="441.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="447.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="453.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="451.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="455.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="459.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="465.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="459.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="464.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="468.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="438.5" y="342.0" text-anchor="middle">ratio 0.3</text>
+<text class="t3" x="438.5" y="359.0" text-anchor="middle">10/25 campionati</text>
+<circle cx="511.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="512.4" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="518.2" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="524.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="516.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="520.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="529.9" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="525.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="530.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="534.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="535.7" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="539.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="543.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="541.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="547.3" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="548.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="552.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="557.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="553.1" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="562.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="566.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="559.0" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="564.8" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="571.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="570.6" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="541.5" y="342.0" text-anchor="middle">ratio 0.5</text>
+<text class="t3" x="541.5" y="359.0" text-anchor="middle">14/25 campionati</text>
+<circle cx="629.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="614.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="617.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="620.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="624.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="627.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="631.0" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="635.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="641.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="634.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="647.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="637.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="641.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="653.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="644.5" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="647.9" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="651.2" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="654.6" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="658.0" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="659.5" cy="318.0" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="661.3" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="664.7" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="668.1" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="671.4" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="674.8" cy="117.4" r="4.5" fill="var(--s1)" fill-opacity="0.75" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="644.5" y="342.0" text-anchor="middle">ratio 0.7</text>
+<text class="t3" x="644.5" y="359.0" text-anchor="middle">19/25 campionati</text>
+<text class="t3" x="360.0" y="388" text-anchor="middle">150 esecuzioni, 0 valori intermedi: il sampler decide sul trace_id, condiviso da tutti i thread</text>
+</svg></div>
+  <figcaption>Su 150 esecuzioni il conteggio è stato <b>sempre 17 oppure 0</b>. Mai quattro, mai otto, mai un numero che dicesse «ho tenuto il critico e buttato gli altri».</figcaption>
+</figure>
+
+<div class="col">
+<p>Il <code>TraceIdRatioBasedSampler</code> decide guardando l'identificatore della <em>traccia</em>. In rt-app tutti i thread nascono figli dello stesso span principale, quindi condividono un unico <code>trace_id</code>: il sampler non ha mai visto cinque task di criticità diversa, ha visto una storia sola e ha deciso se raccontarla o buttarla.</p>
+
+<p class="pull">Non è che OpenTelemetry campioni male. Campiona benissimo — semplicemente l'unità su cui decide è la traccia intera, e per un carico mixed-criticality quell'unità è troppo grossa.</p>
+
+<h3>Due affermazioni di forza molto diversa</h3>
+
+<p>La frazione osservata segue quella richiesta: 0, 8, 40, 56, 76 e 100 per cento a fronte di 0, 10, 30, 50, 70 e 100. Ma con venticinque prove l'intervallo di confidenza è largo trenta o quaranta punti — il 40% osservato dove ne chiedevamo 30 è rumore, non un'anomalia. Questa affermazione va scritta <strong>«coerente con»</strong>, mai «verificato».</p>
+
+<p>L'altra è fortissima, perché non è una stima ma un conteggio: <strong>zero separazioni su centocinquanta</strong>. Bastava un caso per smentirla. È la differenza fra «abbiamo misurato male una quantità» e «abbiamo cercato un fenomeno e non c'è».</p>
+
+<div class="note">
+  <span class="lbl">Corollario pratico</span>
+  <p>Chiedendo il 10% di campionamento, il task critico perde la telemetria nel <strong>90% delle esecuzioni</strong> — non il 90% dei suoi dati, il 90% delle esecuzioni <em>intere</em>. Con OTel standard la politica che servirebbe non è nemmeno esprimibile.</p>
+</div>
+</div>
+
+<div class="col">
+<section>
+  <span class="snum">BLOCCO 3</span>
+  <h2>Come guardi decide se il sistema regge</h2>
+  <p class="lede">Carico di fondo crescente — zero, uno, quattro e otto task di disturbo — contro le due architetture di consegna degli span.</p>
+
+  <p>OpenTelemetry offre due modi di recapitare gli span. Il <strong>SimpleSpanProcessor</strong> è l'onesto: appena uno span è pronto lo spedisce, sul posto, aspettando che la spedizione finisca. Il <strong>BatchSpanProcessor</strong> è il pragmatico: li accumula in una coda e ogni cinque secondi li manda tutti insieme, da un thread separato.</p>
+
+  <p>La differenza sembra un dettaglio implementativo. Non lo è.</p>
+</section>
+</div>
+
+<figure>
+  <div class="plot"><svg id="fig3-batch-vs-simple-costo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="100%" role="img" aria-label="Costo per giro sul task critico: Batch contro Simple">
+<style>
+#fig3-batch-vs-simple-costo{--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#7b7a75;--grid:#e6e5e1;--axis:#c9c8c3;--s1:#2a78d6;--s2:#eb6834;--crit:#d03b3b;--q1:#86b6ef;--q2:#5598e7;--q3:#2a78d6;--q4:#1c5cab;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #fig3-batch-vs-simple-costo{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+}
+:root[data-theme="dark"] #fig3-batch-vs-simple-costo{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+#fig3-batch-vs-simple-costo .bg{fill:var(--surface)}
+#fig3-batch-vs-simple-costo .grid{stroke:var(--grid);stroke-width:1}
+#fig3-batch-vs-simple-costo .axis{stroke:var(--axis);stroke-width:1}
+#fig3-batch-vs-simple-costo .t{fill:var(--ink);font-size:13px}
+#fig3-batch-vs-simple-costo .t2{fill:var(--ink2);font-size:12px}
+#fig3-batch-vs-simple-costo .t3{fill:var(--ink3);font-size:11px}
+#fig3-batch-vs-simple-costo .ttl{fill:var(--ink);font-size:15px;font-weight:600}
+#fig3-batch-vs-simple-costo .sub{fill:var(--ink2);font-size:12px}
+#fig3-batch-vs-simple-costo .val{fill:var(--ink);font-size:12px;font-weight:600}
+</style>
+
+<text class="ttl" x="16" y="26">Costo per giro sul task critico: Batch contro Simple</text>
+<text class="sub" x="16" y="45">Blocco 3 — trace_level 3, Zipkin senza collector. Mediana su 15 ripetizioni.</text>
+<line class="grid" x1="78" y1="314.0" x2="696" y2="314.0"/>
+<text class="t3" x="68" y="318.0" text-anchor="end">0</text>
+<line class="grid" x1="78" y1="262.4" x2="696" y2="262.4"/>
+<text class="t3" x="68" y="266.4" text-anchor="end">100</text>
+<line class="grid" x1="78" y1="210.9" x2="696" y2="210.9"/>
+<text class="t3" x="68" y="214.9" text-anchor="end">200</text>
+<line class="grid" x1="78" y1="159.3" x2="696" y2="159.3"/>
+<text class="t3" x="68" y="163.3" text-anchor="end">300</text>
+<line class="grid" x1="78" y1="107.8" x2="696" y2="107.8"/>
+<text class="t3" x="68" y="111.8" text-anchor="end">400</text>
+<line class="grid" x1="78" y1="56.2" x2="696" y2="56.2"/>
+<text class="t3" x="68" y="60.2" text-anchor="end">500</text>
+<text class="t3" x="16" y="68">µs per giro</text>
+<line class="axis" x1="78" y1="314" x2="696" y2="314"/>
+<path d="M108.2,314.0 V274.2 Q108.2,270.2 112.2,270.2 H150.2 Q154.2,270.2 154.2,274.2 V314.0 Z" fill="var(--s1)"/>
+<text class="val" x="131.2" y="261.2" text-anchor="middle">85</text>
+<path d="M156.2,314.0 V103.0 Q156.2,99.0 160.2,99.0 H198.2 Q202.2,99.0 202.2,103.0 V314.0 Z" fill="var(--s2)"/>
+<text class="val" x="179.2" y="90.0" text-anchor="middle">417</text>
+<text class="t" x="155.2" y="338.0" text-anchor="middle">0</text>
+<path d="M262.8,314.0 V313.9 Q262.8,309.9 266.8,309.9 H304.8 Q308.8,309.9 308.8,313.9 V314.0 Z" fill="var(--s1)"/>
+<text class="val" x="285.8" y="300.9" text-anchor="middle">8</text>
+<path d="M310.8,314.0 V143.7 Q310.8,139.7 314.8,139.7 H352.8 Q356.8,139.7 356.8,143.7 V314.0 Z" fill="var(--s2)"/>
+<text class="val" x="333.8" y="130.7" text-anchor="middle">338</text>
+<text class="t" x="309.8" y="338.0" text-anchor="middle">1</text>
+<path d="M417.2,314.0 V313.9 Q417.2,309.9 421.2,309.9 H459.2 Q463.2,309.9 463.2,313.9 V314.0 Z" fill="var(--s1)"/>
+<text class="val" x="440.2" y="300.9" text-anchor="middle">8</text>
+<path d="M465.2,314.0 V145.8 Q465.2,141.8 469.2,141.8 H507.2 Q511.2,141.8 511.2,145.8 V314.0 Z" fill="var(--s2)"/>
+<text class="val" x="488.2" y="132.8" text-anchor="middle">334</text>
+<text class="t" x="464.2" y="338.0" text-anchor="middle">4</text>
+<path d="M571.8,314.0 V313.9 Q571.8,309.9 575.8,309.9 H613.8 Q617.8,309.9 617.8,313.9 V314.0 Z" fill="var(--s1)"/>
+<text class="val" x="594.8" y="300.9" text-anchor="middle">8</text>
+<path d="M619.8,314.0 V142.7 Q619.8,138.7 623.8,138.7 H661.8 Q665.8,138.7 665.8,142.7 V314.0 Z" fill="var(--s2)"/>
+<text class="val" x="642.8" y="129.7" text-anchor="middle">340</text>
+<text class="t" x="618.8" y="338.0" text-anchor="middle">8</text>
+<text class="t2" x="360.0" y="360.0" text-anchor="middle">task best-effort di disturbo (n_lo)</text>
+<rect x="84" y="52" width="11" height="11" rx="2" fill="var(--s1)"/>
+<text class="t2" x="100" y="62">BatchSpanProcessor</text>
+<rect x="234" y="52" width="11" height="11" rx="2" fill="var(--s2)"/>
+<text class="t2" x="250" y="62">SimpleSpanProcessor</text>
+<text class="t3" x="360.0" y="388" text-anchor="middle">Il costo del Batch non cresce col carico: spedisce ogni 5 s a prescindere dal volume</text>
+</svg></div>
+  <figcaption>Il costo del Batch <b>non cresce col carico</b> — spedisce ogni cinque secondi a prescindere dal volume. Quello del Simple è quaranta volte più alto: il 17% del tempo di calcolo del task critico.</figcaption>
+</figure>
+
+<div class="col">
+<p>Il meccanismo si legge in una colonna sola — quante volte il programma ha provato a contattare il collector, che in questa campagna non c'era. Con otto task di disturbo: <strong>336 tentativi</strong> per esecuzione con il Batch, <strong>24 632</strong> con il Simple. Fattore settantatré.</p>
+</div>
+
+<figure>
+  <div class="plot"><svg id="fig4-deadline-miss" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" width="100%" role="img" aria-label="Scadenze mancate dal task critico: solo con il SimpleSpanProcessor">
+<style>
+#fig4-deadline-miss{--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#7b7a75;--grid:#e6e5e1;--axis:#c9c8c3;--s1:#2a78d6;--s2:#eb6834;--crit:#d03b3b;--q1:#86b6ef;--q2:#5598e7;--q3:#2a78d6;--q4:#1c5cab;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #fig4-deadline-miss{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+}
+:root[data-theme="dark"] #fig4-deadline-miss{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+#fig4-deadline-miss .bg{fill:var(--surface)}
+#fig4-deadline-miss .grid{stroke:var(--grid);stroke-width:1}
+#fig4-deadline-miss .axis{stroke:var(--axis);stroke-width:1}
+#fig4-deadline-miss .t{fill:var(--ink);font-size:13px}
+#fig4-deadline-miss .t2{fill:var(--ink2);font-size:12px}
+#fig4-deadline-miss .t3{fill:var(--ink3);font-size:11px}
+#fig4-deadline-miss .ttl{fill:var(--ink);font-size:15px;font-weight:600}
+#fig4-deadline-miss .sub{fill:var(--ink2);font-size:12px}
+#fig4-deadline-miss .val{fill:var(--ink);font-size:12px;font-weight:600}
+</style>
+
+<text class="ttl" x="16" y="26">Scadenze mancate dal task critico: solo con il SimpleSpanProcessor</text>
+<text class="sub" x="16" y="45">Blocco 3 — conteggi SOMMATI sulle 15 ripetizioni. Controllo e Batch: zero ovunque.</text>
+<line class="grid" x1="78" y1="288.0" x2="696" y2="288.0"/>
+<text class="t3" x="68" y="292.0" text-anchor="end">0</text>
+<line class="grid" x1="78" y1="242.2" x2="696" y2="242.2"/>
+<text class="t3" x="68" y="246.2" text-anchor="end">10</text>
+<line class="grid" x1="78" y1="196.4" x2="696" y2="196.4"/>
+<text class="t3" x="68" y="200.4" text-anchor="end">20</text>
+<line class="grid" x1="78" y1="150.7" x2="696" y2="150.7"/>
+<text class="t3" x="68" y="154.7" text-anchor="end">30</text>
+<line class="grid" x1="78" y1="104.9" x2="696" y2="104.9"/>
+<text class="t3" x="68" y="108.9" text-anchor="end">40</text>
+<text class="t3" x="16" y="68">scadenze mancate</text>
+<line class="axis" x1="78" y1="288" x2="696" y2="288"/>
+<text class="t3" x="155.2" y="278.0" text-anchor="middle">0</text>
+<text class="t" x="155.2" y="312.0" text-anchor="middle">0</text>
+<path d="M278.8,288.0 V108.9 Q278.8,104.9 282.8,104.9 H336.8 Q340.8,104.9 340.8,108.9 V288.0 Z" fill="var(--crit)"/>
+<text class="val" x="309.8" y="95.9" text-anchor="middle">40</text>
+<text class="t3" x="309.8" y="330.0" text-anchor="middle">sforo max 15 ms</text>
+<text class="t" x="309.8" y="312.0" text-anchor="middle">1</text>
+<path d="M433.2,288.0 V264.5 Q433.2,260.5 437.2,260.5 H491.2 Q495.2,260.5 495.2,264.5 V288.0 Z" fill="var(--crit)"/>
+<text class="val" x="464.2" y="251.5" text-anchor="middle">6</text>
+<text class="t3" x="464.2" y="330.0" text-anchor="middle">sforo max 86 ms</text>
+<text class="t" x="464.2" y="312.0" text-anchor="middle">4</text>
+<path d="M587.8,288.0 V269.1 Q587.8,265.1 591.8,265.1 H645.8 Q649.8,265.1 649.8,269.1 V288.0 Z" fill="var(--crit)"/>
+<text class="val" x="618.8" y="256.1" text-anchor="middle">5</text>
+<text class="t3" x="618.8" y="330.0" text-anchor="middle">sforo max 82 ms</text>
+<text class="t" x="618.8" y="312.0" text-anchor="middle">8</text>
+<text class="t2" x="360.0" y="350" text-anchor="middle">task best-effort di disturbo (n_lo)</text>
+<rect x="84" y="52" width="11" height="11" rx="2" fill="var(--crit)"/>
+<text class="t2" x="100" y="62">SimpleSpanProcessor — violazione di scadenza</text>
+<text class="t3" x="360.0" y="368" text-anchor="middle">51 scadenze mancate in tutta la campagna di 410 esecuzioni, tutte in queste tre celle</text>
+</svg></div>
+  <figcaption>Le <b>uniche 51 scadenze mancate</b> dell'intera campagna, tutte e sole nelle celle Simple. Nei blocchi 1 e 2, su oltre 460 000 giri, non ce n'era stata nessuna.</figcaption>
+</figure>
+
+<div class="col">
+<p>E non sono ritardi modesti. Lo sforo peggiore è di <strong>86 millisecondi</strong>: il task doveva ripartire ogni dieci ed è rimasto fermo per più di otto periodi interi.</p>
+
+<p>Il profilo è quello sbagliato, per un sistema real-time. Con un solo task di disturbo le scadenze mancate sono di più (quaranta) ma piccole; con quattro e otto sono poche ma enormi. Non è un degrado graduale che si mette a preventivo: sono <strong>stalli rari e lunghissimi</strong>. Un ritardo costante di trecento microsecondi si dimensiona; uno stallo da ottantasei millisecondi no.</p>
+
+<p class="pull">Il Batch isola il task critico da un guasto del sistema di monitoraggio. Il Simple glielo scarica addosso.</p>
+
+<div class="tw">
+<table>
+  <thead><tr><th>disturbo</th><th>configurazione</th><th class="n">costo/giro</th><th class="n">scadenze mancate</th><th class="n">sforo peggiore</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Batch</td><td class="n">−8 µs</td><td class="n">0</td><td class="n dim">—</td></tr>
+    <tr class="hl"><td>1</td><td>Simple</td><td class="n">−338 µs</td><td class="n bad">40</td><td class="n bad">14,8 ms</td></tr>
+    <tr><td>4</td><td>Batch</td><td class="n">−8 µs</td><td class="n">0</td><td class="n dim">—</td></tr>
+    <tr class="hl"><td>4</td><td>Simple</td><td class="n">−334 µs</td><td class="n bad">6</td><td class="n bad">86,0 ms</td></tr>
+    <tr><td>8</td><td>Batch</td><td class="n">−8 µs</td><td class="n">0</td><td class="n dim">—</td></tr>
+    <tr class="hl"><td>8</td><td>Simple</td><td class="n">−340 µs</td><td class="n bad">5</td><td class="n bad">81,9 ms</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <span class="lbl">Cosa questi numeri non dicono</span>
+  <p>I ~340 µs del Simple <strong>non sono il costo di esportare</strong>: sono il costo di <em>tentare</em> un export verso un collector irraggiungibile, e riprovare. La campagna è girata deliberatamente senza collector — scelta irrilevante per il Batch (quattro tentativi ogni venti secondi) e per il blocco 2 (che non usa la rete), determinante solo qui.</p>
+  <p>Accendere un collector avrebbe falsato la misura in modo più insidioso: a otto task di disturbo il Simple chiederebbe ottomila richieste HTTP al secondo, e un server Python monothread sarebbe diventato lui il collo di bottiglia — dentro il percorso critico, perché il Simple aspetta la risposta.</p>
+</div>
+</div>
+
+<div class="col">
+<section>
+  <span class="snum">QUESTIONI APERTE</span>
+  <h2>Cosa non siamo riusciti a spiegare</h2>
+  <p class="lede">Due fenomeni riproducibili di cui non abbiamo isolato il meccanismo, dichiarati come tali.</p>
+
+  <p>A carico basso il jitter del task critico è <strong>bimodale</strong>: le esecuzioni si dividono in due gruppi netti, uno attorno a 2,5 µs e uno attorno a 13, senza niente in mezzo, circa metà e metà. L'abbiamo osservato in <strong>tre campagne indipendenti</strong> a ore diverse. Non è rumore.</p>
+</section>
+</div>
+
+<figure>
+  <div class="plot"><svg id="fig5-bimodalita-controllo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" width="100%" role="img" aria-label="Il jitter del task critico e' bimodale a carico basso, e il carico lo stabilizza">
+<style>
+#fig5-bimodalita-controllo{--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#7b7a75;--grid:#e6e5e1;--axis:#c9c8c3;--s1:#2a78d6;--s2:#eb6834;--crit:#d03b3b;--q1:#86b6ef;--q2:#5598e7;--q3:#2a78d6;--q4:#1c5cab;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #fig5-bimodalita-controllo{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+}
+:root[data-theme="dark"] #fig5-bimodalita-controllo{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+#fig5-bimodalita-controllo .bg{fill:var(--surface)}
+#fig5-bimodalita-controllo .grid{stroke:var(--grid);stroke-width:1}
+#fig5-bimodalita-controllo .axis{stroke:var(--axis);stroke-width:1}
+#fig5-bimodalita-controllo .t{fill:var(--ink);font-size:13px}
+#fig5-bimodalita-controllo .t2{fill:var(--ink2);font-size:12px}
+#fig5-bimodalita-controllo .t3{fill:var(--ink3);font-size:11px}
+#fig5-bimodalita-controllo .ttl{fill:var(--ink);font-size:15px;font-weight:600}
+#fig5-bimodalita-controllo .sub{fill:var(--ink2);font-size:12px}
+#fig5-bimodalita-controllo .val{fill:var(--ink);font-size:12px;font-weight:600}
+</style>
+
+<text class="ttl" x="16" y="26">Il jitter del task critico e' bimodale a carico basso, e il carico lo stabilizza</text>
+<text class="sub" x="16" y="45">Blocco 3, celle senza tracing — un punto per esecuzione, 15 per carico.</text>
+<line class="grid" x1="78" y1="294.0" x2="696" y2="294.0"/>
+<text class="t3" x="68" y="298.0" text-anchor="end">0</text>
+<line class="grid" x1="78" y1="251.6" x2="696" y2="251.6"/>
+<text class="t3" x="68" y="255.6" text-anchor="end">5</text>
+<line class="grid" x1="78" y1="243.1" x2="696" y2="243.1" stroke-dasharray="4 4"/>
+<text class="t3" x="692" y="237.1" text-anchor="end">soglia fra le due mode</text>
+<line class="grid" x1="78" y1="209.2" x2="696" y2="209.2"/>
+<text class="t3" x="68" y="213.2" text-anchor="end">10</text>
+<line class="grid" x1="78" y1="166.8" x2="696" y2="166.8"/>
+<text class="t3" x="68" y="170.8" text-anchor="end">15</text>
+<line class="grid" x1="78" y1="124.4" x2="696" y2="124.4"/>
+<text class="t3" x="68" y="128.4" text-anchor="end">20</text>
+<line class="grid" x1="78" y1="82.0" x2="696" y2="82.0"/>
+<text class="t3" x="68" y="86.0" text-anchor="end">25</text>
+<text class="t3" x="16" y="68">jitter di periodo (µs)</text>
+<line class="axis" x1="78" y1="294" x2="696" y2="294"/>
+<circle cx="149.8" cy="261.2" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="160.8" cy="264.0" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="155.2" cy="245.4" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="133.2" cy="270.3" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="144.2" cy="271.9" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="155.2" cy="271.8" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="166.2" cy="272.7" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="177.2" cy="272.5" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="155.2" cy="169.9" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="155.2" cy="220.2" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="155.2" cy="171.3" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="155.2" cy="253.0" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="149.8" cy="191.1" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="160.8" cy="188.1" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="155.2" cy="120.5" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="155.2" y="318.0" text-anchor="middle">0</text>
+<text class="t3" x="155.2" y="335.0" text-anchor="middle">9/15 nel modo basso</text>
+<circle cx="309.8" cy="244.6" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="304.2" cy="214.5" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="315.2" cy="216.4" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="309.8" cy="171.4" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="309.8" cy="105.7" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="309.8" cy="206.7" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="304.2" cy="236.8" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="315.2" cy="233.1" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="309.8" cy="273.6" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="309.8" cy="144.9" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="304.2" cy="204.7" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="315.2" cy="198.8" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="309.8" cy="127.9" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="309.8" cy="260.2" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="309.8" cy="224.9" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="309.8" y="318.0" text-anchor="middle">1</text>
+<text class="t3" x="309.8" y="335.0" text-anchor="middle">3/15 nel modo basso</text>
+<circle cx="392.8" cy="277.0" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="403.8" cy="276.6" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="414.8" cy="276.2" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="425.8" cy="276.9" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="436.8" cy="276.3" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="447.8" cy="277.0" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="458.8" cy="276.2" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="469.8" cy="276.6" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="480.8" cy="276.8" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="491.8" cy="277.0" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="502.8" cy="276.4" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="513.8" cy="277.5" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="524.8" cy="277.2" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="535.8" cy="277.0" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="464.2" cy="272.4" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="464.2" y="318.0" text-anchor="middle">4</text>
+<text class="t3" x="464.2" y="335.0" text-anchor="middle">15/15 nel modo basso</text>
+<circle cx="563.8" cy="276.4" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="574.8" cy="273.0" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="585.8" cy="276.1" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="596.8" cy="276.5" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="607.8" cy="276.5" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="618.8" cy="275.4" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="629.8" cy="276.4" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="640.8" cy="276.5" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="651.8" cy="276.8" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="662.8" cy="276.4" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="673.8" cy="276.8" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="602.2" cy="260.9" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="613.2" cy="259.8" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="624.2" cy="257.6" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<circle cx="635.2" cy="260.0" r="4.5" fill="var(--s1)" fill-opacity="0.8" stroke="var(--surface)" stroke-width="1.5"/>
+<text class="t" x="618.8" y="318.0" text-anchor="middle">8</text>
+<text class="t3" x="618.8" y="335.0" text-anchor="middle">15/15 nel modo basso</text>
+<text class="t2" x="360.0" y="356.0" text-anchor="middle">task best-effort di disturbo (n_lo)</text>
+<text class="t3" x="360.0" y="368" text-anchor="middle">La mediana di una distribuzione a due mode cade nel vuoto fra le due: qui non riassume nulla</text>
+</svg></div>
+  <figcaption>Il carico <b>non sposta la media, elimina il caso cattivo</b>: con quattro o più task di disturbo tutte e quindici le esecuzioni finiscono nel gruppo buono. L'effetto però non è monotono — con un solo disturbo le cose vanno peggio che a vuoto.</figcaption>
+</figure>
+
+<div class="col">
+<p>Queste celle non contengono un solo simbolo di OpenTelemetry, quindi l'effetto è del carico e non dell'esportatore — un'ipotesi alternativa che il blocco 3 ha permesso di escludere.</p>
+
+<p>La bimodalità ci ha teso una trappola concreta. Confrontando la cella di controllo fra due esecuzioni della stessa campagna, il jitter dava 12,6 contro 4,8 e la latenza di risveglio 27 contro 7. Sembrava un cambiamento. Non lo era: il binario era <em>identico</em>, ed era cambiata solo la ripartizione fra i due gruppi, sette su quindici contro nove. La mediana di una distribuzione a due mode cade nel vuoto in mezzo, e salta.</p>
+
+<div class="note">
+  <span class="lbl">Test proposto e non eseguito</span>
+  <p>Lo stato sembra deciso all'avvio e poi congelato per tutta l'esecuzione, con probabilità circa 50/50. Fa pensare al layout di memoria. Il test sarebbe di mezz'ora — rilanciare la cella di controllo con <code>setarch -R</code> per disabilitare la randomizzazione degli indirizzi — e non è stato fatto. Resta un'ipotesi, non una spiegazione.</p>
+</div>
+
+<h3>Le due statistiche che hanno mentito</h3>
+
+<p>Vale la pena registrarlo, perché sono errori speculari. Guardando i primi risultati del blocco 3 avevamo letto «zero scadenze mancate»: veniva dalla <strong>mediana</strong> fra le quindici ripetizioni, e dieci su quindici non ne avevano — la mediana faceva zero e cancellava le sei che c'erano. E avevamo letto un jitter di 874 µs che avrebbe significato un task completamente destabilizzato: veniva dalla <strong>deviazione standard</strong>, gonfiata da cinque giri su duemila con periodo dimezzato, mentre lo scarto interquartile era 27.</p>
+
+<p>Le due statistiche più comuni hanno mentito in direzioni opposte sullo stesso dato: la prima ha nascosto guasti veri, la seconda ne ha inventato uno falso. Non è un loro difetto — erano quelle sbagliate per la domanda. Per un sistema real-time la domanda non è mai «come va di solito», è <strong>quanto va male nel caso peggiore</strong>.</p>
+</div>
+
+<div class="col">
+<section>
+  <span class="snum">SEGUITO</span>
+  <h2>Cosa portiamo alla proposta architetturale</h2>
+
+  <p>Due cose, sostenute da dati e non da ragionamenti.</p>
+
+  <p>La prima: <strong>il campionamento lavora sull'unità sbagliata.</strong> Serve un sampler che decida su nome e attributi dello span invece che sul <code>trace_id</code>, così il task critico e quelli di sottofondo possono avere frazioni di campionamento indipendenti pur restando nella stessa traccia causale — che è ciò che rende la traccia utile.</p>
+
+  <p>La seconda: <strong>la coda asincrona non è un dettaglio implementativo, è un requisito di sicurezza.</strong> Il confronto fra i due processori non è una questione di prestazioni, è la differenza fra un sistema che rispetta le scadenze e uno che non le rispetta.</p>
+</section>
+</div>
+
+<footer>
+  Dati grezzi, script di analisi e documentazione completa nel repository del progetto:<br>
+  <code>2-DoE/results.csv</code> (410 run) · <code>NOTES-task5.md</code> · <code>plots/*.svg</code><br>
+  Grafici generati in Python puro, senza matplotlib. Palette di riferimento della skill dataviz, non modificata.
+</footer>
+
+</div>

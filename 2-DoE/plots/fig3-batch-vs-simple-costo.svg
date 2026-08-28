@@ -1,0 +1,61 @@
+<svg id="fig3-batch-vs-simple-costo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="100%" role="img" aria-label="Costo per giro sul task critico: Batch contro Simple">
+<style>
+#fig3-batch-vs-simple-costo{--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#7b7a75;--grid:#e6e5e1;--axis:#c9c8c3;--s1:#2a78d6;--s2:#eb6834;--crit:#d03b3b;--q1:#86b6ef;--q2:#5598e7;--q3:#2a78d6;--q4:#1c5cab;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #fig3-batch-vs-simple-costo{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+}
+:root[data-theme="dark"] #fig3-batch-vs-simple-costo{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+#fig3-batch-vs-simple-costo .bg{fill:var(--surface)}
+#fig3-batch-vs-simple-costo .grid{stroke:var(--grid);stroke-width:1}
+#fig3-batch-vs-simple-costo .axis{stroke:var(--axis);stroke-width:1}
+#fig3-batch-vs-simple-costo .t{fill:var(--ink);font-size:13px}
+#fig3-batch-vs-simple-costo .t2{fill:var(--ink2);font-size:12px}
+#fig3-batch-vs-simple-costo .t3{fill:var(--ink3);font-size:11px}
+#fig3-batch-vs-simple-costo .ttl{fill:var(--ink);font-size:15px;font-weight:600}
+#fig3-batch-vs-simple-costo .sub{fill:var(--ink2);font-size:12px}
+#fig3-batch-vs-simple-costo .val{fill:var(--ink);font-size:12px;font-weight:600}
+</style>
+<rect class="bg" x="0" y="0" width="720" height="400"/>
+<text class="ttl" x="16" y="26">Costo per giro sul task critico: Batch contro Simple</text>
+<text class="sub" x="16" y="45">Blocco 3 — trace_level 3, Zipkin senza collector. Mediana su 15 ripetizioni.</text>
+<line class="grid" x1="78" y1="314.0" x2="696" y2="314.0"/>
+<text class="t3" x="68" y="318.0" text-anchor="end">0</text>
+<line class="grid" x1="78" y1="262.4" x2="696" y2="262.4"/>
+<text class="t3" x="68" y="266.4" text-anchor="end">100</text>
+<line class="grid" x1="78" y1="210.9" x2="696" y2="210.9"/>
+<text class="t3" x="68" y="214.9" text-anchor="end">200</text>
+<line class="grid" x1="78" y1="159.3" x2="696" y2="159.3"/>
+<text class="t3" x="68" y="163.3" text-anchor="end">300</text>
+<line class="grid" x1="78" y1="107.8" x2="696" y2="107.8"/>
+<text class="t3" x="68" y="111.8" text-anchor="end">400</text>
+<line class="grid" x1="78" y1="56.2" x2="696" y2="56.2"/>
+<text class="t3" x="68" y="60.2" text-anchor="end">500</text>
+<text class="t3" x="16" y="68">µs per giro</text>
+<line class="axis" x1="78" y1="314" x2="696" y2="314"/>
+<path d="M108.2,314.0 V274.2 Q108.2,270.2 112.2,270.2 H150.2 Q154.2,270.2 154.2,274.2 V314.0 Z" fill="var(--s1)"/>
+<text class="val" x="131.2" y="261.2" text-anchor="middle">85</text>
+<path d="M156.2,314.0 V103.0 Q156.2,99.0 160.2,99.0 H198.2 Q202.2,99.0 202.2,103.0 V314.0 Z" fill="var(--s2)"/>
+<text class="val" x="179.2" y="90.0" text-anchor="middle">417</text>
+<text class="t" x="155.2" y="338.0" text-anchor="middle">0</text>
+<path d="M262.8,314.0 V313.9 Q262.8,309.9 266.8,309.9 H304.8 Q308.8,309.9 308.8,313.9 V314.0 Z" fill="var(--s1)"/>
+<text class="val" x="285.8" y="300.9" text-anchor="middle">8</text>
+<path d="M310.8,314.0 V143.7 Q310.8,139.7 314.8,139.7 H352.8 Q356.8,139.7 356.8,143.7 V314.0 Z" fill="var(--s2)"/>
+<text class="val" x="333.8" y="130.7" text-anchor="middle">338</text>
+<text class="t" x="309.8" y="338.0" text-anchor="middle">1</text>
+<path d="M417.2,314.0 V313.9 Q417.2,309.9 421.2,309.9 H459.2 Q463.2,309.9 463.2,313.9 V314.0 Z" fill="var(--s1)"/>
+<text class="val" x="440.2" y="300.9" text-anchor="middle">8</text>
+<path d="M465.2,314.0 V145.8 Q465.2,141.8 469.2,141.8 H507.2 Q511.2,141.8 511.2,145.8 V314.0 Z" fill="var(--s2)"/>
+<text class="val" x="488.2" y="132.8" text-anchor="middle">334</text>
+<text class="t" x="464.2" y="338.0" text-anchor="middle">4</text>
+<path d="M571.8,314.0 V313.9 Q571.8,309.9 575.8,309.9 H613.8 Q617.8,309.9 617.8,313.9 V314.0 Z" fill="var(--s1)"/>
+<text class="val" x="594.8" y="300.9" text-anchor="middle">8</text>
+<path d="M619.8,314.0 V142.7 Q619.8,138.7 623.8,138.7 H661.8 Q665.8,138.7 665.8,142.7 V314.0 Z" fill="var(--s2)"/>
+<text class="val" x="642.8" y="129.7" text-anchor="middle">340</text>
+<text class="t" x="618.8" y="338.0" text-anchor="middle">8</text>
+<text class="t2" x="360.0" y="360.0" text-anchor="middle">task best-effort di disturbo (n_lo)</text>
+<rect x="84" y="52" width="11" height="11" rx="2" fill="var(--s1)"/>
+<text class="t2" x="100" y="62">BatchSpanProcessor</text>
+<rect x="234" y="52" width="11" height="11" rx="2" fill="var(--s2)"/>
+<text class="t2" x="250" y="62">SimpleSpanProcessor</text>
+<text class="t3" x="360.0" y="388" text-anchor="middle">Il costo del Batch non cresce col carico: spedisce ogni 5 s a prescindere dal volume</text>
+</svg>

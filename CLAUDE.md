@@ -537,7 +537,7 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   run parziali del blocco 2 rimossi con le loro righe da `data_table.csv` e `index.txt`
   (tornati a 80 = solo blocco 1), albero di build pulito.
 
-- [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
+- [x] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
   descrittive/confronti tra configurazioni.
   **Da fare qui (dai task 0.5, 2 e 3)**: (1) scartare la prima riga di ogni log, e' un

@@ -1,0 +1,48 @@
+<svg id="fig1-overhead-per-livello" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 380" width="100%" role="img" aria-label="Costo dell'instrumentazione, per giro del task critico">
+<style>
+#fig1-overhead-per-livello{--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--ink3:#7b7a75;--grid:#e6e5e1;--axis:#c9c8c3;--s1:#2a78d6;--s2:#eb6834;--crit:#d03b3b;--q1:#86b6ef;--q2:#5598e7;--q3:#2a78d6;--q4:#1c5cab;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) #fig1-overhead-per-livello{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+}
+:root[data-theme="dark"] #fig1-overhead-per-livello{--surface:#1a1a19;--ink:#ffffff;--ink2:#c3c2b7;--ink3:#94938b;--grid:#33332f;--axis:#4a4a45;--s1:#3987e5;--s2:#d95926;--crit:#d03b3b;--q1:#184f95;--q2:#256abf;--q3:#3987e5;--q4:#86b6ef;}
+#fig1-overhead-per-livello .bg{fill:var(--surface)}
+#fig1-overhead-per-livello .grid{stroke:var(--grid);stroke-width:1}
+#fig1-overhead-per-livello .axis{stroke:var(--axis);stroke-width:1}
+#fig1-overhead-per-livello .t{fill:var(--ink);font-size:13px}
+#fig1-overhead-per-livello .t2{fill:var(--ink2);font-size:12px}
+#fig1-overhead-per-livello .t3{fill:var(--ink3);font-size:11px}
+#fig1-overhead-per-livello .ttl{fill:var(--ink);font-size:15px;font-weight:600}
+#fig1-overhead-per-livello .sub{fill:var(--ink2);font-size:12px}
+#fig1-overhead-per-livello .val{fill:var(--ink);font-size:12px;font-weight:600}
+</style>
+<rect class="bg" x="0" y="0" width="720" height="380"/>
+<text class="ttl" x="16" y="26">Costo dell'instrumentazione, per giro del task critico</text>
+<text class="sub" x="16" y="45">Blocco 1 — HI da solo, BatchSpanProcessor, AlwaysOn. Mediana su 20 ripetizioni, misurato sullo slack.</text>
+<line class="grid" x1="78" y1="306.0" x2="696" y2="306.0"/>
+<text class="t3" x="68" y="310.0" text-anchor="end">0</text>
+<line class="grid" x1="78" y1="230.0" x2="696" y2="230.0"/>
+<text class="t3" x="68" y="234.0" text-anchor="end">20</text>
+<line class="grid" x1="78" y1="154.0" x2="696" y2="154.0"/>
+<text class="t3" x="68" y="158.0" text-anchor="end">40</text>
+<line class="grid" x1="78" y1="78.0" x2="696" y2="78.0"/>
+<text class="t3" x="68" y="82.0" text-anchor="end">60</text>
+<text class="t3" x="16" y="64">µs per giro</text>
+<line class="axis" x1="78" y1="306" x2="696" y2="306"/>
+<path d="" fill="var(--q1)"/>
+<text class="val" x="155.2" y="297.0" text-anchor="middle">—</text>
+<text class="t" x="155.2" y="328.0" text-anchor="middle">0</text>
+<text class="t3" x="155.2" y="344.0" text-anchor="middle">nessuno</text>
+<path d="M265.8,306.0 V194.1 Q265.8,190.1 269.8,190.1 H349.8 Q353.8,190.1 353.8,194.1 V306.0 Z" fill="var(--q2)"/>
+<text class="val" x="309.8" y="181.1" text-anchor="middle">+30 µs</text>
+<text class="t" x="309.8" y="328.0" text-anchor="middle">1</text>
+<text class="t3" x="309.8" y="344.0" text-anchor="middle">main+thread</text>
+<path d="M420.2,306.0 V194.1 Q420.2,190.1 424.2,190.1 H504.2 Q508.2,190.1 508.2,194.1 V306.0 Z" fill="var(--q3)"/>
+<text class="val" x="464.2" y="181.1" text-anchor="middle">+30 µs</text>
+<text class="t" x="464.2" y="328.0" text-anchor="middle">2</text>
+<text class="t3" x="464.2" y="344.0" text-anchor="middle">+phase</text>
+<path d="M574.8,306.0 V99.1 Q574.8,95.1 578.8,95.1 H658.8 Q662.8,95.1 662.8,99.1 V306.0 Z" fill="var(--q4)"/>
+<text class="val" x="618.8" y="86.1" text-anchor="middle">+56 µs</text>
+<text class="t" x="618.8" y="328.0" text-anchor="middle">3</text>
+<text class="t3" x="618.8" y="344.0" text-anchor="middle">+phase_loop</text>
+<text class="t3" x="360.0" y="368" text-anchor="middle">RTAPP_TRACE_LEVEL — 0 deadline miss a ogni livello, su ~160000 giri</text>
+</svg>
