@@ -1,0 +1,455 @@
+cset: --> last message, executed args into cpuset "/user", new pid is: 9857
+{
+  name          : calibration
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 8f5827ffca4e55ea
+  tracestate    : 
+  parent_span_id: ff06a58fe3be561a
+  start         : 1787914448360474938
+  duration      : 30463
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : feba7d0fbb750b7f
+  tracestate    : 
+  parent_span_id: 149bf92b621e0fc9
+  start         : 1787914448361709921
+  duration      : 19999386864
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : HI_task-0
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 83abb165c1b8e5a8
+  tracestate    : 
+  parent_span_id: ff06a58fe3be561a
+  start         : 1787914448361792266
+  duration      : 19999306990
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	cancellation: force_terminate
+	config.sched_data.util_min: -1
+	config.index: 0
+	config.lock_pages: 1
+	config.sched_data.priority: 90
+	config.num_instances: 1
+	config.loop: 1
+	config.delay: 0
+	config.forked: 0
+	config.duration: 20
+	config.sched_data.policy: SCHED_FIFO
+	config.nphases: 1
+	config.sched_data.util_max: -1
+	config.name: HI_task-0
+	config.cpuset: [ 2 ]
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : thread_loop[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 149bf92b621e0fc9
+  tracestate    : 
+  parent_span_id: ebd6f3bee609a4d8
+  start         : 1787914448361707301
+  duration      : 19999392721
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : e89897ec1e0c85d0
+  tracestate    : 
+  parent_span_id: 5f88994d0cb7dd45
+  start         : 1787914448361577911
+  duration      : 19999538752
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : thread_loop[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 5f88994d0cb7dd45
+  tracestate    : 
+  parent_span_id: 068f73d1261c305a
+  start         : 1787914448361575241
+  duration      : 19999542268
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 60d2f013136e78b6
+  tracestate    : 
+  parent_span_id: 76c2485b68bd230f
+  start         : 1787914448361447175
+  duration      : 19999680880
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : thread_loop[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 76c2485b68bd230f
+  tracestate    : 
+  parent_span_id: bff37f13ef2259c4
+  start         : 1787914448361444459
+  duration      : 19999684438
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 1d7311a4aff33030
+  tracestate    : 
+  parent_span_id: 86537db17fe0c578
+  start         : 1787914448391718613
+  duration      : 19969491917
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : thread_loop[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 86537db17fe0c578
+  tracestate    : 
+  parent_span_id: 83abb165c1b8e5a8
+  start         : 1787914448391714580
+  duration      : 19969497198
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : LO_noise-1
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : ebd6f3bee609a4d8
+  tracestate    : 
+  parent_span_id: ff06a58fe3be561a
+  start         : 1787914448361671247
+  duration      : 19999603045
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	cancellation: force_terminate
+	config.sched_data.util_min: -1
+	config.index: 1
+	config.lock_pages: 1
+	config.sched_data.priority: 0
+	config.num_instances: 4
+	config.loop: 1
+	config.delay: 0
+	config.forked: 0
+	config.duration: 20
+	config.sched_data.policy: SCHED_OTHER
+	config.nphases: 1
+	config.sched_data.util_max: -1
+	config.name: LO_noise-1
+	config.cpuset: [ 3 ]
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : LO_noise-2
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 068f73d1261c305a
+  tracestate    : 
+  parent_span_id: ff06a58fe3be561a
+  start         : 1787914448361538735
+  duration      : 19999737631
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	cancellation: force_terminate
+	config.sched_data.util_min: -1
+	config.index: 2
+	config.lock_pages: 1
+	config.sched_data.priority: 0
+	config.num_instances: 4
+	config.loop: 1
+	config.delay: 0
+	config.forked: 0
+	config.duration: 20
+	config.sched_data.policy: SCHED_OTHER
+	config.nphases: 1
+	config.sched_data.util_max: -1
+	config.name: LO_noise-2
+	config.cpuset: [ 3 ]
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : LO_noise-3
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : bff37f13ef2259c4
+  tracestate    : 
+  parent_span_id: ff06a58fe3be561a
+  start         : 1787914448361400347
+  duration      : 19999877609
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	cancellation: force_terminate
+	config.sched_data.util_min: -1
+	config.index: 3
+	config.lock_pages: 1
+	config.sched_data.priority: 0
+	config.num_instances: 4
+	config.loop: 1
+	config.delay: 0
+	config.forked: 0
+	config.duration: 20
+	config.sched_data.policy: SCHED_OTHER
+	config.nphases: 1
+	config.sched_data.util_max: -1
+	config.name: LO_noise-3
+	config.cpuset: [ 3 ]
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : LO_noise-4
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : bfd7cccd77e8460e
+  tracestate    : 
+  parent_span_id: ff06a58fe3be561a
+  start         : 1787914448361211796
+  duration      : 20000067782
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	cancellation: force_terminate
+	config.sched_data.util_min: -1
+	config.index: 4
+	config.lock_pages: 1
+	config.sched_data.priority: 0
+	config.num_instances: 4
+	config.loop: 1
+	config.delay: 0
+	config.forked: 0
+	config.duration: 20
+	config.sched_data.policy: SCHED_OTHER
+	config.nphases: 1
+	config.sched_data.util_max: -1
+	config.name: LO_noise-4
+	config.cpuset: [ 3 ]
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : phase[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : 8af55b0e25884afc
+  tracestate    : 
+  parent_span_id: d2c31ef9f95fa8ce
+  start         : 1787914448361259400
+  duration      : 20000244474
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : thread_loop[0]
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : d2c31ef9f95fa8ce
+  tracestate    : 
+  parent_span_id: bfd7cccd77e8460e
+  start         : 1787914448361256292
+  duration      : 20000249439
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+  events        : 
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}
+{
+  name          : main
+  trace_id      : 0aea4b073bb41852ae90890ac40ceaa9
+  span_id       : ff06a58fe3be561a
+  tracestate    : 
+  parent_span_id: 0000000000000000
+  start         : 1787914448360435810
+  duration      : 20002802455
+  description   : 
+  span kind     : Internal
+  status        : Unset
+  attributes    : 
+	shutdown: graceful
+	config.io_device: /dev/null
+	config.mem_buffer_size: 4194304
+	config.lock_pages: 1
+	config.calib_cpu: 0
+	config.policy: 0
+	config.logdir: /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block2/t2_p0_s1_r0.5_n4/run_20
+	config.duration: 20
+	config.num_tasks: 2
+	config.calib_ns_per_loop: 139
+	config.logbasename: rtapp
+	config.logsize: -2
+	config.gnuplot: 0
+	config.pi_enabled: 0
+	config.cumulative_slack: 0
+	config.nthreads: 5
+	config.die_on_dmiss: 0
+  events        : 
+	{
+	  name          : graceful-shutdown
+	  timestamp     : 1787914468363235601
+	  attributes    : 
+	}
+  links         : 
+  resources     : 
+	telemetry.sdk.version: 1.28.0
+	telemetry.sdk.name: opentelemetry
+	telemetry.sdk.language: cpp
+	service.name: rt-app_console
+  instr-lib     : rt-app-tracer
+}

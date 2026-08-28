@@ -364,9 +364,40 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 - [~] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
   RTAPP_SRC_DIR/BIN_CACHE/DOE_ROOT in cima allo script, isolare le CPU, lanciare
   block1/block2/block3 (uno alla volta, su richiesta esplicita — non tutti insieme).
-  Stato: **BLOCCO 1 FATTO**, blocchi 2 e 3 da lanciare. Primo tentativo di blocco 2 il
-  2026-08-28 **abortito da un SIGSEGV** di rt-app: due bug di memoria trovati e corretti,
-  vedi **Fix 4** piu' sotto. Dati parziali scartati, blocco 2 da rilanciare da zero. Percorsi risolti da
+  Stato: **BLOCCHI 1 E 2 FATTI**, blocco 3 da lanciare.
+  **Blocco 2**: primo tentativo il 2026-08-28 alle 11:01 **abortito da un SIGSEGV** al run
+  12/25 -> due bug di memoria trovati e corretti (vedi **Fix 4**), dati parziali scartati.
+  Rilanciato dal sorgente corretto: **12:10:11-13:05:21, 55m10s, exit 0, 150/150 run
+  integri, 134 MB**. Analisi in `2-DoE/NOTES-block2.md`, `SPIEGAZIONE-block2.md`,
+  `analyze_block2.py`.
+  Risultati: (a) **FINDING CENTRALE DEL PROGETTO, ora su 150 run**: il conteggio degli
+  span esportati e' **17 oppure 0, mai un valore intermedio**, in tutte e sei le celle ->
+  il `TraceIdRatioBasedSampler` non separa **mai** HI dai LO. Quando campiona entrano
+  tutti e 5 i thread, quando scarta non entra nessuno. Va presentato come **conteggio
+  esatto (0 su 150)**, non come stima; (b) la frazione osservata segue quella nominale
+  (0/8/40/56/76/100% per 0/10/30/50/70/100%) ma con 25 ripetizioni l'IC di Wilson e' largo
+  **30-40 punti** -> scrivere "coerente con", **mai** "verificato"; (c) **il costo
+  dell'export al livello 2 e' zero misurabile**: esperimento naturale sui run campionati
+  vs scartati (stesso binario, stessa config, cambia solo il sorteggio) -> `run_med`,
+  `per_std`, `slack_med` **identici**; idem fra AlwaysOff e AlwaysOn. I +30 us/giro del
+  blocco 1 al livello 2 sono il costo di **creare** gli hook, non di esportarli;
+  (d) `HI_task` **0,000% di deadline miss** su 299400 giri con 4 thread di disturbo;
+  (e) **17 span e non 8**: la formula e' `2 + n_thread * 3` (il task 3 aveva 2 thread).
+  **ANOMALIA APERTA, da risolvere col blocco 3** (`NOTES-block2.md` §5): a parita' di
+  `trace_level=2` il jitter e' **10,8 us con `n_lo=0` (blocco 1) contro 2,1 us con
+  `n_lo=4` (blocco 2)** — il task critico e' 5x piu' stabile **sotto carico**, con
+  distribuzioni che non si sovrappongono (max blocco 2 = 3,9; min blocco 1 = 10,1). Si
+  lega alla bimodalita' della baseline del blocco 1 (il suo valore "buono" ~2,7 coincide
+  con questo). Due spiegazioni **non distinguibili** con i dati attuali: (1) il carico
+  inchioda il package in uno stato stabile; (2) confondente dell'exporter — il blocco 1
+  usava **Zipkin** (`_e0`), che senza collector tenta una connessione HTTP a ogni flush
+  periodico **durante** il run, il blocco 2 usa **ostream** (`_e1`) che scrive allo
+  shutdown. **Il blocco 3 e' il test**: usa Zipkin e ha celle a `trace_level=0` (nessun
+  exporter) a `n_lo` 0/1/4/8 -> se il jitter scende con `n_lo` anche li', vale la (1).
+  Non scrivere nulla in relazione sul jitter vs carico prima di aver risolto questo.
+  Nota operativa scoperta qui: `stdout.log` resta **vuoto finche' il run non e' finito**
+  (il BatchSpanProcessor svuota allo shutdown) -> per sapere se un run e' concluso usare
+  la presenza dei `.gz` dei log LO, che `test.sh` produce come ultimo passo. Percorsi risolti da
   `PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"` invece che
   hardcodati, quindi il repo funziona ovunque sia clonato. Risultati e analisi in
   `2-DoE/NOTES-block1.md`, `SPIEGAZIONE-block1.md`, `analyze_block1.py`; dati grezzi in
@@ -472,8 +503,17 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   mostrano jitter elevato in modo casuale (task 2); (3) non leggere il
   `deadline_miss_ratio` di LO come misura lineare del carico, satura al ~53% — usare
   `wu_latency` e il periodo mediano; (4) `hi/lo_spans_exported` del blocco 2 e' **binario
-  per run** (8 span o 0, task 3) -> trattarlo come proporzione binomiale su 25 ripetizioni,
-  non come conteggio continuo; (5) **correggere `count_exported_spans()`**, che conta la
+  per run** -> trattarlo come proporzione binomiale su 25 ripetizioni, non come conteggio
+  continuo. **Attenzione al valore**: il task 3 misuro' 8 span perche' aveva 2 thread, ma
+  il blocco 2 gira con `n_lo=4` cioe' **5 thread** -> il conteggio e' **17 span o 0**,
+  verificato sul campo il 2026-08-28. La formula e' `2 + n_thread * 3`
+  (`main` + `calibration`, e per ogni thread lo span del thread + `thread_loop` + `phase`).
+  Composizione reale di un run campionato: 5x `thread_loop[0]`, 5x `phase[0]`, 1x `main`,
+  1x `calibration`, e 1 span per thread col nome della task (`HI_task-0`, `LO_noise-1..4`)
+  -> conferma diretta del bug di `count_exported_spans()`: solo lo span *del thread* porta
+  il nome della task, i 10 discendenti no. Nota operativa: `stdout.log` resta **vuoto
+  finche' il run non e' finito** (il BatchSpanProcessor svuota tutto allo shutdown), quindi
+  non contare gli span di un run ancora in corso; (5) **correggere `count_exported_spans()`**, che conta la
   sottostringa in tutto il file e quindi raddoppia (`name` + attributo `config.name`):
   contare solo le righe `name`, vedi `3-exporter/NOTES.md` §8; (6) **non usare
   `max_duration_us`/`mean_duration_us` per confrontare livelli di tracing**: derivano da
