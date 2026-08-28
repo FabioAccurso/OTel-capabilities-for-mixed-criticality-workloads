@@ -157,7 +157,7 @@ Lo stesso teardown e' scritto in **due punti**:
 | punto | riga | lock |
 |---|---|---|
 | `__shutdown()` (terminazione forzata) | 894 | `fork_mutex` |
-| `thread_body()` (uscita naturale) | 1766 | **nessuno** |
+| `thread_body()` (uscita naturale) | 1792 (dopo il fix del cpuset) | **nessuno** |
 
 Entrambi facevano:
 
@@ -189,8 +189,8 @@ Due difetti sovrapposti:
 - `thread_body()` prende `fork_mutex` attorno al teardown, lo stesso che usa
   `__shutdown()`.
 
-Nessun rischio di deadlock: `__shutdown()` rilascia `fork_mutex` alla riga 910,
-**prima** del ciclo di `pthread_join()` alla 934, quindi un thread che prende il
+Nessun rischio di deadlock: `__shutdown()` rilascia `fork_mutex` alla riga 912,
+**prima** del ciclo di `pthread_join()` alla 938, quindi un thread che prende il
 mutex mentre esce non blocca chi lo sta aspettando. E fra `lock` e `unlock` non ci
 sono punti di cancellazione, quindi un `pthread_cancel()` non puo' lasciare il mutex
 bloccato.
