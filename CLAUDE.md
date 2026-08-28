@@ -580,7 +580,34 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   descriverle con le due mode e la ripartizione, e non usarle come baseline senza
   dichiararlo; (12) intitolare le celle Simple **"comportamento a backend irraggiungibile"**,
   non "costo dell'export".
-  Stato:
+  Stato: **FATTO**. `scripts/measurements/analyze_doe.py` **riscritto** -> `2-DoE/results.csv`
+  (**410 run**, 39 colonne, ~2 min di elaborazione). Aggregazione in `2-DoE/aggregate.py`,
+  grafici in `2-DoE/make_plots.py` -> `2-DoE/plots/*.svg` (5 figure). Documentazione in
+  `2-DoE/NOTES-task5.md` e `SPIEGAZIONE-task5.md`. Pagina di sintesi pubblicata come
+  Artifact "Telemetria contro scadenze"
+  (https://claude.ai/code/artifact/64c8a36e-bdab-42cb-9e1b-24e72e81f1ca), copia locale in
+  `2-DoE/report-task5.html`.
+  **Correzioni applicate** (tutte e 12 le avvertenze accumulate): scarto della prima riga;
+  `count_exported_spans()` riscritto — conta le righe `^  name\s*:\s*(\S+)`, e la
+  verifica sul campo conferma il bug segnalato dal compagno di corso: la vecchia dava
+  **2** per HI e **8** per LO invece di 1 e 4 (fattore 2 da `name` + `config.name`) e non
+  contava affatto i **12 discendenti su 17**; aggiunte `hi_deadline_miss_count` (i miss si
+  SOMMANO), `hi_period_iqr_us` (distingue degrado diffuso da incidenti isolati),
+  `hi_slack_min_us`, `hi_wu_latency_p99_us`; log LO letti da `.gz` con famiglia di colonne
+  `lo_*`; `max_duration_us`/`mean_duration_us` conservate ma marcate come **da NON usare**
+  per confrontare livelli di tracing.
+  **Sintesi dei tre risultati**: (1) l'instrumentazione costa **30-56 us/giro** = <1% del
+  budget, 0 miss in 240000 giri (blocchi 1-2); (2) **0 separazioni su 150** — il ratio
+  sampler decide sulla trace, non sul task; la frazione osservata e' *coerente con* quella
+  nominale ma con IC di Wilson larghi 30-40 punti; (3) **51 deadline miss, tutte e sole con
+  Simple**, stalli fino a **86 ms**, mentre Batch fa 0 ovunque con -8 us/giro contro -340.
+  **Questioni aperte dichiarate** (NOTES-task5 §6): bimodalita' riproducibile in 3 campagne
+  (test `setarch -R` **proposto e NON eseguito**); calo di `run` al livello 3 (ipotesi SMT
+  testata e scartata); nessun numero per il costo di un export riuscito.
+  **Nota tecnica**: matplotlib e numpy non sono installati -> grafici come SVG in Python
+  puro (vettoriale, meglio per la relazione). Palette di riferimento della skill `dataviz`
+  usata **senza modifiche**; il validator richiede node, non disponibile, ma non avendo
+  sostituito le tinte i valori documentati come validati restano tali.
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della
   consegna): sketch di un `Sampler` custom che decide su nome/attributi dello span
