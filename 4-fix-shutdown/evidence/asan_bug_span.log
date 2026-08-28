@@ -1,0 +1,122 @@
+[rt-app] <notice> pLoad = 139ns
+[rt-app] <notice> thread_data_set_unique_name 0 HI_task-0
+[rt-app] <notice> thread_data_set_unique_name 1 LO_noise-1
+[rt-app] <notice> thread_data_set_unique_name 2 LO_noise-2
+[rt-app] <notice> thread_data_set_unique_name 3 LO_noise-3
+[rt-app] <notice> thread_data_set_unique_name 4 LO_noise-4
+[rt-app] <notice> [0] starting thread ...
+
+[rt-app] <notice> [3] starting thread ...
+
+[rt-app] <notice> [1] starting thread ...
+
+[rt-app] <notice> [2] starting thread ...
+
+[rt-app] <notice> [4] starting thread ...
+
+[rt-app] <notice> [0] Starting with SCHED_OTHER policy with priority 0
+[rt-app] <notice> [2] Starting with SCHED_OTHER policy with priority 0
+[rt-app] <notice> [4] Starting with SCHED_OTHER policy with priority 0
+[rt-app] <notice> [1] Starting with SCHED_OTHER policy with priority 0
+[rt-app] <notice> [3] Starting with SCHED_OTHER policy with priority 0
+=================================================================
+==5807==ERROR: AddressSanitizer: heap-use-after-free on address 0x503000007878 at pc 0x61ed4ebe4af6 bp 0x713d0b5d6380 sp 0x713d0b5d6370
+READ of size 8 at 0x503000007878 thread T4
+    #0 0x61ed4ebe4af5 in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() /usr/include/c++/13/bits/shared_ptr_base.h:337
+    #1 0x61ed4ebe4af5 in std::__shared_count<(__gnu_cxx::_Lock_policy)2>::~__shared_count() /usr/include/c++/13/bits/shared_ptr_base.h:1071
+    #2 0x61ed4ebe4af5 in std::__shared_ptr<opentelemetry::v1::trace::Span, (__gnu_cxx::_Lock_policy)2>::~__shared_ptr() /usr/include/c++/13/bits/shared_ptr_base.h:1524
+    #3 0x61ed4ebe4af5 in std::shared_ptr<opentelemetry::v1::trace::Span>::~shared_ptr() /usr/include/c++/13/bits/shared_ptr.h:175
+    #4 0x61ed4ebe4af5 in opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>::shared_ptr_wrapper::~shared_ptr_wrapper() ../../otel-installdir/include/opentelemetry/nostd/shared_ptr.h:55
+    #5 0x61ed4ebea065 in opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>::~shared_ptr() ../../otel-installdir/include/opentelemetry/nostd/shared_ptr.h:123
+    #6 0x61ed4ebea065 in void absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer::operator()<5ul>(std::integral_constant<unsigned long, 5ul>) const ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../types/internal/variant.h:1305
+    #7 0x61ed4ebea065 in decltype (((declval<absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer>)())((declval<std::integral_constant<unsigned long, 5ul> >)())) absl::otel_v1::base_internal::Callable::Invoke<absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer, std::integral_constant<unsigned long, 5ul> >(absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer&&, std::integral_constant<unsigned long, 5ul>&&) ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../utility/../base/internal/invoke.h:153
+    #8 0x61ed4ebea065 in decltype (absl::otel_v1::base_internal::Invoker<absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer, std::integral_constant<unsigned long, 5ul> >::type::Invoke((declval<absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer>)(), (declval<std::integral_constant<unsigned long, 5ul> >)())) absl::otel_v1::base_internal::Invoke<absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer, std::integral_constant<unsigned long, 5ul> >(absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer&&, std::integral_constant<unsigned long, 5ul>&&) ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../utility/../base/internal/invoke.h:180
+    #9 0x61ed4ebea065 in absl::otel_v1::variant_internal::ReachableSwitchCase<absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer, 5ul>::Run(absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer&&) ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../types/internal/variant.h:296
+    #10 0x61ed4ebea065 in absl::otel_v1::variant_internal::VisitIndicesResultImpl<absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer, unsigned long>::type absl::otel_v1::variant_internal::VisitIndicesSwitch<8ul>::Run<absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer>(absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::Destroyer&&, unsigned long) ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../types/internal/variant.h:371
+    #11 0x61ed4ebebaad in absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::destroy() ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../types/internal/variant.h:1316
+    #12 0x61ed4ebebaad in absl::otel_v1::variant_internal::VariantStateBaseDestructorNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::~VariantStateBaseDestructorNontrivial() ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../types/internal/variant.h:1318
+    #13 0x61ed4ebebaad in absl::otel_v1::variant_internal::VariantMoveBaseNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::~VariantMoveBaseNontrivial() ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../types/internal/variant.h:1326
+    #14 0x61ed4ebebaad in absl::otel_v1::variant_internal::VariantCopyBaseNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::~VariantCopyBaseNontrivial() ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../types/internal/variant.h:1368
+    #15 0x61ed4ebebaad in absl::otel_v1::variant_internal::VariantMoveAssignBaseNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::~VariantMoveAssignBaseNontrivial() ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../types/internal/variant.h:1409
+    #16 0x61ed4ebebaad in absl::otel_v1::variant_internal::VariantCopyAssignBaseNontrivial<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::~VariantCopyAssignBaseNontrivial() ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/../types/internal/variant.h:1440
+    #17 0x61ed4ebebaad in absl::otel_v1::variant<absl::otel_v1::monostate, bool, long, unsigned long, double, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::SpanContext>, opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::baggage::Baggage> >::~variant() ../../otel-installdir/include/opentelemetry/nostd/internal/absl/types/variant.h:569
+    #18 0x61ed4ebebaad in opentelemetry::v1::context::Context::DataList::~DataList() ../../otel-installdir/include/opentelemetry/context/context.h:163
+    #19 0x61ed4ebebaad in std::_Sp_counted_ptr<opentelemetry::v1::context::Context::DataList*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() /usr/include/c++/13/bits/shared_ptr_base.h:428
+    #20 0x61ed4ebc6f15 in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() /usr/include/c++/13/bits/shared_ptr_base.h:346
+    #21 0x61ed4ebc6f15 in std::__shared_count<(__gnu_cxx::_Lock_policy)2>::~__shared_count() /usr/include/c++/13/bits/shared_ptr_base.h:1071
+    #22 0x61ed4ebc6f15 in std::__shared_ptr<opentelemetry::v1::context::Context::DataList, (__gnu_cxx::_Lock_policy)2>::~__shared_ptr() /usr/include/c++/13/bits/shared_ptr_base.h:1524
+    #23 0x61ed4ebc6f15 in std::shared_ptr<opentelemetry::v1::context::Context::DataList>::~shared_ptr() /usr/include/c++/13/bits/shared_ptr.h:175
+    #24 0x61ed4ebc6f15 in opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::context::Context::DataList>::shared_ptr_wrapper::~shared_ptr_wrapper() ../../otel-installdir/include/opentelemetry/nostd/shared_ptr.h:55
+    #25 0x61ed4ebc5e0a in opentelemetry::v1::context::Token::~Token() (/home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app+0x1de0a) (BuildId: e2ea4a9da76f674bdfde75260b016f5ed6b25919)
+    #26 0x61ed4ebc611c in opentelemetry::v1::context::Token::~Token() (/home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app+0x1e11c) (BuildId: e2ea4a9da76f674bdfde75260b016f5ed6b25919)
+    #27 0x61ed4ebec60b in opentelemetry::v1::nostd::unique_ptr<opentelemetry::v1::context::Token>::delete_ptr() ../../otel-installdir/include/opentelemetry/nostd/unique_ptr.h:141
+    #28 0x61ed4ebd9074 in opentelemetry::v1::nostd::unique_ptr<opentelemetry::v1::context::Token>::reset(opentelemetry::v1::context::Token*) ../../otel-installdir/include/opentelemetry/nostd/unique_ptr.h:116
+    #29 0x61ed4ebd9074 in opentelemetry::v1::nostd::unique_ptr<opentelemetry::v1::context::Token>::~unique_ptr() ../../otel-installdir/include/opentelemetry/nostd/unique_ptr.h:72
+    #30 0x61ed4ebd9074 in opentelemetry::v1::trace::Scope::~Scope() ../../otel-installdir/include/opentelemetry/trace/scope.h:25
+    #31 0x61ed4ebd9074 in thread_body /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:1811
+    #32 0x713d12ea7a41 in asan_thread_start ../../../../src/libsanitizer/asan/asan_interceptors.cpp:234
+    #33 0x713d12859b83 in start_thread nptl/pthread_create.c:447
+    #34 0x713d128e6d6b in clone3 ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+0x503000007878 is located 8 bytes inside of 24-byte region [0x503000007870,0x503000007888)
+freed by thread T0 here:
+    #0 0x713d12f485e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x61ed4ebe0e3f in std::_Sp_counted_ptr<opentelemetry::v1::trace::Span*, (__gnu_cxx::_Lock_policy)2>::~_Sp_counted_ptr() /usr/include/c++/13/bits/shared_ptr_base.h:419
+    #2 0x61ed4ebe0e3f in std::_Sp_counted_ptr<opentelemetry::v1::trace::Span*, (__gnu_cxx::_Lock_policy)2>::_M_destroy() /usr/include/c++/13/bits/shared_ptr_base.h:432
+    #3 0x61ed4ebe548c in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() /usr/include/c++/13/bits/shared_ptr_base.h:347
+    #4 0x61ed4ebe548c in std::__shared_count<(__gnu_cxx::_Lock_policy)2>::~__shared_count() /usr/include/c++/13/bits/shared_ptr_base.h:1071
+    #5 0x61ed4ebe548c in std::__shared_ptr<opentelemetry::v1::trace::Span, (__gnu_cxx::_Lock_policy)2>::~__shared_ptr() /usr/include/c++/13/bits/shared_ptr_base.h:1524
+    #6 0x61ed4ebe548c in std::__shared_ptr<opentelemetry::v1::trace::Span, (__gnu_cxx::_Lock_policy)2>::reset() /usr/include/c++/13/bits/shared_ptr_base.h:1642
+    #7 0x61ed4ebe548c in opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>::shared_ptr_wrapper::Reset() ../../otel-installdir/include/opentelemetry/nostd/shared_ptr.h:77
+    #8 0x61ed4ebd00e7 in opentelemetry::v1::nostd::shared_ptr<opentelemetry::v1::trace::Span>::operator=(decltype(nullptr)) ../../otel-installdir/include/opentelemetry/nostd/shared_ptr.h:138
+    #9 0x61ed4ebd00e7 in __shutdown /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:903
+    #10 0x61ed4ebdf234 in main /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:2164
+    #11 0x713d127e71c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #12 0x713d127e728a in __libc_start_main_impl ../csu/libc-start.c:360
+    #13 0x61ed4ebc3e64 in _start (/home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app+0x1be64) (BuildId: e2ea4a9da76f674bdfde75260b016f5ed6b25919)
+
+previously allocated by thread T4 here:
+    #0 0x713d12f47548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+    #1 0x61ed4ec4142c in opentelemetry::v1::sdk::trace::Tracer::StartSpan(opentelemetry::v1::nostd::string_view, opentelemetry::v1::common::KeyValueIterable const&, opentelemetry::v1::trace::SpanContextKeyValueIterable const&, opentelemetry::v1::trace::StartSpanOptions const&) (/home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app+0x9942c) (BuildId: e2ea4a9da76f674bdfde75260b016f5ed6b25919)
+
+Thread T4 created by T0 here:
+    #0 0x713d12f3e1f9 in pthread_create ../../../../src/libsanitizer/asan/asan_interceptors.cpp:245
+    #1 0x61ed4ebcc1dd in create_thread /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:408
+    #2 0x61ed4ebdf1a7 in main /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:2152
+    #3 0x713d127e71c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x713d127e728a in __libc_start_main_impl ../csu/libc-start.c:360
+    #5 0x61ed4ebc3e64 in _start (/home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app+0x1be64) (BuildId: e2ea4a9da76f674bdfde75260b016f5ed6b25919)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /usr/include/c++/13/bits/shared_ptr_base.h:337 in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release()
+Shadow bytes around the buggy address:
+  0x503000007580: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x503000007600: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x503000007680: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x503000007700: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x503000007780: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x503000007800: fa fa fd fd fd fd fa fa fd fd fd fd fa fa fd[fd]
+  0x503000007880: fd fa fa fa 00 00 00 00 fa fa fd fd fd fa fa fa
+  0x503000007900: 00 00 00 fa fa fa 00 00 02 fa fa fa 00 00 05 fa
+  0x503000007980: fa fa 00 00 00 01 fa fa 00 00 00 03 fa fa 00 00
+  0x503000007a00: 00 03 fa fa 00 00 00 03 fa fa fd fd fd fa fa fa
+  0x503000007a80: fd fd fd fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==5807==ABORTING

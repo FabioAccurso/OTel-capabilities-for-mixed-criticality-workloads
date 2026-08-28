@@ -1,0 +1,89 @@
+diff --git a/rt-app/src/rt-app.cpp b/rt-app/src/rt-app.cpp
+index fe24c18..e0eadf7 100644
+--- a/rt-app/src/rt-app.cpp
++++ b/rt-app/src/rt-app.cpp
+@@ -896,10 +896,12 @@ static void __shutdown(bool force_terminate)
+                 if (threads[i].data->span->IsRecording()) {
+ 					threads[i].data->span->End();
+ 				}
+-				// Call the destructor
+-			    threads[i].data->span.~shared_ptr();
+-
+-			    // Set to nullptr so no other function tries to access it
++			    // Release our reference. Assigning nullptr already destroys the
++			    // referent (if we were the last owner) and leaves the shared_ptr in
++			    // a valid empty state. The explicit ~shared_ptr() that used to sit
++			    // here ended the object's lifetime, so the assignment below then
++			    // released the control block a SECOND time -- undefined behaviour.
++			    // See 4-fix-shutdown/NOTES.md.
+ 			    threads[i].data->span = nullptr;
+ 			}
+ 			#endif
+@@ -1071,7 +1073,6 @@ static void set_thread_affinity(thread_data_t *data, cpuset_data_t *cpu_data)
+ 	if (data->def_cpu_data.cpuset == NULL) {
+ 		/* Get default affinity */
+ 		cpu_set_t cpuset;
+-		unsigned int cpu_count;
+ 
+ 		ret = pthread_getaffinity_np(pthread_self(),
+ 						    sizeof(cpu_set_t), &cpuset);
+@@ -1080,9 +1081,27 @@ static void set_thread_affinity(thread_data_t *data, cpuset_data_t *cpu_data)
+ 			perror("pthread_get_affinity");
+ 			exit(EXIT_FAILURE);
+ 		}
+-		cpu_count = CPU_COUNT(&cpuset);
+-		data->def_cpu_data.cpusetsize = CPU_ALLOC_SIZE(cpu_count);
+-		data->def_cpu_data.cpuset = CPU_ALLOC(cpu_count);
++		/*
++		 * Allocate a FULL cpu_set_t, the same convention used for
++		 * config-provided cpusets (rt-app_parse_config.cpp:765).
++		 *
++		 * The previous CPU_ALLOC(CPU_COUNT(&cpuset)) was wrong twice over:
++		 *  - CPU_COUNT() is the number of CPUs SET in the mask, not the
++		 *    highest CPU id the mask must be able to represent. Shielded on
++		 *    CPUs 2,3,6,7 it returns 4, sizing the set for ids 0..3 while the
++		 *    mask actually holds ids 6 and 7;
++		 *  - the resulting 8-byte allocation was then compared by CPU_EQUAL()
++		 *    below, which unconditionally reads sizeof(cpu_set_t) == 128
++		 *    bytes -> 120 bytes read past the end of the heap block, confirmed
++		 *    by AddressSanitizer. See 4-fix-shutdown/NOTES.md.
++		 */
++		data->def_cpu_data.cpusetsize = sizeof(cpu_set_t);
++		data->def_cpu_data.cpuset =
++			static_cast<cpu_set_t *>(malloc(data->def_cpu_data.cpusetsize));
++		if (data->def_cpu_data.cpuset == NULL) {
++			perror("malloc(cpu_set_t)");
++			exit(EXIT_FAILURE);
++		}
+ 		memcpy(data->def_cpu_data.cpuset, &cpuset,
+ 						data->def_cpu_data.cpusetsize);
+ 		create_cpuset_str(&data->def_cpu_data);
+@@ -1765,18 +1784,23 @@ void *thread_body(void *arg)
+ 
+ 	/**************************** OTEL - End thread span *******************************/
+ 	#if (RTAPP_TRACE_LEVEL > 0)
++	// Serialise against __shutdown(), which tears down the very same span under
++	// fork_mutex before pthread_cancel()ing us. IsRecording() is a plain read and
++	// never was a synchronisation primitive: without this lock both paths could
++	// destroy the same shared_ptr concurrently. __shutdown() releases fork_mutex
++	// before its pthread_join() loop, so taking it here cannot deadlock.
++	pthread_mutex_lock(&fork_mutex);
+ 	if (data->span) {
+ 		// Only end it if it hasn't been ended by __shutdown yet
+ 		if (data->span->IsRecording()) {
+ 			data->span->End();
+ 		}
+ 
+-		// Call the destructor
+-		data->span.~shared_ptr();
+-
+-		// Set to nullptr so no other function tries to access it
+-		data->span = nullptr; 
++		// Assigning nullptr is the whole teardown: it drops our reference and
++		// leaves the shared_ptr valid and empty. See the note in __shutdown().
++		data->span = nullptr;
+ 	}
++	pthread_mutex_unlock(&fork_mutex);
+ 	#endif
+ 	/***********************************************************************************/
+ 

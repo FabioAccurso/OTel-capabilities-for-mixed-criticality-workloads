@@ -1,0 +1,82 @@
+[rt-app] <notice> pLoad = 139ns
+[rt-app] <notice> thread_data_set_unique_name 0 HI_task-0
+[rt-app] <notice> thread_data_set_unique_name 1 LO_noise-1
+[rt-app] <notice> thread_data_set_unique_name 2 LO_noise-2
+[rt-app] <notice> thread_data_set_unique_name 3 LO_noise-3
+[rt-app] <notice> thread_data_set_unique_name 4 LO_noise-4
+[rt-app] <notice> [0] starting thread ...
+
+[rt-app] <notice> [1] starting thread ...
+
+[rt-app] <notice> [4] starting thread ...
+
+[rt-app] <notice> [2] starting thread ...
+
+[rt-app] <notice> [1] Starting with SCHED_OTHER policy with priority 0
+[rt-app] <notice> [4] Starting with SCHED_OTHER policy with priority 0
+[rt-app] <notice> [0] Starting with SCHED_OTHER policy with priority 0
+[rt-app] <notice> [3] starting thread ...
+
+=================================================================
+[rt-app] <notice> [2] Starting with SCHED_OTHER policy with priority 0
+==5513==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000008058 at pc 0x734229deb990 bp 0x7342209cb560 sp 0x7342209cad08
+[rt-app] <notice> [3] Starting with SCHED_OTHER policy with priority 0
+READ of size 128 at 0x502000008058 thread T6
+    #0 0x734229deb98f in MemcmpInterceptorCommon(void*, int (*)(void const*, void const*, unsigned long), void const*, void const*, unsigned long) ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:814
+    #1 0x734229dec37a in memcmp ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:845
+    #2 0x734229dec37a in memcmp ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:840
+    #3 0x6133596e9320 in set_thread_affinity /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:1104
+    #4 0x6133596e9320 in thread_body /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:1609
+    #5 0x734229d80a41 in asan_thread_start ../../../../src/libsanitizer/asan/asan_interceptors.cpp:234
+    #6 0x734229732b83 in start_thread nptl/pthread_create.c:447
+    #7 0x7342297bfd6b in clone3 ../sysdeps/unix/sysv/linux/x86_64/clone3.S:78
+
+0x502000008058 is located 0 bytes after 8-byte region [0x502000008050,0x502000008058)
+allocated by thread T6 here:
+    #0 0x734229e1f9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
+    #1 0x6133596ea0bc in set_thread_affinity /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:1085
+    #2 0x6133596ea0bc in thread_body /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:1609
+    #3 0x734229d80a41 in asan_thread_start ../../../../src/libsanitizer/asan/asan_interceptors.cpp:234
+    #4 0x734229732b83 in start_thread nptl/pthread_create.c:447
+
+Thread T6 created by T0 here:
+    #0 0x734229e171f9 in pthread_create ../../../../src/libsanitizer/asan/asan_interceptors.cpp:245
+    #1 0x6133596df1fd in create_thread /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:408
+    #2 0x6133596f210d in main /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app.cpp:2135
+    #3 0x7342296c01c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7342296c028a in __libc_start_main_impl ../csu/libc-start.c:360
+    #5 0x6133596d6e84 in _start (/home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/rt-app/src/rt-app+0x1be84) (BuildId: 0ea83e4b300bcae6028a29648ff64336e435d549)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:814 in MemcmpInterceptorCommon(void*, int (*)(void const*, void const*, unsigned long), void const*, void const*, unsigned long)
+Shadow bytes around the buggy address:
+  0x502000007d80: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000007e00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000007e80: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000007f00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000007f80: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x502000008000: fa fa fd fd fa fa 00 03 fa fa 00[fa]fa fa fa fa
+  0x502000008080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000008100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000008180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000008200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000008280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==5513==ABORTING

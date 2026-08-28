@@ -10,8 +10,14 @@
   esplicitamente dicendo che non è soddisfatto.
 - Al termine di un task, aggiorna il suo checkbox (`[ ]` → `[x]`) e la riga "Stato" sotto di
   esso in questo file, con una frase breve su cosa è stato fatto/dove sono i risultati.
-- Non modificare i file `rt-app*.cpp/.h` in `src/` in modo distruttivo: sono forniti dal
-  docente, già in C++ e già con hook OTel parziali. Estendi, non riscrivere da zero.
+- I file `rt-app*.cpp/.h` in `src/` **non sono del docente**: sono una traduzione in C++
+  fatta da un gruppo dell'anno scorso, che il docente ha girato a Fabio come materiale
+  utile ma **senza garanzia che sia funzionante** (precisato da Fabio il 2026-08-28).
+  Quindi bug e difetti reali **vanno corretti**, non aggirati — ma ogni correzione va
+  documentata in modo che Fabio possa segnalarla al docente: cartella dedicata con
+  `NOTES.md` + `SPIEGAZIONE.md`, binario prima/dopo come prova, e commit separato dalla
+  campagna di misura. Resta valido il principio di estendere invece di riscrivere da zero:
+  interventi minimi e mirati, non rifacimenti.
 - Se un comando fallisce, riporta l'errore esatto invece di provare a "indovinare" un fix
   senza spiegarlo.
 
@@ -358,7 +364,9 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
 - [~] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
   RTAPP_SRC_DIR/BIN_CACHE/DOE_ROOT in cima allo script, isolare le CPU, lanciare
   block1/block2/block3 (uno alla volta, su richiesta esplicita — non tutti insieme).
-  Stato: **BLOCCO 1 FATTO**, blocchi 2 e 3 da lanciare. Percorsi risolti da
+  Stato: **BLOCCO 1 FATTO**, blocchi 2 e 3 da lanciare. Primo tentativo di blocco 2 il
+  2026-08-28 **abortito da un SIGSEGV** di rt-app: due bug di memoria trovati e corretti,
+  vedi **Fix 4** piu' sotto. Dati parziali scartati, blocco 2 da rilanciare da zero. Percorsi risolti da
   `PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"` invece che
   hardcodati, quindi il repo funziona ovunque sia clonato. Risultati e analisi in
   `2-DoE/NOTES-block1.md`, `SPIEGAZIONE-block1.md`, `analyze_block1.py`; dati grezzi in
@@ -410,6 +418,50 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   `data_table.csv` -> svuotare prima `block*/`, `data_table.csv` e `index.txt`. Vale per i
   **rilanci**: al primo giro dei blocchi 2 e 3 le righe si accodano correttamente alle 80
   del blocco 1, che NON vanno cancellate.
+
+- [x] **Fix 4** — Due bug di memoria in `rt-app.cpp` trovati durante il primo tentativo
+  di blocco 2 e corretti (fuori numerazione: emersi come blocco al Task 4).
+  Documentazione ed evidenze in `4-fix-shutdown/` (`NOTES.md`, `SPIEGAZIONE.md`,
+  `evidence/` con i due binari a confronto, i log ASan prima/dopo, lo stderr del run
+  crashato e `fix.patch`). Un solo file toccato, **37 righe aggiunte / 13 rimosse**.
+  Origine: il blocco 2 e' morto con **SIGSEGV** (exit 139) al run 12/25 della cella
+  AlwaysOff, il 2026-08-28 alle 11:05:51, **in chiusura** e non durante la misura.
+  (a) **La caccia statistica e' fallita ed e' un dato**: 1 crash su 32 esecuzioni reali,
+  e 0/20 sia col binario difettoso sia con quello corretto -> venti ripetizioni non
+  bastano a decidere su un evento raro. Un primo tentativo era pure **invalido** (senza
+  root `pthread_setschedparam` fallisce e rt-app muore per tutt'altro motivo).
+  Passaggio ad **AddressSanitizer**, che vede il difetto anche quando non causa crash
+  (serve `"lock_pages": false` come **booleano** JSON, e task a `SCHED_OTHER` per girare
+  senza root).
+  (b) **Bug A, heap-buffer-overflow deterministico** (`rt-app.cpp:1104`):
+  `CPU_ALLOC(CPU_COUNT(&cpuset))` alloca 8 byte, poi `CPU_EQUAL` ne legge 128 -> 120
+  fuori bounds. Doppio errore: `CPU_COUNT` e' il numero di CPU *accese*, non l'id massimo
+  da rappresentare (con shield 2,3,6,7 da' 4 e dimensiona per gli id 0..3), e le macro a
+  dimensione fissa non vanno usate su set allocati con `CPU_ALLOC` (serve `CPU_EQUAL_S`).
+  Risolto allineando il cpuset di default a `sizeof(cpu_set_t)`, come gia' fa
+  `rt-app_parse_config.cpp:765`. **Il blocco 1 NON va rifatto**: verificato con
+  `strace -c -e trace=sched_setaffinity` che prima e dopo il fix le chiamate sono **5 in
+  entrambi i casi** (una per thread, all'avvio), perche' nel caso comune i due operandi
+  sono lo stesso puntatore -> la lettura era UB ma non cambiava il comportamento.
+  (c) **Bug B, heap-use-after-free nel teardown degli span** (`rt-app.cpp:894` e `1766`):
+  `data->span.~shared_ptr()` seguito da `data->span = nullptr` rilascia il control block
+  **due volte** (assegnare `nullptr` e' gia' il teardown completo); e i due punti che lo
+  fanno — `__shutdown()` e `thread_body()` — possono eseguire in parallelo perche' solo
+  il primo prende `fork_mutex`. `IsRecording()` non e' una primitiva di sincronizzazione.
+  Risolto togliendo il distruttore esplicito in entrambi i punti e prendendo `fork_mutex`
+  anche in `thread_body()` (nessun deadlock: `__shutdown()` lo rilascia alla riga 910,
+  prima del `pthread_join()` alla 934). Verifica controllata: **5/5 run con errore ASan
+  col bug, 0/5 col fix**. Il bug si manifesta **anche con AlwaysOff**, perche' il
+  distruttore esplicito viene eseguito comunque.
+  (d) **Perche' il blocco 1 non era mai crashato**: aveva `n_lo=0`, un thread solo. Il
+  blocco 2 ne ha 5, il blocco 3 arriva a **9** -> senza questi fix il blocco 3 sarebbe
+  stato con ogni probabilita' ineseguibile.
+  (e) **Materiale per il Task 6**: il costo del monitoraggio non e' solo jitter, e' anche
+  **affidabilita'** — il codice di instrumentazione puo' uccidere l'applicazione
+  monitorata, con probabilita' crescente nel numero di task monitorati.
+  Pulizia fatta: `bin/` svuotato (tutti i binari venivano dal sorgente difettoso), gli 11
+  run parziali del blocco 2 rimossi con le loro righe da `data_table.csv` e `index.txt`
+  (tornati a 80 = solo blocco 1), albero di build pulito.
 
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
