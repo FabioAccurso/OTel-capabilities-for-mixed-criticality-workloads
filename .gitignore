@@ -48,3 +48,4 @@ otel-installdir/
 
 # backup automatico creato da run_doe.sh alla migrazione dello schema del data_table
 *.pre-aperf.bak
+*.pre-exitcode.bak

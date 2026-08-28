@@ -1,0 +1,65 @@
+BLOCCO 3 — contesa processor/exporter sotto carico di sottofondo crescente
+exporter Zipkin senza collector, 15 rip./cella, 20 s
+
+A. BUDGET PER ITERAZIONE (run + slack), mediana fra ripetizioni [us]
+   Il budget e' la metrica corretta: costante se non c'e' overhead.
+
+braccio                           n_lo=0              n_lo=1              n_lo=4              n_lo=8
+----------------------------------------------------------------------------------------------------
+trace0 (controllo)       9991 [9991-9992]     9991 [9991-9992]     9992 [9991-9992]     9991 [9991-9992]
+trace3 Batch             9977 [9976-9977]     9978 [9978-9979]     9978 [9978-9979]     9979 [9978-9979]
+trace3 Simple            9686 [9678-9688]     9691 [9685-9693]     8689 [8683-9672]     9682 [9669-9690]
+
+   mediana [min-max fra le ripetizioni]. Un intervallo largo segnala che la
+   cella non e' omogenea: trace3 Simple n_lo=4 e' BIMODALE (~8688 e ~9665,
+   8 e 7 ripetizioni), quindi la sua mediana non descrive un comportamento unico.
+
+   delta rispetto al controllo trace0, stesso n_lo [us]:
+braccio                   n_lo=0      n_lo=1      n_lo=4      n_lo=8
+trace3 Batch               -14.0       -13.0       -14.0       -12.0
+trace3 Simple             -305.0      -300.0     -1303.0      -309.0
+
+B. DEADLINE MISS (dopo lo scarto del transitorio di avvio)
+braccio                   n_lo=0      n_lo=1      n_lo=4      n_lo=8
+--------------------------------------------------------------------
+trace0 (controllo)       0/29993     0/29969     0/29925     0/29862
+trace3 Batch             0/29965     0/29950     0/29907     0/29841
+trace3 Simple            0/29985     0/29835    12/29624     9/29544
+
+   righe scartate come transitorio (media), attese 1/2/5/10 per n_lo 0/1/4/8:
+trace0 (controllo)           1.0         2.1         5.0         9.2
+trace3 Batch                 2.3         3.3         6.2        10.7
+trace3 Simple                2.0         3.0         6.4        11.7
+
+C. TENTATIVI DI EXPORT (righe 'ZIPKIN EXPORTER' su stderr, media per run)
+   Batch accumula e spara a tick da 5 s; Simple esporta a ogni span chiuso.
+braccio                   n_lo=0      n_lo=1      n_lo=4      n_lo=8
+--------------------------------------------------------------------
+trace0 (controllo)           0.0         0.0         0.0         0.0
+trace3 Batch                 7.9       117.5       236.9       231.5
+trace3 Simple             2007.0     16044.9     25520.5     25543.4
+
+D. TEMPORIZZAZIONE DI HI: slack minimo [us] (margine peggiore osservato)
+braccio                   n_lo=0      n_lo=1      n_lo=4      n_lo=8
+--------------------------------------------------------------------
+trace0 (controllo)          3292         714        1361         109
+trace3 Batch                 181          78          65         203
+trace3 Simple                441         326       -2453       -3631
+
+E. RUN IN REGIME ANOMALO (run_med > 1.5x la mediana della propria cella)
+   Colonna aperf_mhz ora attiva: se un anomalo compare, dice subito se la
+   CPU era davvero a ~626 MHz (ipotesi frequenza) o a ~2296 (falsificata).
+   trace0 (controllo)   n_lo=1   rip.12  run_med=    4077 (2.04x)  aperf_mhz=2286
+   trace3 Batch         n_lo=0   rip.6   run_med=    6584 (3.29x)  aperf_mhz=2286
+
+   2 run anomali su 180 (1.1%)
+   aperf_mhz su tutto il blocco: n=180 media=2294.0 min=2285 max=2300
+
+F. POSIZIONE DEI DEADLINE MISS DENTRO IL RUN
+   Se fossero un artefatto dello shutdown si addenserebbero a fine run.
+   21 miss totali, per quarto del run:
+       0- 25 %  ##### 5
+      25- 50 %  ######## 8
+      50- 75 %  ##### 5
+      75-100 %  ### 3
+   primo miss a idx 41, ultimo a idx 1960

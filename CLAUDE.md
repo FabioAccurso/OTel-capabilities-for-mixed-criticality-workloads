@@ -673,8 +673,9 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   assoluti no — e il fattore cambierebbe se rt-app aggiungesse un altro attributo contenente
   il nome. Contare invece le sole righe di intestazione: `grep -cE "^  name +: <nome>"`.
 
-- [~] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`). **Blocchi 1 e 2
-  fatti** (2026-08-27 e 2026-08-28), blocco 3 da fare, su richiesta esplicita.
+- [x] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`). **COMPLETATO**:
+  blocco 1 (2026-08-27), blocchi 2 e 3 e campagna diagnostica (2026-08-28). 485 run in
+  totale.
   `run_doe.sh` riscritto (originale in `run_doe.sh.orig`):
   - **path derivati dalla posizione dello script**, non piu' `$HOME/rtsia-project/...`;
   - **preflight che si ferma**: verifica shield attivo, `CpbDis=1` e `sudo` utilizzabile.
@@ -814,6 +815,57 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   `aperf_mhz` riportasse ~2296 invece di ~626, l'ipotesi frequenza sarebbe falsificata e
   resterebbero contesa SMT sul sibling cpu3 o pressione sulla memoria, da misurare con i
   contatori IPC di `perf stat`.
+
+  ### Blocco 3 — FATTO (2026-08-28), 180/180 run
+
+  12 celle (trace_level 0/3 x processor Batch/Simple x n_lo 0/1/4/8) x 15 rip. da 20 s,
+  sampler AlwaysOn, **exporter Zipkin senza collector**. Piattaforma: 2295 MHz su tutti i
+  180 run, `aperf_mhz` 2285-2300, Tctl 49.8 -> 56.1 C. Dati in `2-DoE/block3/`, analisi in
+  `2-DoE/block3/NOTES.md`, script `scripts/measurements/analyze_block3.py`.
+  **Cinque risultati**:
+  (a) **`SimpleSpanProcessor` fa perdere deadline al task critico.** Zero miss in tutte le
+      celle di controllo e in tutte le celle Batch, a qualunque carico; con Simple e
+      n_lo >= 4 compaiono **21 miss** con slack fino a **-3631 us** (sfora di 3.6 ms su un
+      periodo di 10 ms). I miss sono distribuiti uniformemente lungo il run (5/8/5/3 per
+      quarto, primo a idx 41, ultimo a idx 1960), quindi **non** sono un artefatto
+      dell'abort allo shutdown;
+  (b) **costo per iterazione: Batch ~13 us, Simple ~300 us**, cioe' 23 volte tanto — il 3 %
+      del periodo e il **15 % del lavoro utile**. Il valore di Batch e' costante al variare
+      del carico e coerente con i ~13 us del blocco 1. **La cella Simple n_lo=4 e' BIMODALE**
+      (8 rip. a ~8688, 7 a ~9665): la sua mediana non descrive un comportamento unico e la
+      non-monotonia apparente rispetto a n_lo=8 viene da li'. Secondo modo non spiegato;
+  (c) **la causa e' l'export sincrono**: `SimpleSpanProcessor::OnEnd` chiama `Export()` nel
+      thread che chiude lo span, sotto spin-lock condiviso (`simple_processor.h:60-70`).
+      Tentativi di export per run: **232 con Batch, 25 543 con Simple** a n_lo=8. Nota: senza
+      collector gli export falliscono subito con ECONNREFUSED, che e' il caso *piu'
+      favorevole* — con un collector reale Simple costerebbe di piu', non di meno;
+  (d) **Simple fa ABORTIRE il processo real-time**: 40 run su 180 terminati con SIGABRT
+      (`exit_code` 134), tutti nel braccio Simple (0/15 a n_lo=0, 11/15, 14/15, 15/15).
+      Causa verificata nel codice: `__shutdown()` usa `pthread_cancel` (`rt-app.cpp:933`);
+      glibc la implementa come eccezione di *forced unwind*; `SimpleSpanProcessor::OnEnd` e'
+      **`noexcept`** (`simple_processor.h:60`) e un unwind che attraversa un `noexcept` chiama
+      `std::terminate()`. Con Simple il thread sta quasi sempre dentro `OnEnd`, con Batch
+      quasi mai. Probabilita' misurata per numero di thread: 0/3, 2/3, 2/3, 3/3, 3/3 per 1,
+      2, 3, 5, 9 thread. **La scelta del processor non degrada le prestazioni: termina il
+      processo**, e in modo silenzioso rispetto ai dati (l'abort arriva a lavoro finito);
+  (e) **l'ipotesi "frequenza" per il regime a ~3.5x e' FALSIFICATA.** 2 run anomali su 180
+      (1.1 %, in linea con l'1.3 % precedente), stavolta con `aperf_mhz` attivo:
+      run_med 4077 (2.04x) e 6584 (3.29x), **entrambi con aperf_mhz = 2286**. La CPU girava a
+      frequenza nominale: il lavoro per iterazione cresce di 2-3.3x mentre i MHz non calano.
+      I due run cadono in celle **diverse** (una di controllo senza tracing, una Batch),
+      quindi il fenomeno **non dipende da OpenTelemetry**. Ipotesi rimaste: contesa SMT sul
+      sibling **cpu3** (non controllato: il thread main ha `Cpus_allowed_list = 2-3,6-7`,
+      task 0.5) o pressione su cache/memoria — si distinguono con i contatori IPC di
+      `perf stat`.
+
+  **Modifiche a `run_doe.sh` rese necessarie dal blocco 3**: i run del braccio Simple
+  abortiscono *dopo* aver scritto i log, quindi lo script non deve fermarsi sull'exit status.
+  Ora registra la colonna **`exit_code`** e valida il run sul **contenuto** (soglia al 99 %
+  delle iterazioni attese), cosi' un crash *precoce*, che troncherebbe i dati, interrompe
+  comunque la campagna. I run abortiti perdono esattamente **20 iterazioni** (1980 invece di
+  2000 in tutti e 34 i casi: e' l'ultimo blocco di buffer non scritto); le analisi usano
+  mediane su ~1974 iterazioni e il punto (a) verifica che il troncamento non introduca bias.
+  L'header del `data_table.csv` e' passato da 16 a 17 colonne, con migrazione automatica.
 
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche

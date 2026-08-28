@@ -23,7 +23,7 @@ TEST="$HERE/test.sh"
 
 DATA_TABLE="$DOE_ROOT/data_table.csv"
 INDEX_FILE="$DOE_ROOT/index.txt"
-HEADER="run_id,block,trace_level,processor_type,sampler_type,sampler_ratio,exporter_type,n_lo,rep,duration_s,mhz_med,aperf_mhz,tctl_pre_c,tctl_post_c,hi_loops,run_dir"
+HEADER="run_id,block,trace_level,processor_type,sampler_type,sampler_ratio,exporter_type,n_lo,rep,duration_s,mhz_med,aperf_mhz,tctl_pre_c,tctl_post_c,hi_loops,run_dir,exit_code"
 
 # sudo non interattivo: -n usa le credenziali in cache, -A l'helper SUDO_ASKPASS.
 # Servono entrambi perche' -n disabilita l'askpass per definizione.
@@ -124,7 +124,17 @@ run_one() {
 
     local t_pre; t_pre=$(tctl)
     local am_pre; am_pre=$(amperf)
-    bash "$TEST" "$run_dir" "$bin" "$cfg" >/dev/null
+    # NON abortire su exit != 0: con RTAPP_PROCESSOR_TYPE=1 (SimpleSpanProcessor)
+    # rt-app termina con SIGABRT *dopo* aver scritto tutti i log. Causa (misurata
+    # il 2026-08-28): __shutdown() chiude i thread con pthread_cancel, che in
+    # glibc e' implementata come eccezione di forced-unwind; SimpleSpanProcessor::
+    # OnEnd e' `noexcept`, e un unwind che attraversa un noexcept chiama
+    # std::terminate. Con Simple l'export e' sincrono dentro OnEnd, quindi il
+    # thread ci passa molto tempo e il cancel lo colpisce li'. I dati del run sono
+    # completi: l'abort e' in fase di shutdown. Si registra exit_code e si valida
+    # il run sul CONTENUTO, non sull'exit status.
+    local rc=0
+    bash "$TEST" "$run_dir" "$bin" "$cfg" >/dev/null || rc=$?
     local am_post; am_post=$(amperf)
     local t_post; t_post=$(tctl)
     local mhz; mhz=$(mhz_med)
@@ -139,15 +149,26 @@ run_one() {
     hi_log=$(ls "$run_dir"/*HI_task*.log 2>/dev/null | head -1 || true)
     [ -n "$hi_log" ] || hi_log=$(ls "$run_dir"/rtapp-*.log 2>/dev/null | head -1 || true)
     if [ -z "$hi_log" ] || [ ! -s "$hi_log" ]; then
-        echo "[ERRORE] run $run_dir non ha prodotto un log valido, campagna interrotta." >&2
+        echo "[ERRORE] run $run_dir non ha prodotto un log valido (exit=$rc), campagna interrotta." >&2
         exit 1
     fi
     hi_loops=$(( $(wc -l < "$hi_log") - 1 ))
+    # Soglia al 99 % delle iterazioni nominali: il ritardo di avvio scala col
+    # numero di thread (task 0.5: fino a ~77 ms con n_lo=8, cioe' ~8 iterazioni su
+    # 2000) e va tollerato, un troncamento da crash precoce no.
+    local want=$(( dur * 100 ))          # period = 10 ms -> dur*1000/10
+    local floor=$(( want * 99 / 100 ))
+    if [ "$hi_loops" -lt "$floor" ]; then
+        echo "[ERRORE] run $run_dir troncato: $hi_loops iterazioni su $want attese" >&2
+        echo "         (exit=$rc) — i dati non sono utilizzabili, campagna interrotta." >&2
+        exit 1
+    fi
 
-    echo "$RUN_COUNTER,$block,$trace,$proc,$samp,$ratio,$exporter,$n_lo,$rep,$dur,$mhz,$af,$t_pre,$t_post,$hi_loops,$run_dir" >> "$DATA_TABLE"
+    echo "$RUN_COUNTER,$block,$trace,$proc,$samp,$ratio,$exporter,$n_lo,$rep,$dur,$mhz,$af,$t_pre,$t_post,$hi_loops,$run_dir,$rc" >> "$DATA_TABLE"
     echo "$RUN_COUNTER $run_dir" >> "$INDEX_FILE"
-    printf '  rep %2d  %-28s loops=%-6s MHz=%-6s aperf=%-6s Tctl %s->%s C\n' \
-        "$rep" "$(basename "$cell_dir")" "$hi_loops" "$mhz" "$af" "$t_pre" "$t_post"
+    printf '  rep %2d  %-28s loops=%-6s MHz=%-6s aperf=%-6s Tctl %s->%s C%s\n' \
+        "$rep" "$(basename "$cell_dir")" "$hi_loops" "$mhz" "$af" "$t_pre" "$t_post" \
+        "$([ "$rc" -ne 0 ] && echo "  [exit=$rc]" || true)"
     RUN_COUNTER=$((RUN_COUNTER + 1))
 }
 
@@ -236,7 +257,13 @@ mkdir -p "$BIN_CACHE" "$DOE_ROOT"
 # con lo schema vecchio non va appeso in silenzio: le righe nuove avrebbero una
 # colonna in piu' e l'intero file diventerebbe disallineato senza errori.
 if [ -s "$DATA_TABLE" ] && [ "$(head -1 "$DATA_TABLE")" != "$HEADER" ]; then
-    if [ "$(head -1 "$DATA_TABLE")" = "${HEADER/,aperf_mhz/}" ]; then
+    if [ "$(head -1 "$DATA_TABLE")" = "${HEADER/,exit_code/}" ]; then
+        cp "$DATA_TABLE" "${DATA_TABLE}.pre-exitcode.bak"
+        { echo "$HEADER"; sed -n '2,$p' "${DATA_TABLE}.pre-exitcode.bak" | sed 's/$/,0/'; } > "$DATA_TABLE"
+        echo "[migrazione] data_table: aggiunta colonna exit_code=0 alle righe pre-esistenti"
+        echo "             backup in $(basename "${DATA_TABLE}.pre-exitcode.bak")"
+    elif [ "$(head -1 "$DATA_TABLE")" = "${HEADER/,aperf_mhz/}" ] || \
+         [ "$(head -1 "$DATA_TABLE")" = "${HEADER/,aperf_mhz/}" ]; then
         cp "$DATA_TABLE" "${DATA_TABLE}.pre-aperf.bak"
         awk -F, -v OFS=, 'NR==1{next} {for(i=NF;i>11;i--)$(i+1)=$i; $12="NA"; print}' \
             "${DATA_TABLE}.pre-aperf.bak" > "${DATA_TABLE}.tmp"
