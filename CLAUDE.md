@@ -361,10 +361,53 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   e le 6 celle di `block2` passano 1. Rimosso il commento che diceva di modificare a mano
   `main()`. Blocchi 1 e 3 invariati su Zipkin.
 
-- [~] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
+- [x] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`): editare
   RTAPP_SRC_DIR/BIN_CACHE/DOE_ROOT in cima allo script, isolare le CPU, lanciare
   block1/block2/block3 (uno alla volta, su richiesta esplicita — non tutti insieme).
-  Stato: **BLOCCHI 1 E 2 FATTI**, blocco 3 da lanciare.
+  Stato: **FATTO — tutti e tre i blocchi, 410 run**, esattamente il preventivo del Task 1.
+  **Blocco 3**: primo tentativo il 2026-08-28 alle 13:16 **abortito con SIGABRT** dopo 27
+  min a 6 celle su 12 -> Bug C (`pthread_cancel()` dentro il codice OTel), vedi **Fix 4**;
+  dati scartati. Rilanciato dal sorgente corretto: **14:19:12-15:22:00, 62m48s, exit 0,
+  180/180 run integri, zero abort, 320 MB**. Analisi in `2-DoE/NOTES-block3.md`,
+  `SPIEGAZIONE-block3.md`, `analyze_block3.py`. Totale `2-DoE/`: 474 MB.
+  Risultati: (a) **LE UNICHE DEADLINE MISS DELLA CAMPAGNA**: 51 in tutto, **tutte e sole
+  nelle celle `SimpleSpanProcessor`** (n_lo=1: 40 miss su 15/15 run, max -14826 us;
+  n_lo=4: 6 su 5/15 run, max **-86040 us** = piu' di 8 periodi interi; n_lo=8: 5 su 5/15,
+  max -81948). Batch e controllo: **0** a ogni livello di carico. Nei blocchi 1 e 2, su
+  oltre 460000 giri, non ce n'era stata nessuna. Il profilo e' il peggiore possibile per un
+  RT: **stalli rari e catastrofici**, non degrado graduale dimensionabile;
+  (b) **costo per giro**: Batch **-8 us** e piatto al crescere del carico, Simple
+  **~-340 us** = 40x, cioe' il 17% dei 2000 us di calcolo. Meccanismo nelle connessioni
+  fallite per run a n_lo=8: Batch **336**, Simple **24632** (fattore 73) — il Batch
+  spedisce ogni 5 s a prescindere dal volume, il Simple ogni span in linea;
+  (c) **conclusione architetturale**: il `BatchSpanProcessor` **isola** il task critico da
+  un backend irraggiungibile, il `SimpleSpanProcessor` **gliene propaga addosso il costo**.
+  Vale indipendentemente dalla velocita' del collector: riguarda la struttura del
+  disaccoppiamento. Materiale per il Task 6;
+  (d) **ATTENZIONE**: i ~340 us del Simple **non sono il costo di esportare** ma di
+  *tentare* un export verso un backend irraggiungibile. Campagna senza collector, scelta
+  dichiarata e coerente coi blocchi 1-2 (immuni: 8 e 2 conn/run il primo, 0 il secondo).
+  Niente collector perche' a n_lo=8 servirebbero ~8000 POST sincrone/s e `fake_zipkin.py`
+  (HTTPServer Python monothread) diventerebbe il collo di bottiglia dentro il percorso
+  critico. **Limite dichiarato: nessun numero per il costo di un export riuscito**;
+  (e) **ANOMALIA DEL BLOCCO 2 RISOLTA**: nelle celle `trace_level=0` (nessun exporter, zero
+  simboli otel nel binario) il jitter e' 4,8 / 9,4 / **2,0** / **2,1** us per n_lo
+  0/1/4/8 -> **l'ipotesi del confondente Zipkin e' esclusa, l'effetto e' del carico**. Il
+  2,0 a n_lo=4 coincide col 2,1 del blocco 2 (exporter diverso, campagna diversa). Con
+  carico sufficiente sparisce anche la dispersione (15/15 run fra 2,0 e 2,6 contro
+  2,5-20,5 a vuoto). **L'effetto NON e' monotono**: n_lo=1 e' il caso peggiore ->
+  interpretazione non verificata: conta la *continuita'* dell'occupazione della cpu vicina,
+  non la sua entita';
+  (f) **bimodalita' riproducibile in 3 campagne indipendenti** (blocco 1 del 27, primo
+  tentativo blocco 3, rilancio): a carico basso il jitter del controllo si divide in due
+  gruppi netti (~2,5 e ~12-27 us) circa 50/50. **Trappola verificata sul campo**: fra il
+  tentativo abortito e il rilancio la cella di controllo dava 12,6 vs 4,8 us e wu_med 27 vs
+  7 **con binario identico** (il fix C e' guardato da `#if RTAPP_TRACE_LEVEL > 0`), solo
+  perche' la ripartizione era 7/15 contro 9/15. **Le celle di controllo NON vanno riassunte
+  con la mediana.** Ipotesi non testata: stato deciso all'avvio (ASLR / stato del package);
+  **test proposto e non fatto: rilanciare con `setarch -R`**.
+
+  **Blocchi 1 e 2 (gia' fatti, riepilogo)**:
   **Blocco 2**: primo tentativo il 2026-08-28 alle 11:01 **abortito da un SIGSEGV** al run
   12/25 -> due bug di memoria trovati e corretti (vedi **Fix 4**), dati parziali scartati.
   Rilanciato dal sorgente corretto: **12:10:11-13:05:21, 55m10s, exit 0, 150/150 run
@@ -525,6 +568,18 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   **bimodale** (10 run su 20 a ~2,7 us, 10 a ~16 us, nulla in mezzo) mentre al livello 3
   e' compatto a ~13,5 -> la strumentazione sembra non alzare solo la media ma **far
   sparire i run buoni**; da confermare sul blocco 3 prima di scriverlo come risultato.
+  **Dal blocco 3**: (9) i **deadline miss vanno SOMMATI** fra ripetizioni, mai mediati —
+  la cella Simple a n_lo=4 ha 6 miss su 5 run di 15, quindi la mediana del
+  `deadline_miss_ratio` vale 0,00% e cancellerebbe l'unico risultato di sicurezza della
+  campagna (specchio esatto dell'errore opposto del punto 4); (10) riportare per il jitter
+  **sia `per_std` sia l'IQR**: dove divergono di due ordini di grandezza (Simple n_lo=1:
+  std 172, IQR **3**; n_lo=4: std 874, IQR **27**) il fenomeno e' fatto di **incidenti
+  isolati** — pochi giri con periodo dimezzato per il riaggancio del timer `relative`
+  (`rt-app.cpp:752-756`) — non di degrado diffuso. A n_lo=8 invece l'IQR sale a **1020**:
+  li' il degrado e' reale; (11) le celle di controllo a n_lo 0 e 1 sono **bimodali**:
+  descriverle con le due mode e la ripartizione, e non usarle come baseline senza
+  dichiararlo; (12) intitolare le celle Simple **"comportamento a backend irraggiungibile"**,
+  non "costo dell'export".
   Stato:
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della

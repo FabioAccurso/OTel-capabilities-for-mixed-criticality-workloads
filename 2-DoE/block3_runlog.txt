@@ -1,0 +1,646 @@
+=== [driver] START 2026-08-28 14:19:12 ===
+--- frequenza (per il record) ---
+base (max non-turbo) ratio : 20  ->  2000 MHz
+turbo disabled             : yes
+--- shield su 2,3,6,7 ---
+[isolate] shielding CPUs 2,3,6,7 (system + kthreads moved off)...
+cset: --> activating shielding:
+cset: moving 484 tasks from root into system cpuset...
+[                                                  ]%==================================================]
+cset: kthread shield activated, moving 15 tasks into system cpuset...
+[                                                  ]%==================================================]
+cset: **> 13 tasks are not movable, impossible to move
+cset: "system" cpuset of CPUSPEC(0-1,4-5) with 486 tasks running
+cset: "user" cpuset of CPUSPEC(2-3,6-7) with 0 tasks running
+[isolate] moving all IRQ affinities off the isolated CPUs...
+[isolate] IRQ affinity requested: 0,1,4,5 | actually set: 0-1,4-5
+[isolate] done. Launch experiments INSIDE the shield with:
+  sudo cset shield --exec -- <command...>
+To undo everything: sudo ./reset_isolation.sh
+--- run_doe.sh block3 ---
+[build] t0_p0_s0_r0.0_e0
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_utils.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_parse_config.h:25,
+                 from rt-app_args.cpp:31:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app.cpp:46:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_parse_config.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_taskgroups.cpp:11:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/config.json  (n_lo=0, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_01/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_02/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_03/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_04/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_05/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_06/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_07/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_08/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_09/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_10/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_11/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_12/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_13/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_14/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_15/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n0/run_15
+[build] t3_p0_s0_r0.0_e0
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_utils.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_parse_config.h:25,
+                 from rt-app_args.cpp:31:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app.cpp:46:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_parse_config.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_taskgroups.cpp:11:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/config.json  (n_lo=0, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_01/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_02/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_03/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_04/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_05/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_06/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_07/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_08/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_09/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_10/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_11/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_12/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_13/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_14/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_15/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n0/run_15
+[build] t3_p1_s0_r0.0_e0
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_utils.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_parse_config.h:25,
+                 from rt-app_args.cpp:31:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app.cpp:46:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_parse_config.cpp:34:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+In file included from rt-app_types.h:69,
+                 from rt-app_utils.h:29,
+                 from rt-app_taskgroups.cpp:11:
+./../libdl/dl_syscalls.h:20: warning: "_GNU_SOURCE" redefined
+   20 | #define _GNU_SOURCE
+      | 
+<command-line>: note: this is the location of the previous definition
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/config.json  (n_lo=0, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_01/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_02/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_03/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_04/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_05/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_06/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_07/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_08/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_09/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_10/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_11/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_12/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_13/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_14/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_15/config.json
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n0/run_15
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/config.json  (n_lo=1, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_01/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_02/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_03/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_04/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_05/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_06/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_07/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_08/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_09/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_10/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_11/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_12/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_13/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_14/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_15/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n1/run_15
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/config.json  (n_lo=1, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_01/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_02/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_03/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_04/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_05/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_06/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_07/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_08/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_09/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_10/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_11/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_12/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_13/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_14/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_15/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n1/run_15
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/config.json  (n_lo=1, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_01/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_02/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_03/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_04/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_05/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_06/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_07/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_08/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_09/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_10/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_11/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_12/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_13/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_14/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_15/config.json
+[test] gzipped 1 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n1/run_15
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/config.json  (n_lo=4, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_01/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_02/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_03/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_04/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_05/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_06/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_07/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_08/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_09/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_10/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_11/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_12/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_13/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_14/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_15/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n4/run_15
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/config.json  (n_lo=4, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_01/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_02/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_03/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_04/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_05/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_06/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_07/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_08/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_09/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_10/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_11/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_12/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_13/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_14/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_15/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n4/run_15
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/config.json  (n_lo=4, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_01/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_02/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_03/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_04/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_05/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_06/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_07/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_08/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_09/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_10/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_11/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_12/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_13/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_14/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_15/config.json
+[test] gzipped 4 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n4/run_15
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/config.json  (n_lo=8, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_01/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_02/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_03/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_04/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_05/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_06/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_07/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_08/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_09/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_10/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_11/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_12/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_13/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_14/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t0_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_15/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t0_p0_s0_r0.0_n8/run_15
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/config.json  (n_lo=8, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_01/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_02/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_03/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_04/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_05/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_06/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_07/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_08/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_09/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_10/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_11/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_12/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_13/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_14/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p0_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_15/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p0_s0_r0.0_n8/run_15
+wrote /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/config.json  (n_lo=8, duration=20s, calibration=139, pacing=timer)
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_01/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_01
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_02/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_02
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_03/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_03
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_04/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_04
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_05/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_05
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_06/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_06
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_07/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_07
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_08/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_08
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_09/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_09
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_10/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_10
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_11/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_11
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_12/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_12
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_13/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_13
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_14/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_14
+[test] /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/bin/rtapp_t3_p1_s0_r0.0_e0  /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_15/config.json
+[test] gzipped 8 LO_noise log(s)
+[test] done -> /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE/block3/t3_p1_s0_r0.0_n8/run_15
+[run_doe] finished 'block3'. Results under: /home/fabio/Scrivania/OTel-capabilities-for-mixed-criticality-workloads/2-DoE
+=== [driver] run_doe.sh exit=0  2026-08-28 15:22:00 ===
+=== [driver] cleanup 2026-08-28 15:22:00 ===
+cset: --> deactivating/reseting shielding
+cset: moving 0 tasks from "/user" user set to root set...
+cset: moving 489 tasks from "/system" system set to root set...
+[                                                  ]%==================================================]
+cset: deleting "/user" and "/system" sets
+cset: done
+[isolate] shield removed.
+=== [driver] cleanup fatto ===
