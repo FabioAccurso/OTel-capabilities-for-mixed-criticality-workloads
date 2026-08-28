@@ -1,0 +1,53 @@
+BLOCCO 2 — il sampler sa proteggere il task critico?
+trace_level=2, processor=Batch, exporter=ostream, 1 HI + 4 LO, 20 s, 25 rip./cella
+
+A. SPAN ESPORTATI (media per run, e quanti run hanno esportato qualcosa)
+sampler         run  span_tot  span_HI  span_LO  trace_id  run campionati          frazione [IC95%]
+---------------------------------------------------------------------------------------------------
+AlwaysOn         25     17.00     1.00     4.00      1.00           25/25        1.00  [0.87, 1.00]
+Ratio 0.1        25      2.72     0.16     0.64      0.16            4/25        0.16  [0.06, 0.35]
+Ratio 0.3        25      7.48     0.44     1.76      0.44           11/25        0.44  [0.27, 0.63]
+Ratio 0.5        25     10.88     0.64     2.56      0.64           16/25        0.64  [0.45, 0.80]
+Ratio 0.7        25     13.60     0.80     3.20      0.80           20/25        0.80  [0.61, 0.91]
+AlwaysOff        25      0.00     0.00     0.00      0.00            0/25        0.00  [0.00, 0.13]
+
+B. LA DECISIONE E' PER-TRACE, NON PER-TASK
+   Un run 'parziale' e' un run con 0 < span < 17: sarebbe la prova
+   che il sampler distingue fra span (e quindi fra criticita').
+
+sampler         run a 0 span  run completi  run parziali   span HI se campionato   span LO se campionato
+--------------------------------------------------------------------------------------------------------
+AlwaysOn                   0            25             0                    1.00                    4.00
+Ratio 0.1                 21             4             0                    1.00                    4.00
+Ratio 0.3                 14            11             0                    1.00                    4.00
+Ratio 0.5                  9            16             0                    1.00                    4.00
+Ratio 0.7                  5            20             0                    1.00                    4.00
+AlwaysOff                 25             0             0                       -                       -
+
+   run parziali su tutto il blocco: 0
+
+C. TEMPORIZZAZIONE DI HI (variabile di risposta: slack; budget = run+slack)
+   Aggregazione fra ripetizioni con la MEDIANA, non la media: esistono run
+   interi in un regime a ~3.7x (vedi tabella E) che rendono la media inservibile.
+sampler         iter  warmup    budget   run_med  slack_med  slack_min      p50  per_max  miss
+----------------------------------------------------------------------------------------------
+AlwaysOn        2000    7.00    9991.0    1999.0     7993.0         81   9999.0  10009.0     0
+Ratio 0.1       2000    7.00    9991.0    1969.0     8023.0        119   9999.0  10009.0     0
+Ratio 0.3       2000    7.00    9991.0    1969.0     8023.0         70   9998.0  10010.0     0
+Ratio 0.5       2000    6.00    9991.0    1969.0     8023.0        231   9999.0  10009.0     0
+Ratio 0.7       2000    7.00    9991.0    1969.0     8023.0      -1142   9998.0  10009.0     1
+AlwaysOff       2000    6.00    9991.0    1999.0     7993.0        159   9999.0  10010.0     0
+
+D. COSTO DI UN RUN CAMPIONATO (solo celle Ratio, confronto interno)
+   Stessa cella, stesso binario: gli unici due gruppi differiscono solo
+   per l'esito del sorteggio del sampler. Isola il costo dell'export.
+
+   campionati    n=51   budget mediano   9991.0 us
+   scartati      n=49   budget mediano   9991.0 us
+   delta                              +0.0 us per iterazione
+
+E. RUN IN REGIME ANOMALO (run_med > 1.5x la mediana della propria cella)
+   Ratio 0.3      rip.14  run_med=    6491 (cella=1969, 3.30x)  miss=0
+   AlwaysOff      rip.1   run_med=    7273 (cella=1999, 3.64x)  miss=0
+
+   2 run anomali su 150 (1.3%)

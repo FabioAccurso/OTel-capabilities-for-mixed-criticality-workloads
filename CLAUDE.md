@@ -673,8 +673,8 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   assoluti no — e il fattore cambierebbe se rt-app aggiungesse un altro attributo contenente
   il nome. Contare invece le sole righe di intestazione: `grep -cE "^  name +: <nome>"`.
 
-- [~] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`). **Blocco 1 fatto**
-  (2026-08-27), blocchi 2 e 3 da fare, uno alla volta su richiesta esplicita.
+- [~] **Task 4** — Eseguire il DoE (`scripts/measurements/run_doe.sh`). **Blocchi 1 e 2
+  fatti** (2026-08-27 e 2026-08-28), blocco 3 da fare, su richiesta esplicita.
   `run_doe.sh` riscritto (originale in `run_doe.sh.orig`):
   - **path derivati dalla posizione dello script**, non piu' `$HOME/rtsia-project/...`;
   - **preflight che si ferma**: verifica shield attivo, `CpbDis=1` e `sudo` utilizzabile.
@@ -716,9 +716,58 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   sul **sibling SMT cpu3**, dentro lo shield ma non controllato (il task 0.5 ha verificato
   che il thread main, e quindi il worker del `BatchSpanProcessor`, ha
   `Cpus_allowed_list = 2-3,6-7`). Da rendere un controllo esplicito nei blocchi successivi.
-  **Attenzione alla dimensione dei dati**: block1 e' 3.3 MB compressi; block2 e block3 sono
-  stimati ~37 e ~45 MB, e nel blocco 2 `stdout.log` conterra' anche gli span esportati. Da
-  decidere prima di lanciarli se committarli o tenerli fuori dal repo.
+  **Dimensione dei dati, misurata**: la stima di ~37 MB per block2 era sbagliata di un
+  fattore 2.4 — block2 sono **739 MB non compressi, 90 MB gzippati**. Ripartizione: log LO
+  82.5 MB (92 %), log HI 3.1 MB, `stdout.log` 0.1 MB. Gli span esportati pesano nulla
+  (17 span per run al massimo, vedi blocco 2); il peso e' tutto nei log dei task di rumore,
+  che nel blocco 2 non vengono analizzati. Block3 arriva fino a `n_lo=8` su 12 celle x 15
+  rip.: **stimare ~1.5 GB non compressi / ~180 MB gzippati**, e decidere prima di lanciarlo
+  se conservare i log LO.
+
+  ### Blocco 2 — FATTO (2026-08-28), 150/150 run
+
+  6 celle (sampler: AlwaysOff, AlwaysOn, Ratio 0.1/0.3/0.5/0.7) x 25 rip. da 20 s,
+  `trace_level=2`, processor Batch, **exporter ostream** (`RTAPP_EXPORTER_TYPE=1`),
+  1 HI su cpu2 + 4 LO su cpu6. Piattaforma: 2295 MHz su tutti e 150 i run, Tctl 48.1 ->
+  57.0 C, 2000/2000 iterazioni ovunque. Dati in `2-DoE/block2/` (log gzippati),
+  analisi in `2-DoE/block2/NOTES.md`, script `scripts/measurements/analyze_block2.py`.
+  **Quattro risultati**:
+  (a) **l'ipotesi centrale del progetto e' confermata su 150 run**: la decisione di
+      campionamento e' **per-trace, non per-task**. Un run e' completo (17 span) o vuoto
+      (0 span): **zero run parziali su 150**. Quando un run e' campionato escono sempre
+      esattamente 1 span HI e 4 LO. I 17 span condividono un solo `trace_id` (misurato:
+      1.00 trace_id distinti per run in tutte le celle). Il sampler funziona ma alla
+      granularita' sbagliata: la frazione di run campionati segue il ratio (0.16 / 0.44 /
+      0.64 / 0.80 per ratio 0.1 / 0.3 / 0.5 / 0.7) e ogni IC 95 % di Wilson contiene il
+      valore nominale. **A ratio 0.1 nell'84 % dei run non esiste nessuna traccia del task
+      critico** — e' il caso d'uso che il Task 6 deve risolvere;
+  (b) **a `trace_level=2` l'overhead non e' misurabile**: budget (`run + slack`) = 9991.0 us
+      in tutte e sei le celle, AlwaysOff compreso. Coerente col blocco 1 (solo il livello 3
+      era misurabile). Si ripresenta l'artefatto di layout: `run_med` e' 1999 per AlwaysOn e
+      AlwaysOff contro 1969 per le celle Ratio (30 us), ma `slack` si sposta in senso opposto
+      della stessa quantita';
+  (c) **il confronto piu' pulito del DoE finora**: dentro le sole celle Ratio i run si
+      dividono in campionati (n=51) e scartati (n=49) in base al solo esito del sorteggio —
+      stesso binario, stessa cella, nessun confondimento da layout. Budget mediano **9991.0
+      in entrambi i gruppi, delta +0.0 us**. Esportare gli span non costa nulla di
+      misurabile al task critico, perche' il `BatchSpanProcessor` esporta su un thread
+      proprio (finding del task 0.2). Resta il rovescio: quel thread e' `SCHED_OTHER`;
+  (d) **1 solo deadline miss su ~299 000 iterazioni** (tasso 3.3e-6), in Ratio 0.7 rip. 7:
+      una singola iterazione a `run`=11093 us con `slack`=-1142, preceduta da `wu_lat`=39
+      contro i 7 abituali, rientrata in 3 iterazioni. Non attribuibile a OTel — la cella
+      AlwaysOn, con 25/25 run campionati, ha **zero** miss.
+  **Il regime anomalo a ~3.5x si e' ripresentato**: 2 run su 150 (1.3 %), a 3.30x e 3.64x,
+  entrambi **senza** deadline miss. E' lo stesso fenomeno del blocco 1, quindi riproducibile
+  e non un incidente. Accertato che **non** e' il binario, ne' l'avvio (entra ed esce a meta'
+  run), ne' il lavoro nominale (`perf`=68 identico), ne' termico (Tctl 48-50 C, il run piu'
+  freddo della campagna), ne' la periodicita' (`period` 9998-10000, 2000/2000 iterazioni).
+  Il fattore 3.67 = 2296/626 MHz indica la **frequenza effettiva** come ipotesi principale:
+  il pin MSR scrive la P-state *richiesta*, ma l'SMU puo' scendere sotto P0 per i limiti
+  STAPM del package da 15 W, e `mhz_med` viene letto **dopo** il run.
+  **Due contromisure da applicare prima del blocco 3**: campionare `aperf`/`mperf` *durante*
+  il run (unica misura che distingue "CPU lenta" da "piu' lavoro"), e lanciare una volta
+  `hwlatdetect` (pacchetto `rt-tests`) per escludere latenze di origine firmware (SMI),
+  che spiegherebbero sia il regime a 3.5x sia il miss isolato.
 
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
