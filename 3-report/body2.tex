@@ -1,0 +1,125 @@
+
+\section{Il generatore di carico e le opzioni di strumentazione}
+
+Il workload \`e generato da rt-app, un programma che esegue task periodici descritti in un file di
+configurazione. La versione utilizzata \`e stata fornita come base di partenza, gi\`a strumentata
+con OpenTelemetry, e ne abbiamo studiato il funzionamento per poterla configurare correttamente.
+
+\subsection{Come si descrive un workload}
+
+La configurazione \`e un file JSON con due sezioni. La sezione globale stabilisce la durata
+dell'esecuzione, la costante di calibrazione e la destinazione dei log; la sezione dei task
+descrive, per ciascun task, la politica di scheduling, la priorit\`a, le CPU su cui pu\`o girare e
+la sequenza di eventi che ne costituisce la fase periodica.
+
+\begin{lstlisting}[caption={Struttura della configurazione: un task critico e un task di disturbo.}]
+{
+  "global": {
+      "duration": 20,          // durata dell'esecuzione, in secondi
+      "calibration": 29,       // costo per iterazione, fissato (vedi 1.5)
+      "logdir": "...",         // cartella dei log, una per esecuzione
+      "log_basename": "rtapp"
+  },
+  "tasks": {
+      "HI_task": {                    // task critico
+          "policy": "SCHED_FIFO",     // scheduling real-time
+          "priority": 90,
+          "cpus": [2],                // core fisico 1
+          "loop": -1,                 // ripete fino a fine durata
+          "run": 2000,                // 2000 us di lavoro effettivo
+          "timer": { "ref": "unique", "period": 10000, "mode": "absolute" }
+      },
+      "LO_noise": {                   // task di disturbo
+          "policy": "SCHED_OTHER",
+          "instance": 4,              // repliche indipendenti
+          "cpus": [6],                // core fisico 3
+          "loop": -1,
+          "run": 1000,
+          "sleep": 1000
+      }
+  }
+}
+\end{lstlisting}
+
+Gli eventi che compongono la fase sono di tre tipi: \texttt{run} esegue un ciclo di calcolo per la
+durata indicata; \texttt{sleep} sospende il task per un tempo relativo alla fine del lavoro;
+\texttt{timer} sospende il task fino a un istante calcolato su una griglia temporale.
+
+\textbf{Il task critico usa un timer su griglia assoluta}, e questa \`e una scelta deliberata. Con
+un'attesa relativa, l'istante di attivazione successivo deriva dalla somma fra lavoro e attesa, e
+ne eredita quindi tutta la variabilit\`a; inoltre, in questa modalit\`a il programma non calcola il
+margine residuo rispetto alla scadenza, che \`e la grandezza su cui si fonda tutta l'analisi
+successiva. Il confronto diretto fra le due modalit\`a, a parit\`a di tutto il resto, \`e riportato
+in Tabella~\ref{tab:timer}.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lcccc}
+\toprule
+ & iterazioni & periodo mediano & jitter & margine calcolato \\
+\midrule
+attesa relativa & 1981/2000 & 10062\us & 37\us & \textbf{mai} \\
+timer su griglia assoluta & \textbf{2000/2000} & \textbf{9999\us} & \textbf{10\us} & s\`i \\
+\bottomrule
+\end{tabular}
+\caption{Effetto della modalit\`a di attivazione sul task critico, a parit\`a di carico.}
+\label{tab:timer}
+\end{table}
+
+\textbf{I task di disturbo usano invece l'attesa relativa}, anch'essa per scelta. Essi sono
+volutamente in sovraccarico, e con un'attivazione su griglia assoluta un task in ritardo non
+attenderebbe pi\`u: il disturbo degenererebbe in un ciclo di calcolo continuo anzich\'e mantenere
+il ciclo di lavoro previsto. Sui task di disturbo, del resto, non si misurano scadenze.
+
+\subsection{Le opzioni che governano la strumentazione}
+
+Il comportamento della telemetria \`e determinato da cinque parametri fissati \textbf{al momento
+della compilazione}, non modificabili a esecuzione avviata. Ne consegue che ogni configurazione
+sperimentale corrisponde a un eseguibile distinto, prodotto passando i relativi valori al
+compilatore. La Tabella~\ref{tab:flag} ne riassume il significato.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{p{4.6cm}p{2.2cm}p{7.4cm}}
+\toprule
+\textbf{parametro} & \textbf{valori} & \textbf{significato} \\
+\midrule
+livello di tracciamento &
+0, 1, 2, 3 &
+Quanto \`e fine la granularit\`a: 0 disattiva; 1 registra l'esecuzione complessiva e un elemento
+per thread; 2 aggiunge un elemento per fase; 3 aggiunge un elemento per ogni iterazione del ciclo,
+cio\`e il volume massimo. \\
+\addlinespace
+tipo di \emph{processor} &
+Batch, Simple &
+\emph{Come} gli elementi raccolti vengono consegnati. Il primo li accumula in una coda e li invia a
+intervalli da un thread dedicato; il secondo li invia \textbf{immediatamente, nel thread stesso che
+li ha generati}. \`E il parametro pi\`u rilevante fra quelli studiati. \\
+\addlinespace
+tipo di \emph{sampler} &
+sempre, per proporzione, mai &
+\emph{Se} una traccia viene registrata. Nel caso intermedio la decisione \`e probabilistica. \\
+\addlinespace
+proporzione di campionamento &
+$0\ldots1$ &
+La probabilit\`a usata dal caso intermedio. \\
+\addlinespace
+tipo di \emph{exporter} &
+collector, uscita standard &
+\emph{Dove} gli elementi vengono inviati. \\
+\bottomrule
+\end{tabular}
+\caption{I parametri che governano la strumentazione e ci\`o che ciascuno controlla.}
+\label{tab:flag}
+\end{table}
+
+La distinzione fra i tre ruoli \`e importante per interpretare i risultati: il \emph{sampler}
+decide \emph{se}, il \emph{processor} decide \emph{come} e \emph{quando}, l'\emph{exporter} decide
+\emph{dove}. Come si vedr\`a, il costo per il task critico dipende quasi interamente dal secondo.
+
+Sul quinto parametro va fatta una precisazione metodologica. Nella configurazione predefinita gli
+elementi vengono inviati a un servizio di raccolta esterno; in assenza di tale servizio l'invio
+fallisce senza bloccare l'esecuzione, ma non lascia alcuna traccia contabile di quanti elementi
+siano stati effettivamente prodotti. Poich\'e uno degli esperimenti richiede proprio di contarli,
+abbiamo reso selezionabile una modalit\`a alternativa che scrive gli elementi sull'uscita standard,
+separata dal log del generatore di carico che viene invece emesso sull'uscita di errore. Questa
+aggiunta \`e stata realizzata rispettando i parametri esistenti, in modo che le due modalit\`a
+differiscano \emph{soltanto} per la destinazione e restino confrontabili sotto ogni altro aspetto.

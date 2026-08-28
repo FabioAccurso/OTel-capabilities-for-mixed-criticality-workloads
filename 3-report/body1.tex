@@ -1,0 +1,180 @@
+\title{\vspace{-1.4cm}\textbf{Valutazione di OpenTelemetry\\per il monitoraggio di workload mixed-criticality}\\[.3em]
+\large Campagna sperimentale su Linux PREEMPT-RT}
+\author{Benito Cervone \and \textit{(secondo componente del gruppo)}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\begin{center}
+\begin{minipage}{0.9\textwidth}
+\small\itshape
+Questo documento riporta il lavoro svolto per valutare se e in che misura OpenTelemetry sia in
+grado di monitorare workload real-time a criticit\`a mista, con particolare attenzione a due
+domande: se la pipeline di telemetria sappia \emph{prioritizzare} i task critici rispetto a quelli
+best-effort, e quale sia l'\emph{overhead} del monitoraggio sui tempi di risposta. La valutazione
+si basa su una campagna di 485 esecuzioni misurate su una piattaforma resa deterministica in modo
+controllato. Il codice strumentato \`e stato fornito come base di partenza; il nostro contributo
+riguarda la costruzione della piattaforma di misura, il disegno degli esperimenti, la loro
+esecuzione e l'analisi dei risultati.
+\end{minipage}
+\end{center}
+
+\vspace{1em}
+{\small\tableofcontents}
+\newpage
+
+\section{La piattaforma sperimentale}
+
+Misurare l'overhead di una libreria di tracing significa cercare differenze dell'ordine delle
+decine di microsecondi. Su una macchina non preparata, la varianza dovuta a frequenza variabile,
+migrazioni di processo e interruzioni \`e di gran lunga superiore al segnale che si vuole
+osservare. La prima parte del lavoro \`e stata quindi dedicata a rendere la piattaforma
+sufficientemente stabile da rendere significative le misure successive.
+
+\subsection{Hardware e sistema}
+
+Le misure sono state eseguite su un portatile con processore AMD Ryzen 7 3700U (4 core fisici,
+8 thread SMT, TDP 15\,W) e kernel Linux \texttt{6.12.79-rt17} con patch PREEMPT-RT, installato
+in dual boot su hardware reale e non in virtualizzazione.
+
+Il processore espone 8 CPU logiche appaiate a due a due sui 4 core fisici:
+
+\begin{center}\ttfamily\small
+cpu0,\,cpu1 $\rightarrow$ core 0 \quad
+cpu2,\,cpu3 $\rightarrow$ core 1 \quad
+cpu4,\,cpu5 $\rightarrow$ core 2 \quad
+cpu6,\,cpu7 $\rightarrow$ core 3
+\end{center}
+
+Tutti i core condividono la stessa cache L3, per cui la scelta di \emph{quali} core utilizzare \`e
+indifferente; conta invece che si tratti di core \textbf{interi}. Questo ha determinato due
+decisioni.
+
+\textbf{Il task critico e i task di disturbo devono stare su core fisici diversi.} Due thread SMT
+dello stesso core condividono unit\`a di esecuzione, cache L1 e L2: collocandoli l\`i,
+l'interferenza misurata sarebbe stata in buona parte contesa hardware, cio\`e esattamente il
+fenomeno che lo studio deve tenere separato dagli effetti di scheduling e di telemetria. Il task
+critico \`e stato quindi assegnato a \texttt{cpu2} (core 1) e i task di disturbo a \texttt{cpu6}
+(core 3).
+
+\textbf{Non si isola una CPU lasciando fuori il suo gemello SMT.} Isolando ad esempio le sole
+\texttt{cpu2} e \texttt{cpu4}, il carico di sistema che continua a girare sui rispettivi gemelli
+sottrarrebbe risorse alle CPU nominalmente isolate, che risulterebbero tali solo sulla carta.
+L'isolamento comprende quindi i due core interi: \texttt{2,3,6,7}.
+
+\subsection{Parametri di avvio del kernel}
+
+La riga di comando del kernel \`e stata configurata come segue:
+
+\begin{lstlisting}
+isolcpus=managed_irq,domain,2,3,6,7  nohz_full=2,3,6,7
+rcu_nocbs=2,3,6,7  irqaffinity=0,1,4,5
+\end{lstlisting}
+
+Ciascun parametro risponde a una sorgente di disturbo distinta.
+
+\begin{itemize}
+\item \texttt{isolcpus=domain} rimuove le CPU indicate dai domini di bilanciamento dello
+scheduler: nessun processo vi viene migrato automaticamente, e vi finisce solo ci\`o che viene
+collocato esplicitamente.
+
+\item \texttt{isolcpus=managed\_irq} agisce sul lato di sottomissione delle richieste di I/O: il
+livello a code multiple del sottosistema a blocchi non utilizza le code il cui interrupt \`e
+associato a una CPU isolata. \`E utile chiarire un equivoco: questo parametro \textbf{non} modifica
+l'affinit\`a degli interrupt gestiti dal kernel, che rimane invariata; l'effetto \`e che quelle
+code non vengono pi\`u utilizzate, e la verifica corretta \`e quindi il conteggio degli interrupt,
+non l'affinit\`a dichiarata. Sulla nostra macchina le code del disco che ricadrebbero sulle CPU
+isolate mostrano contatori a zero.
+
+\item \texttt{nohz\_full} elimina il tick periodico di scheduling sulle CPU indicate quando vi
+gira un solo task eseguibile. L'effetto \`e stato misurato e non assunto: in 5 secondi di
+esecuzione all'interno dell'area isolata si contano \textbf{106} interruzioni di temporizzazione
+locale sulla CPU del task critico, contro le 5000 che si avrebbero con il tick pieno alla
+frequenza configurata di 1000\,Hz, e contro le 623--1216 osservate sulle CPU di servizio.
+
+\item \texttt{rcu\_nocbs} sposta l'esecuzione dei callback di RCU fuori dalle CPU isolate.
+
+\item \texttt{irqaffinity} fa s\`i che gli interrupt \emph{nascano} affini alle sole CPU di
+servizio. Senza questo parametro, alcune periferiche (controller grafico, USB, audio, tastiera)
+allocano i propri interrupt sulle CPU isolate, e occorre riassegnarli a posteriori. Dopo la
+verifica, tali interrupt risultano affini a \texttt{0-1,4-5} e presentano conteggio nullo sulle
+CPU isolate gi\`a prima di attivare l'isolamento a runtime.
+\end{itemize}
+
+Restano due categorie non eliminabili, di cui si \`e tenuto conto: i thread di kernel per-CPU
+(migrazione, softirq, timer, RCU), che esistono per costruzione su ogni CPU e di cui l'isolamento
+riduce l'attivit\`a ma non l'esistenza; e un piccolo numero di interrupt gestiti direttamente dal
+kernel, la cui affinit\`a non \`e modificabile ma che, come verificato, non vengono sollecitati.
+
+\subsection{Isolamento a runtime}
+
+Ai parametri di avvio si affianca un isolamento applicato a ogni sessione di misura, che crea due
+insiemi di CPU distinti: uno di servizio (\texttt{0,1,4,5}) in cui vengono confinati tutti i
+processi esistenti, e uno riservato (\texttt{2,3,6,7}) in cui gira soltanto ci\`o che viene
+lanciato esplicitamente. Lo stesso passo riassegna alle CPU di servizio le affinit\`a degli
+interrupt che un driver avesse eventualmente allocato altrove dopo l'avvio.
+
+L'efficacia \`e stata verificata sperimentalmente confrontando lo stesso carico dentro e fuori
+l'area isolata. Il jitter del periodo, definito come differenza fra periodo massimo e mediano,
+passa da 1420--2418\us{} all'esterno a 51--180\us{} all'interno, con un miglioramento di circa un
+ordine di grandezza. Sottoponendo la macchina a carico artificiale sulle CPU di servizio, i valori
+misurati all'interno dell'area isolata restano indistinguibili da quelli a macchina scarica,
+mentre all'esterno il periodo mediano cresce del 40\,\% con un terzo delle iterazioni perse.
+
+\subsection{Stabilit\`a della frequenza}
+
+Il kernel real-time in uso \`e compilato senza il sottosistema di gestione della frequenza e senza
+quello degli stati di riposo del processore. Non esistono quindi i consueti governor, e gli
+strumenti abituali non sono applicabili: le transizioni di frequenza sono decise dal firmware e il
+sistema operativo pu\`o soltanto osservarle. Il rovescio positivo \`e che, non essendovi stati di
+riposo gestiti dal kernel, non si osservano picchi di latenza al risveglio; inoltre il contatore
+temporale del processore \`e indipendente dalla frequenza, per cui la misura del tempo resta
+corretta.
+
+L'unica leva disponibile agisce sui registri di controllo del processore, ed \`e stata utilizzata
+per disabilitare il meccanismo di sovra-frequenza automatica e per richiedere lo stato di
+prestazione massimo. L'effetto \`e stato quantificato:
+
+\begin{table}[h]\centering\small
+\begin{tabular}{lcc}
+\toprule
+ & \textbf{sovra-frequenza attiva} & \textbf{frequenza fissata} \\
+\midrule
+frequenza osservata sui core & 2032--2670\,MHz (dispersione 31\,\%) & 2229--2296\,MHz (2.9\,\%) \\
+costo per iterazione stimato & 18--21\,ns (dispersione 17\,\%) & 29--30\,ns (3.4\,\%) \\
+durata della fase di lavoro & $+29$/$+44$\,\% sul valore richiesto & $+6$/$+9$\,\% \\
+periodo, 99\textsuperscript{o} percentile & 11572--12305\us & 11165--11379\us \\
+\bottomrule
+\end{tabular}
+\caption{Effetto della fissazione della frequenza, misurato su esecuzioni ripetute.}
+\end{table}
+
+La dispersione del 31\,\% sulla frequenza si trasferisce direttamente sulle misure temporali, e
+sarebbe stata di gran lunga superiore all'overhead da misurare. Con la frequenza fissata, il valore
+osservato su tutte le 485 esecuzioni della campagna \`e risultato costante a \textbf{2295\,MHz},
+con temperatura compresa fra 48 e 57\,\textdegree C e nessun intervento di limitazione termica.
+
+Le scritture su tali registri non sopravvivono al riavvio: vanno ripetute a ogni sessione, e il
+loro esito viene verificato automaticamente prima di ogni campagna, che si interrompe se la
+condizione non \`e soddisfatta.
+
+\subsection{Costante di calibrazione}
+
+Il generatore di carico determina la quantit\`a di lavoro da eseguire dividendo la durata
+richiesta per un costo unitario stimato. Tale costo pu\`o essere misurato all'avvio oppure fissato
+nella configurazione. Abbiamo scelto di fissarlo, per due ragioni.
+
+La prima \`e di determinismo: la misura automatica esegue attese ripetute fino a convergenza e
+richiede alcuni secondi non deterministici a ogni esecuzione, ma soprattutto restituisce un valore
+che dipende dallo stato istantaneo della macchina. Un valore diverso dell'1\,\% sposta la quantit\`a
+di lavoro effettivamente eseguito del 3.5\,\%, cio\`e molto pi\`u dell'effetto che la campagna deve
+misurare.
+
+La seconda \`e di comparabilit\`a: con la costante fissata, tutte le celle dell'esperimento
+eseguono esattamente lo stesso numero di iterazioni del ciclo di carico, e le differenze osservate
+sono attribuibili al solo fattore in studio. Due campagne indipendenti hanno stimato il costo reale
+in circa 28.8\,ns per iterazione; poich\'e il parametro accetta solo valori interi, la scelta
+ricade fra 28 (che darebbe un errore del $+2.7$\,\% sulla durata nominale) e 29 ($-0.8$\,\%). \`E
+stato adottato il valore \textbf{29} su tutte le esecuzioni.

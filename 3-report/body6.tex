@@ -1,0 +1,103 @@
+
+\section{Proposta: un criterio di campionamento consapevole della criticit\`a}
+
+I risultati dell'Esperimento 2 individuano un limite preciso e circoscritto: il criterio di
+campionamento proporzionale opera sull'identificativo di traccia, e poich\'e tutti i thread di
+un'esecuzione condividono tale identificativo, la decisione ricade sull'intera esecuzione. Non
+esiste, con i componenti disponibili, un modo di esprimere una politica del tipo ``conserva sempre
+le tracce dei task critici e riduci quelle dei task best-effort''.
+
+In questa sezione delineiamo come tale limite possa essere superato. L'esposizione resta a livello
+di progetto: si indicano i punti del sistema su cui intervenire e la logica da introdurvi, senza
+scendere nel dettaglio implementativo.
+
+\subsection{Il vincolo da cui partire}
+
+L'analisi del funzionamento della libreria evidenzia due elementi che condizionano qualunque
+soluzione.
+
+\textbf{Il momento della decisione.} Il componente che decide se registrare una traccia viene
+interpellato \emph{all'atto della creazione} dell'elemento, e riceve il nome dell'elemento e i soli
+attributi passati contestualmente alla creazione. Nel codice a disposizione, gli attributi che
+descrivono la politica di scheduling e la priorit\`a --- cio\`e proprio le informazioni che
+identificano la criticit\`a di un task --- vengono impostati \emph{successivamente}. Un criterio
+personalizzato, allo stato attuale, non li vedrebbe.
+
+\textbf{La struttura delle tracce.} Ogni thread viene creato come discendente dell'elemento radice
+che rappresenta l'esecuzione. Questa scelta \`e ci\`o che rende l'intera esecuzione una traccia sola,
+ed \`e la causa diretta del comportamento osservato in Figura~\ref{fig:01}.
+
+\subsection{Due interventi complementari}
+
+\textbf{Primo intervento: rendere la criticit\`a visibile al momento della decisione.} Sono
+possibili due strade, di costo diverso. La meno invasiva consiste nell'adottare una convenzione sui
+nomi dei task, che il criterio personalizzato pu\`o esaminare: il nome dell'elemento \`e infatti
+gi\`a disponibile al momento della decisione. Le configurazioni della campagna adottano gi\`a nomi
+distinti per i task critici e per quelli di disturbo, per cui questa strada non richiederebbe
+modifiche al codice esistente. La strada pi\`u pulita, ma che comporta una piccola modifica nel
+punto in cui gli elementi dei thread vengono creati, consiste nel passare la criticit\`a come
+attributo contestualmente alla creazione, anzich\'e subito dopo. \`E preferibile in prospettiva,
+perch\'e non lega la politica a una convenzione sui nomi.
+
+\textbf{Secondo intervento: separare le tracce per criticit\`a.} \`E il punto essenziale, e senza
+di esso il primo non basta. Finch\'e tutti i thread appartengono alla stessa traccia, qualunque
+criterio proporzionale continuer\`a a valutare un unico identificativo, e le decisioni sui diversi
+task resteranno rigidamente accoppiate. Occorre che \emph{ciascun thread avvii una propria traccia},
+cos\`i che ogni criticit\`a possa essere campionata in modo indipendente.
+
+La relazione causale con l'esecuzione principale, che ha valore diagnostico e non va perduta, pu\`o
+essere mantenuta sostituendo il legame di discendenza con un \emph{collegamento} fra tracce, che la
+libreria prevede proprio per correlare tracce distinte. Il risultato \`e che le tracce restano
+navigabili come oggi, ma diventano campionabili separatamente.
+
+\subsection{Dove intervenire}
+
+Gli interventi si concentrano in tre punti, tutti circoscritti.
+
+\begin{enumerate}
+\item \textbf{Un nuovo componente di campionamento}, da introdurre come file a s\'e stante. Ne
+implementerebbe l'interfaccia prevista dalla libreria, esponendo una decisione basata sulla
+criticit\`a riconosciuta: conservare sempre gli elementi dei task critici, applicare una
+proporzione configurabile agli altri, ed ereditare la decisione del genitore per gli elementi
+discendenti, cos\`i che una traccia campionata resti completa.
+
+\item \textbf{La funzione di inizializzazione del tracciamento}, dove il fornitore di tracce viene
+costruito e dove viene scelto il criterio di campionamento. \`E il punto in cui il nuovo componente
+verrebbe registrato, affiancandolo a quelli esistenti secondo lo stesso schema gi\`a utilizzato per
+gli altri parametri di configurazione, in modo che la scelta resti selezionabile e non sostitutiva.
+
+\item \textbf{Il punto di creazione degli elementi associati ai thread}, per i due aspetti discussi
+sopra: rendere disponibile la criticit\`a al momento della decisione e avviare una traccia distinta
+per thread mantenendo il collegamento con l'esecuzione principale.
+\end{enumerate}
+
+\subsection{Come verificarne l'efficacia}
+
+La proposta \`e verificabile con la stessa impostazione sperimentale gi\`a costruita, il che ne
+rende la valutazione immediata. Sarebbe sufficiente ripetere l'Esperimento 2 sostituendo il criterio
+di campionamento, e osservare la Figura~\ref{fig:01}: con un criterio consapevole della criticit\`a,
+i punti dovrebbero disporsi \textbf{nella banda intermedia}, oggi vuota, con gli elementi del task
+critico sempre presenti e quelli dei task di disturbo ridotti secondo la proporzione impostata.
+La stessa figura che oggi documenta il limite diventerebbe quindi la verifica del suo superamento.
+
+Andrebbe inoltre misurato, con l'impostazione dell'Esperimento 1, il costo del nuovo criterio: la
+decisione viene presa a ogni creazione di elemento, e un criterio che esamini attributi o nomi \`e
+pi\`u oneroso di uno che valuti un solo identificativo. L'ordine di grandezza atteso \`e tale da non
+incidere in modo apprezzabile, ma trattandosi di un sistema real-time la verifica \`e necessaria e
+non pu\`o essere data per acquisita.
+
+\subsection{Osservazione conclusiva}
+
+Vale la pena rilevare che i due risultati principali di questo studio indicano due margini di
+intervento di natura diversa. Il costo di \emph{costruire} gli elementi di traccia --- circa 14\us{}
+per iterazione --- \`e sostenuto necessariamente dal thread che li genera e non \`e eliminabile per
+via architetturale. Il costo di \emph{consegnarli}, che come si \`e visto \`e di gran lunga
+superiore, \`e invece \emph{collocabile}: la modalit\`a differita lo sposta su un thread di
+servizio, sottraendolo al percorso critico. La proposta qui delineata agisce su un terzo asse, il
+\emph{volume} della telemetria, rendendone la riduzione selettiva anzich\'e indiscriminata.
+
+Le tre leve sono indipendenti e componibili. Per un sistema a criticit\`a mista, le evidenze
+raccolte suggeriscono di adottare la consegna differita, di non affidare al campionamento
+proporzionale la protezione dei task critici, e di introdurre un criterio in grado di distinguerli.
+
+\end{document}

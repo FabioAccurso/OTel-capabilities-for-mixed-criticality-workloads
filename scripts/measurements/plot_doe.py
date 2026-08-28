@@ -65,7 +65,7 @@ ax.set_xticks(range(len(SAMPLERS))); ax.set_xticklabels([s[2] for s in SAMPLERS]
 ax.set_yticks([0, 17]); ax.set_yticklabels(["0\n(niente)", "17\n(tutto)"])
 ax.set_ylim(-2.6, 20); ax.set_ylabel("span esportati nel run")
 ax.set_title("1 — La decisione di campionamento e' per-trace, non per-task")
-ax.set_xlabel("150 run del blocco 2, 25 per sampler  ·  ogni punto e' un run")
+ax.set_xlabel("150 esecuzioni, 25 per criterio di campionamento  ·  ogni punto e' una esecuzione")
 save(fig, "01_all_or_nothing.png")
 
 # ---------------------------------------------------------------- FIG 2
@@ -101,7 +101,7 @@ ax1.set_xlabel("task di rumore concorrenti (n_lo)"); ax1.set_ylabel("costo per i
 ax1.set_title("3 — Il costo lo decide il processor, non il tracing")
 ax1.legend(fontsize=8.5); ax1.set_ylim(0, 1480)
 ax1.annotate("cella bimodale:\n8 rip. a ~8688 us, 7 a ~9665\nla mediana non rappresenta\nun comportamento unico",
-             xy=(2+0.5*w, 1303), xytext=(0.62, 0.72), textcoords="axes fraction",
+             xy=(2-0.5*w, 1303), xytext=(0.26, 0.80), textcoords="axes fraction",
              fontsize=7.5, color=C_ACC, ha="center",
              arrowprops=dict(arrowstyle="->", color=C_ACC, lw=1))
 for j, (t, p, name, col) in enumerate(ARMS[1:]):
@@ -127,7 +127,7 @@ ax.set_yscale("log"); ax.set_xticks(NLOS)
 ax.set_xlabel("task di rumore concorrenti (n_lo)")
 ax.set_ylabel("tentativi di export per run (scala log)")
 ax.set_title("4 — Perche' Simple costa 23 volte tanto")
-ax.legend(fontsize=8.5, loc="center right")
+ax.legend(fontsize=8.5, loc="lower right", bbox_to_anchor=(1.0, 0.02))
 save(fig, "04_export_attempts.png")
 
 # ---------------------------------------------------------------- FIG 5

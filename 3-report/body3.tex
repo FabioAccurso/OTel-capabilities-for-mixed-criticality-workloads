@@ -1,0 +1,194 @@
+
+\section{Disegno degli esperimenti}
+
+La campagna \`e articolata in tre esperimenti, ciascuno costruito per isolare un solo fattore
+tenendo fissi tutti gli altri. Complessivamente sono state eseguite 485 esecuzioni misurate,
+riportate in Tabella~\ref{tab:doe}.
+
+\begin{table}[h]\centering\small
+\begin{tabular}{llccl}
+\toprule
+& \textbf{fattore studiato} & \textbf{celle} & \textbf{esecuzioni} & \textbf{carico} \\
+\midrule
+Esperimento 1 & granularit\`a del tracciamento & 4 & 80 & solo task critico \\
+Esperimento 2 & criterio di campionamento & 6 & 150 & 1 critico + 4 di disturbo \\
+Esperimento 3 & modalit\`a di consegna $\times$ carico & 12 & 180 & 0, 1, 4, 8 di disturbo \\
+\addlinespace
+verifica & controllo di riproducibilit\`a & 3 & 75 & 1 critico + 4 di disturbo \\
+\bottomrule
+\end{tabular}
+\caption{Struttura della campagna sperimentale.}
+\label{tab:doe}
+\end{table}
+
+\subsection{Esperimento 1 --- costo puro della strumentazione}
+
+\textbf{Obiettivo.} Quantificare quanto costa al task critico la sola presenza della
+strumentazione, in assenza di qualunque altro carico.
+
+\textbf{Costruzione.} Un solo task periodico critico, nessun task di disturbo, campionamento sempre
+attivo e consegna differita. L'unico fattore che varia \`e la granularit\`a del tracciamento sui
+suoi quattro livelli, con 20 ripetizioni per livello. L'assenza di carico concorrente \`e voluta:
+serve a ottenere un valore di riferimento non contaminato da contesa, rispetto al quale
+interpretare gli esperimenti successivi.
+
+\subsection{Esperimento 2 --- il campionamento protegge il task critico?}
+
+\textbf{Obiettivo.} \`E la domanda centrale dello studio. In un sistema a criticit\`a mista ci si
+attende di poter conservare integralmente le tracce dei task critici riducendo quelle dei task
+best-effort. L'esperimento verifica se il criterio di campionamento proporzionale offerto dalla
+libreria consenta questa distinzione.
+
+\textbf{Costruzione.} Carico misto realistico (un task critico e quattro di disturbo), granularit\`a
+e modalit\`a di consegna fissate, e sei livelli del solo criterio di campionamento: sempre attivo,
+mai attivo, e quattro proporzioni intermedie (0.1, 0.3, 0.5, 0.7), con 25 ripetizioni ciascuno. Le
+25 ripetizioni sono necessarie perch\'e l'esito \`e probabilistico e la grandezza di interesse \`e
+una frequenza, di cui occorre stimare l'incertezza.
+
+\textbf{Variabile osservata.} A differenza degli altri due esperimenti, qui non interessa
+principalmente il tempo, ma \emph{quanti} elementi di traccia vengono effettivamente emessi e a
+quale task appartengono. Per questo l'esperimento adotta la modalit\`a di uscita che li rende
+contabili.
+
+\subsection{Esperimento 3 --- consegna e contesa sotto carico crescente}
+
+\textbf{Obiettivo.} Verificare come il costo della telemetria si comporti al crescere del numero di
+task concorrenti, e soprattutto se la modalit\`a con cui gli elementi vengono consegnati incida
+sulla capacit\`a del task critico di rispettare le proprie scadenze.
+
+\textbf{Costruzione.} Due fattori incrociati: la modalit\`a di consegna (differita o immediata) e il
+numero di task di disturbo (0, 1, 4, 8), con 15 ripetizioni per combinazione. A questi si affianca,
+per ogni livello di carico, una condizione di controllo con tracciamento disattivato, che fornisce
+il riferimento rispetto al quale misurare il costo a parit\`a di contesa. \`E l'esperimento pi\`u
+vicino a una situazione d'esercizio.
+
+\subsection{Scelte metodologiche comuni}
+
+\textbf{Numero di ripetizioni.} Da 15 a 25 per cella, in linea con quanto richiesto per garantire
+significativit\`a statistica, e dimensionato sulla variabilit\`a osservata nelle prove preliminari.
+
+\textbf{Ordine di esecuzione interlacciato.} Le ripetizioni non sono eseguite raggruppate per cella,
+ma alternando le celle a ogni ripetizione. Eseguire tutte le ripetizioni di una configurazione e
+poi quelle della successiva avrebbe fatto s\`i che qualunque deriva lungo la campagna --- termica o
+di altra natura --- si sommasse a una sola configurazione, diventando indistinguibile dal fattore in
+studio. Con l'ordine interlacciato, un'eventuale deriva agisce su tutte le celle allo stesso modo.
+
+\textbf{Verifiche preliminari bloccanti.} Prima di ogni campagna si controlla automaticamente che
+l'isolamento delle CPU sia attivo e che la frequenza sia effettivamente fissata; in caso contrario
+l'esecuzione non parte. La cautela nasce da un'esperienza concreta: in assenza di isolamento la
+procedura di lancio ricade silenziosamente su un'esecuzione non isolata, e un'intera campagna
+risulterebbe inutilizzabile senza alcuna segnalazione.
+
+\textbf{Isolamento dei dati per esecuzione.} Ogni ripetizione scrive in una propria cartella, che
+contiene anche la configurazione effettivamente eseguita. Questo evita la sovrascrittura dei log
+fra esecuzioni successive e rende ciascun risultato verificabile a posteriori.
+
+\textbf{Registrazione delle condizioni ambientali.} A ogni esecuzione vengono registrate la
+frequenza osservata e la temperatura prima e dopo, in modo che un'eventuale deriva della
+piattaforma sia rilevabile nei dati anzich\'e restare implicita.
+
+\textbf{Trattamento del transitorio iniziale.} Le prime iterazioni di ogni esecuzione presentano un
+margine negativo per costruzione: il task critico fissa l'istante di riferimento e attende poi che
+tutti gli altri thread siano pronti, cosicch\'e alla ripartenza l'origine dei tempi risulta gi\`a
+arretrata. Il numero di iterazioni interessate \textbf{cresce con il numero di thread} (da 1 con il
+solo task critico a circa 10 con otto task di disturbo). Poich\'e il numero di task di disturbo \`e
+uno dei fattori dell'Esperimento 3, scartare un numero fisso di righe avrebbe introdotto un errore
+sistematico correlato proprio con il fattore in studio, che si sarebbe letto come ``pi\`u carico,
+pi\`u scadenze mancate''. L'analisi scarta quindi le righe iniziali fino al primo margine non
+negativo, registrando quante ne sono state escluse; oltre quel punto, un margine negativo \`e una
+scadenza realmente mancata.
+
+\section{Esecuzione degli esperimenti}
+
+Questa sezione riporta la sequenza di comandi che porta dalla macchina appena avviata ai dati
+analizzabili. Gli script citati sono quelli sviluppati per la campagna.
+
+\subsection{Preparazione della piattaforma}
+
+Da ripetere a ogni sessione, poich\'e nessuna delle due impostazioni sopravvive al riavvio.
+
+\begin{lstlisting}
+# 1. frequenza fissata allo stato di prestazione massimo
+sudo ./scripts/utils_isolation/pin_cpu_freq.sh fix 0
+sudo ./scripts/utils_isolation/pin_cpu_freq.sh status   # verifica
+
+# 2. isolamento dei due core fisici destinati agli esperimenti
+sudo ./scripts/utils_isolation/isolate_cpus.sh 2,3,6,7
+
+# al termine della sessione
+sudo ./scripts/utils_isolation/reset_isolation.sh
+\end{lstlisting}
+
+\subsection{Definizione del workload}
+
+La configurazione viene generata a partire dai parametri del carico, cos\`i che le celle differiscano
+soltanto per ci\`o che si intende variare:
+
+\begin{lstlisting}
+python3 scripts/measurements/gen_config.py \
+        --n-lo 4              `# numero di task di disturbo` \
+        --duration 20         `# durata in secondi` \
+        --hi-cpu 2 --lo-cpus 6  `# core fisici distinti` \
+        --calibration 29 \
+        --out 1-configs/cfg_n4.json
+\end{lstlisting}
+
+Lo script avverte se il task critico e quelli di disturbo dovessero ricadere sui due thread dello
+stesso core fisico, condizione da evitare per le ragioni esposte in \S1.1.
+
+\subsection{Definizione del tipo di monitoraggio}
+
+Poich\'e i parametri della telemetria sono fissati in compilazione, ogni configurazione corrisponde
+a un eseguibile distinto:
+
+\begin{lstlisting}
+# esempio: granularita' massima, consegna immediata, campionamento sempre attivo
+make -C rt-app/src CPPFLAGS="-DRTAPP_TRACE_LEVEL=3 \
+                             -DRTAPP_PROCESSOR_TYPE=1 \
+                             -DRTAPP_SAMPLER_TYPE=0 \
+                             -DRTAPP_SAMPLER_RATIO=0.0 \
+                             -DRTAPP_EXPORTER_TYPE=0"
+
+# esempio: campionamento proporzionale al 30%, elementi contabili sull'uscita standard
+make -C rt-app/src CPPFLAGS="-DRTAPP_TRACE_LEVEL=2 \
+                             -DRTAPP_PROCESSOR_TYPE=0 \
+                             -DRTAPP_SAMPLER_TYPE=1 \
+                             -DRTAPP_SAMPLER_RATIO=0.3 \
+                             -DRTAPP_EXPORTER_TYPE=1"
+\end{lstlisting}
+
+Gli eseguibili prodotti vengono conservati in una cache indicizzata dalla combinazione di
+parametri, in modo che ogni cella dell'esperimento usi esattamente il binario corrispondente e che
+la compilazione non venga ripetuta inutilmente.
+
+\subsection{Esecuzione di una singola prova e di una campagna}
+
+\begin{lstlisting}
+# singola esecuzione, all'interno dell'area isolata
+bash scripts/measurements/test.sh <cartella_di_uscita> <eseguibile> <configurazione>
+
+# campagna completa: costruisce gli eseguibili, genera le configurazioni,
+# esegue le ripetizioni in ordine interlacciato e registra le condizioni ambientali
+./scripts/measurements/run_doe.sh block1     # granularita' del tracciamento
+./scripts/measurements/run_doe.sh block2     # criterio di campionamento
+./scripts/measurements/run_doe.sh block3     # modalita' di consegna e carico
+\end{lstlisting}
+
+Ogni esecuzione produce la configurazione effettivamente usata, un log per ciascun thread, e le
+uscite standard e di errore. Al termine, una riga per esecuzione viene aggiunta a una tabella
+riassuntiva con i livelli dei fattori e le condizioni ambientali registrate.
+
+\subsection{Analisi}
+
+\begin{lstlisting}
+# estrae le variabili di risposta e le unisce ai livelli dei fattori
+python3 scripts/measurements/analyze_doe.py \
+        --data-table 2-DoE/data_table.csv --out 2-DoE/results.csv
+
+# statistiche descrittive e confronti fra configurazioni
+python3 scripts/measurements/report_doe.py \
+        --results 2-DoE/results.csv --out 2-DoE/REPORT.md
+
+# figure
+python3 scripts/measurements/plot_doe.py
+\end{lstlisting}

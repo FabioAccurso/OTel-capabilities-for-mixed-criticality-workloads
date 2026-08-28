@@ -51,3 +51,9 @@ otel-installdir/
 *.pre-exitcode.bak
 __pycache__/
 *.pyc
+
+# artefatti di compilazione LaTeX
+3-report/*.aux
+3-report/*.log
+3-report/*.out
+3-report/*.toc
