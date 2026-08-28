@@ -218,12 +218,27 @@ che non sono il lavoro utile.
 
 ### I numeri
 
-| trace_level | `run` | `slack` | budget | periodo reale | il resto |
+| trace_level | `run` | `slack` | somma delle mediane | **budget** | il resto |
 |---|---|---|---|---|---|
-| 0 | 1984 | 8005 | 9991 | 10 000 | **9** |
-| 1 | 1954 | 8036 | 9991 | 10 000 | **9** |
-| 2 | 1984 | 8006 | 9991 | 10 000 | **9** |
-| 3 | 1999 | 7979 | 9977 | 10 000 | **23** |
+| 0 | 1984 | 8005 | 9989 | **9991** | 9 |
+| 1 | 1954 | 8036 | 9990 | **9991** | 9 |
+| 2 | 1984 | 8006 | 9990 | **9991** | 9 |
+| 3 | 1999 | 7979 | 9978 | **9977** | 23 |
+
+> **Perche' `run + slack` non da' esattamente il `budget`.** Il budget **non e'
+> la somma delle mediane, ma la mediana della somma**: per ogni singola
+> iterazione si calcola `run_i + slack_i`, e solo dopo se ne prende la mediana.
+> La mediana non e' un operatore lineare, quindi
+> `median(a+b) != median(a) + median(b)`. Verificato su un run singolo del
+> livello 0 (2000 iterazioni): `median(run)`=1984 e `median(slack)`=8006 danno
+> 9990, mentre `median(run+slack)`=9991.
+>
+> La quantita' con senso fisico e' la seconda: `run` e `slack` della **stessa**
+> iterazione sono accoppiati, l'uno finisce dove l'altro comincia. Sommare due
+> mediane prese separatamente mescola iterazioni diverse — le due mediane non
+> cadono sulla stessa iterazione — e produce un numero che non corrisponde a
+> nessuna iterazione realmente avvenuta. La colonna "somma delle mediane" e'
+> riportata solo per rendere esplicito lo scarto, che vale 1-2 us.
 
 **Come leggerli.** La riga del livello 1 e' la piu' istruttiva: `run` **scende**
 di 30 us rispetto al livello 0 (1954 contro 1984), ma `slack` **sale** di 31
@@ -235,6 +250,42 @@ cresciuto: invece il tempo e' semplicemente stato contato altrove.
 Solo il livello 3 sposta davvero il budget, da 9991 a 9977: il resto passa da 9
 a 23 us, quindi il tracing a granularita' massima aggiunge **14 us per
 iterazione** di lavoro che non compare in nessuna colonna nativa.
+
+### Cosa c'e' dentro "il resto" — e cosa NON c'e'
+
+Il resto **non e' il tempo di invio degli span**. Scomponendolo con la colonna
+`wu_latency`, che rt-app registra a parte:
+
+| trace | resto | di cui `wu_latency` | differenza |
+|---|---|---|---|
+| 0 | 9 | 7.4 | **1.6** |
+| 1 | 9 | 7.4 | **1.6** |
+| 2 | 9 | 7.4 | **1.6** |
+| 3 | 23 | 7.5 | **15.5** |
+
+La componente dominante a riposo e' la **wakeup latency**: il ritardo fra la
+scadenza del timer e il momento in cui il kernel rimette davvero in esecuzione
+il thread. Vale 7.4 us, e' costante a tutti i livelli e non ha niente a che
+vedere con OpenTelemetry — e' il costo del `clock_nanosleep` piu' lo scheduling.
+
+Restano ~1.6 us di overhead di rt-app stesso (scrittura della riga di log,
+gestione degli eventi), e al livello 3 quei 1.6 diventano 15.5. Quei ~14 us sono
+il costo di **creare e chiudere gli span** nel thread: allocare il `Recordable`,
+prendere i timestamp, scrivere gli attributi, accodare nella coda del
+`BatchSpanProcessor`.
+
+**L'invio non e' li' dentro**, e i dati lo dimostrano direttamente. Nel blocco 3,
+a parita' di `trace_level=3` e `n_lo=0`, cambiando **solo** il processor:
+
+```
+Batch  (export su thread worker separato)   resto =  23 us
+Simple (export sincrono nel thread)         resto = 314 us
+```
+
+Se il resto di Batch contenesse gia' l'invio, i due valori sarebbero simili. Il
+fattore 13x fra loro **e'** il costo dell'invio: con `Batch` lo paga un altro
+thread, con `Simple` lo paga il thread critico. E' anche il motivo per cui il
+blocco 3 e' il pezzo di campagna che conta di piu'.
 
 **Perche' e' significativo.** E' una figura sulla **validita' delle misure**,
 non sul sistema sotto test, e giustifica la variabile di risposta usata in tutte
