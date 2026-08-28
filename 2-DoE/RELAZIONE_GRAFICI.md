@@ -174,30 +174,81 @@ nei dati segnala che qualcosa e' andato storto.
 
 ## 7 — `07_metric_artifact.png` · Perche' la metrica ovvia porta a una conclusione falsa
 
-**Cosa mostra.** Blocco 1, quattro livelli di tracing. A sinistra la colonna
-`run` che rt-app riporta nativamente; a destra il `budget` (`run + slack`)
-relativo al livello 0.
+**Cosa mostra.** Blocco 1, quattro livelli di tracing. In alto l'anatomia di
+un'iterazione; in basso a sinistra la colonna `run` che rt-app riporta
+nativamente; in basso a destra la metrica corretta.
 
-**Come leggerlo.** A sinistra il livello 1 misura **1954 us contro i 1984 del
-livello 0**: risulterebbe piu' veloce del codice *senza alcun tracing*. A destra,
-la stessa identica campagna dice che i livelli 1 e 2 non sono misurabili e solo
-il livello 3 costa ~13 us.
+### Da dove viene il "budget", e perche' l'ordinata e' quella
 
-**Perche' e' significativo.** E' una figura sulla **validita' delle misure**, non
-sul sistema sotto test, e giustifica la scelta della variabile di risposta usata
-in tutte le altre. Un overhead non puo' rendere il codice piu' veloce: il
-risultato di sinistra e' un artefatto di **layout del binario** — ogni livello e'
-un eseguibile diverso, e l'allineamento del codice del busy-loop cambia — e vale
-~30 us, cioe' **piu' del segnale da misurare**.
+Il task critico usa un timer su **griglia assoluta**, quindi fra un'attivazione
+e la successiva passano esattamente **10 000 us**, sempre, a ogni livello
+(verificato: il delta fra `start` consecutivi e' 10 000 in tutti i run). Quei
+10 000 us si dividono in tre parti:
 
-La colonna `run` cronometra solo il busy-loop, mentre gli span nascono fuori da
-quella finestra. Lo stesso vale per `period` (`end - start` della stessa riga),
-che al livello 3 *si accorcia* di 15-24 us proprio dove l'overhead cresce.
-Sommando `slack` si recupera l'intero tempo dell'iterazione, e l'artefatto si
-cancella: cio' che `run` guadagna, `slack` lo perde esattamente.
+- **`run`** — il tempo del busy-loop, l'unica cosa che rt-app cronometra
+  esplicitamente (`ldata->duration`, accumulato dagli eventi `run`);
+- **`slack`** — il margine residuo. `rt-app.cpp:761-763` lo calcola come
+  `t_next - t_now` **dopo** che il lavoro dell'iterazione e' finito: quanto
+  tempo manca alla prossima attivazione;
+- **il resto** — `10 000 - run - slack`. E' tempo realmente trascorso dentro
+  l'iterazione che **non compare in nessuna delle due colonne**: creazione e
+  chiusura degli span, logging di rt-app, gestione degli eventi.
+
+Il **budget** e' `run + slack`, cioe' la parte di iterazione che rt-app
+*misura*. Il resto e' la parte che gli sfugge — ed e' esattamente li' che vive
+l'overhead di OpenTelemetry, perche' gli span nascono e muoiono fuori dalla
+finestra cronometrata da `run`.
+
+Ne segue la lettura dell'ordinata del pannello in basso a destra:
+
+```
+overhead in piu' = (10 000 - budget) - (10 000 - budget del livello 0)
+                 =  resto(livello) - resto(livello 0)
+```
+
+cioe' **di quanto cresce la parte invisibile** rispetto alla configurazione
+senza tracing. Piu' la barra e' alta, piu' l'iterazione ha speso tempo in cose
+che non sono il lavoro utile.
+
+> **Nota.** Nella prima versione di questa figura l'ordinata era
+> `budget - budget(livello 0)`, quindi **negativa**: un costo maggiore appariva
+> come una barra verso il basso, in contraddizione con la figura 3, dove il
+> costo e' positivo. E' stata corretta: ora entrambe le figure usano la stessa
+> convenzione, barra alta = piu' costoso.
+
+### I numeri
+
+| trace_level | `run` | `slack` | budget | periodo reale | il resto |
+|---|---|---|---|---|---|
+| 0 | 1984 | 8005 | 9991 | 10 000 | **9** |
+| 1 | 1954 | 8036 | 9991 | 10 000 | **9** |
+| 2 | 1984 | 8006 | 9991 | 10 000 | **9** |
+| 3 | 1999 | 7979 | 9977 | 10 000 | **23** |
+
+**Come leggerli.** La riga del livello 1 e' la piu' istruttiva: `run` **scende**
+di 30 us rispetto al livello 0 (1954 contro 1984), ma `slack` **sale** di 31
+(8036 contro 8005). I due si compensano quasi esattamente e il budget resta
+9991, identico. Se quei 30 us fossero stati lavoro reale risparmiato,
+l'iterazione avrebbe finito prima e lo slack sarebbe cresciuto **restando**
+cresciuto: invece il tempo e' semplicemente stato contato altrove.
+
+Solo il livello 3 sposta davvero il budget, da 9991 a 9977: il resto passa da 9
+a 23 us, quindi il tracing a granularita' massima aggiunge **14 us per
+iterazione** di lavoro che non compare in nessuna colonna nativa.
+
+**Perche' e' significativo.** E' una figura sulla **validita' delle misure**,
+non sul sistema sotto test, e giustifica la variabile di risposta usata in tutte
+le altre. Un overhead non puo' rendere il codice piu' veloce: il risultato del
+pannello in basso a sinistra e' un artefatto di **layout del binario** — ogni
+livello e' un eseguibile diverso, e l'allineamento del codice del busy-loop
+cambia — e vale ~30 us, cioe' **piu' del segnale da misurare**.
+
+Lo stesso problema affligge la colonna `period` (`end - start` della stessa
+riga), che al livello 3 *si accorcia* di 15-24 us proprio dove l'overhead
+cresce, per la stessa ragione: gli span nascono fuori da quella finestra.
 
 **Implicazione pratica.** Chi analizzasse questo DoE con le colonne native di
-rt-app concluderebbe che la strumentazione OTel migliora le prestazioni.
+rt-app concluderebbe che la strumentazione OTel **migliora** le prestazioni.
 
 ---
 

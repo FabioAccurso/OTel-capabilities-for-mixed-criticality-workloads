@@ -192,24 +192,61 @@ save(fig, "06_abort_rate.png")
 
 # ---------------------------------------------------------------- FIG 7
 # Perche' la metrica ovvia (`run`) porta a una conclusione falsa.
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.0, 3.8), sharex=True)
-lv = [0,1,2,3]
+# Tre pannelli: l'anatomia di un'iterazione (che spiega da dove viene il
+# "budget"), la metrica sbagliata, la metrica giusta.
+import matplotlib.gridspec as gridspec
+fig = plt.figure(figsize=(9.6, 6.4))
+gs = gridspec.GridSpec(2, 2, height_ratios=[1, 1.35], hspace=0.52, wspace=0.28)
+axT = fig.add_subplot(gs[0, :]); ax1 = fig.add_subplot(gs[1, 0]); ax2 = fig.add_subplot(gs[1, 1])
+
+lv = [0, 1, 2, 3]
 runv = [med(sel(block="block1", trace_level=t), "med_duration_us") for t in lv]
+slkv = [med(sel(block="block1", trace_level=t), "slack_med_us") for t in lv]
 budv = [med(sel(block="block1", trace_level=t), "budget_med_us") for t in lv]
-b1 = ax1.bar([str(t) for t in lv], runv, 0.55, color=["#c9ced6","#f0a3a8","#c9ced6","#c9ced6"])
+PER = 10000.0
+rest = [PER - b for b in budv]
+
+# --- pannello alto: anatomia dell'iterazione (livello 0 vs livello 3) -------
+C_RUN, C_SLACK, C_REST = "#8fb8e8", "#dfe4ea", C_SIMPLE
+for i, t in enumerate([0, 3]):
+    y = 1 - i
+    axT.barh(y, runv[t], color=C_RUN, edgecolor="white", height=.52)
+    axT.barh(y, slkv[t], left=runv[t], color=C_SLACK, edgecolor="white", height=.52)
+    axT.barh(y, rest[t]*40, left=runv[t]+slkv[t], color=C_REST, edgecolor="white", height=.52)
+    axT.text(runv[t]/2, y, f"run\n{runv[t]:.0f} us", ha="center", va="center", fontsize=8.2)
+    axT.text(runv[t]+slkv[t]/2, y, f"slack\n{slkv[t]:.0f} us", ha="center", va="center", fontsize=8.2)
+    xend = runv[t] + slkv[t] + rest[t]*40
+    axT.annotate(f"{rest[t]:.0f} us", xy=(xend + 90, y), va="center", fontsize=9.5,
+                 color=C_REST, weight="bold")
+axT.set_yticks([0, 1]); axT.set_yticklabels(["trace_level 3", "trace_level 0"], fontsize=9)
+axT.set_xlim(0, 11700); axT.set_xlabel("un'iterazione = 10 000 us esatti (timer su griglia assoluta)", fontsize=9)
+axT.set_title("Anatomia di un'iterazione: `budget` = `run` + `slack`, e cio' che resta e' l'overhead invisibile",
+              fontsize=10)
+axT.grid(False); axT.spines["left"].set_visible(False)
+axT.text(PER+560, 0.5, "\"il resto\": il tempo dell'iterazione\nche non compare ne' in `run` ne' in `slack`\n(disegnato a scala 40x per renderlo visibile)",
+         fontsize=7.8, color=C_REST, va="center", style="italic")
+axT.axvline(PER, color="#57606a", lw=1, ls=":")
+
+# --- basso sinistra: la metrica sbagliata ----------------------------------
+b1 = ax1.bar([str(t) for t in lv], runv, .55, color=["#c9ced6", "#f0a3a8", "#c9ced6", "#c9ced6"])
 ax1.bar_label(b1, fmt="%.0f", fontsize=8.5, padding=2)
-ax1.set_ylim(1900, 2030); ax1.set_ylabel("colonna `run` [us]")
-ax1.set_title("7 — La metrica sbagliata: `run`")
-ax1.text(0.5, 0.02, "il livello 1 risulta PIU' VELOCE\ndi quello senza tracing:\nartefatto di layout del binario",
-         transform=ax1.transAxes, ha="center", fontsize=8, color=C_SIMPLE, style="italic")
-b2 = ax2.bar([str(t) for t in lv], [b - budv[0] for b in budv], 0.55,
-             color=["#c9ced6","#c9ced6","#c9ced6",C_BATCH])
+ax1.set_ylim(1900, 2035); ax1.set_ylabel("colonna `run` [us]")
+ax1.set_title("La metrica sbagliata: `run` da solo", fontsize=10)
+ax1.set_xlabel("trace_level")
+ax1.text(.5, .04, "il livello 1 risulta PIU' VELOCE di quello\nsenza tracing: e' l'allineamento del binario,\nnon un guadagno reale",
+         transform=ax1.transAxes, ha="center", fontsize=7.8, color=C_SIMPLE, style="italic")
+
+# --- basso destra: la metrica giusta, col segno di FIG 3 -------------------
+cost = [rest[t] - rest[0] for t in lv]          # quanto overhead IN PIU' rispetto al livello 0
+b2 = ax2.bar([str(t) for t in lv], cost, .55, color=["#c9ced6", "#c9ced6", "#c9ced6", C_BATCH])
 ax2.bar_label(b2, fmt="%.0f", fontsize=8.5, padding=2)
-ax2.set_ylabel("budget - budget(livello 0) [us]"); ax2.set_ylim(-19, 6)
-ax2.set_title("la metrica giusta: `run + slack`")
-ax2.text(0.5, 0.10, "solo il livello 3 costa (~13 us)\ni livelli 1 e 2 non sono misurabili",
-         transform=ax2.transAxes, ha="center", fontsize=8, color="#57606a", style="italic")
-for a in (ax1, ax2): a.set_xlabel("trace_level")
+ax2.set_ylim(-1.5, 19); ax2.set_ylabel("overhead in piu' vs livello 0 [us]")
+ax2.set_title("La metrica giusta: quanto cresce `il resto`", fontsize=10)
+ax2.set_xlabel("trace_level")
+ax2.text(.5, .70, "= 10000 - (`run` + `slack`)\nrispetto al livello 0.\nPiu' alto = piu' costoso",
+         transform=ax2.transAxes, ha="center", fontsize=7.8, color="#57606a", style="italic")
+fig.suptitle("7 — Perche' la metrica ovvia porta a una conclusione falsa",
+             fontsize=11.5, fontweight="bold", y=1.005)
 save(fig, "07_metric_artifact.png")
 
 # ---------------------------------------------------------------- FIG 8
