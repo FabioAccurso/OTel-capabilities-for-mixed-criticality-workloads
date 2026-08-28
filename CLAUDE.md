@@ -900,6 +900,14 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   totali della campagna sono **22 su 485 run**, di cui 21 nel solo braccio Simple e 1 isolato
   nel blocco 2; con Simple 40 run su 180 terminano con SIGABRT.
 
+  **Grafici e relazione (2026-08-28)**: `scripts/measurements/plot_doe.py` genera 8 figure in
+  `2-DoE/figures/` da `results.csv`; la lettura di ciascuna e' in `2-DoE/RELAZIONE_GRAFICI.md`.
+  Le figure 1-2 rispondono alla domanda della traccia sulla prioritizzazione, 3-5 all'overhead
+  e agli SLO, 6 alla robustezza, **7-8 alla validita' delle misure stesse** (l'artefatto della
+  colonna `run` e la falsificazione dell'ipotesi frequenza). Versione HTML consultabile con le
+  figure incorporate: `scripts/measurements/build_relazione_html.py` (pubblicata come artifact
+  "Telemetria sotto deadline").
+
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della
   consegna): sketch di un `Sampler` custom che decide su nome/attributi dello span
   invece che sul trace_id, così HI e LO possono avere ratio di campionamento indipendenti
