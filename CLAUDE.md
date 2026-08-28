@@ -385,10 +385,31 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   stato del core non identificato. **Conseguenza**: `max_duration_us` e `mean_duration_us`
   di `analyze_doe.py`, che derivano da `run`, **non sono affidabili per confrontare livelli
   di tracing** — usare `slack`, `period_jitter_std_us` e `wu_latency`.
-  **Da decidere prima dei blocchi 2 e 3**: il blocco 1 occupa 21 MB con `n_lo=0`, i
-  blocchi 2 e 3 stimati ~750 MB ciascuno -> comprimere i log o tenere solo `HI_task`.
+  **Decisioni prese il 2026-08-28, prima dei blocchi 2 e 3** (confermate dall'utente):
+  (1) **il timer resta in `mode` default `"relative"`**. Passare ad `"absolute"` avrebbe
+  linearizzato il `miss%` di LO (che satura al ~53%, task 2) ma `gen_config.py:42-47`
+  applica lo stesso `pace()` a HI e LO: avrebbe cambiato anche `HI_task`, rendendo il
+  blocco 1 -- gia' eseguito in `relative` -- incomparabile con la cella di controllo
+  `trace_level=0` del blocco 3. Il degrado di LO si descrive con `wu_latency` e il periodo
+  mediano, che crescono in modo monotono (punto 3 della lista del Task 5).
+  (2) **nessun log viene buttato**: `test.sh` ora gzippa i soli `rtapp-LO_noise-*.log` a
+  fine run (~8:1 misurato nel task 0.5), lasciando `HI_task-0.log` in chiaro perche'
+  `find_hi_log()` di `analyze_doe.py` cerca `*HI*log` e non matcherebbe un `.gz`.
+  Verificato che con `n_lo=0` (celle di controllo del blocco 3) il blocco non fallisce
+  sotto `set -euo pipefail` grazie a `shopt -s nullglob`. Stima: ~1,5 GB di log grezzi
+  -> **~260 MB**. Il disco non era il vincolo (36 GB liberi): il vincolo e' `.git`, oggi
+  14 MB.
+  (3) le due celle di controllo del blocco 2 (AlwaysOff/AlwaysOn) **restano a 25
+  ripetizioni** come le altre, per simmetria del disegno sperimentale.
+  Nota statistica per la relazione: 25 ripetizioni danno un IC 95% di circa **+/-0,20** su
+  una proporzione binomiale a p=0,5. Il blocco 2 e' quindi dimensionato per la tesi
+  principale ("HI e LO non sono mai campionati separatamente": 0 casi su 150) ma **non**
+  per affermare che la frazione osservata coincida col ratio nominale -- li' va detto
+  "coerente con", non "verificato".
   Nota: rilanciare un blocco sovrascrive i `run_NN` ma **aggiunge** righe a
-  `data_table.csv` -> svuotare prima `block*/`, `data_table.csv` e `index.txt`.
+  `data_table.csv` -> svuotare prima `block*/`, `data_table.csv` e `index.txt`. Vale per i
+  **rilanci**: al primo giro dei blocchi 2 e 3 le righe si accodano correttamente alle 80
+  del blocco 1, che NON vanno cancellate.
 
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche
@@ -405,7 +426,13 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   contare solo le righe `name`, vedi `3-exporter/NOTES.md` §8; (6) **non usare
   `max_duration_us`/`mean_duration_us` per confrontare livelli di tracing**: derivano da
   `run`, che al livello 3 *scende* per un effetto microarchitetturale non spiegato
-  (blocco 1 §4) — usare `slack`, `period_jitter_std_us`, `wu_latency`.
+  (blocco 1 §4) — usare `slack`, `period_jitter_std_us`, `wu_latency`; (7) i log
+  `LO_noise` dei blocchi 2 e 3 sono **gzippati** (decisione del 2026-08-28): per leggerli
+  serve `gzip.open(..., "rt")`, `find_hi_log()` invece resta valido perche' `HI_task` e'
+  in chiaro; (8) osservazione dal blocco 1 da verificare: alla baseline il jitter e'
+  **bimodale** (10 run su 20 a ~2,7 us, 10 a ~16 us, nulla in mezzo) mentre al livello 3
+  e' compatto a ~13,5 -> la strumentazione sembra non alzare solo la media ma **far
+  sparire i run buoni**; da confermare sul blocco 3 prima di scriverlo come risultato.
   Stato:
 
 - [ ] **Task 6** — Proposta di miglioramento architetturale (parte finale della

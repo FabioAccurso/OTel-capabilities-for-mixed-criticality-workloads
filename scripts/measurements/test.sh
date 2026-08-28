@@ -35,4 +35,16 @@ else
     "$BIN" "$DIR/config.json" > "$DIR/stdout.log" 2> "$DIR/stderr.log"
 fi
 
+# Compress the LO_noise logs. With up to 8 background threads they dominate a
+# run's footprint (~1.2 MB each, ~8:1 compression), while HI_task-0.log is left
+# in clear so find_hi_log() in analyze_doe.py keeps matching "*HI*log".
+# Decided before launching block 2; see CLAUDE.md, Task 4.
+shopt -s nullglob
+lo_logs=("$DIR"/*LO_noise*.log)
+shopt -u nullglob
+if (( ${#lo_logs[@]} > 0 )); then
+    gzip -f "${lo_logs[@]}"
+    echo "[test] gzipped ${#lo_logs[@]} LO_noise log(s)"
+fi
+
 echo "[test] done -> $DIR"
