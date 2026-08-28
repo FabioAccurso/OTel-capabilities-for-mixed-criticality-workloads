@@ -764,10 +764,34 @@ cosa è successo e perché, non solo con l'esecuzione del comando.
   Il fattore 3.67 = 2296/626 MHz indica la **frequenza effettiva** come ipotesi principale:
   il pin MSR scrive la P-state *richiesta*, ma l'SMU puo' scendere sotto P0 per i limiti
   STAPM del package da 15 W, e `mhz_med` viene letto **dopo** il run.
-  **Due contromisure da applicare prima del blocco 3**: campionare `aperf`/`mperf` *durante*
-  il run (unica misura che distingue "CPU lenta" da "piu' lavoro"), e lanciare una volta
-  `hwlatdetect` (pacchetto `rt-tests`) per escludere latenze di origine firmware (SMI),
-  che spiegherebbero sia il regime a 3.5x sia il miss isolato.
+  **Contromisura applicata (2026-08-28): colonna `aperf_mhz` in `run_doe.sh`.** Frequenza
+  effettiva media della CPU di HI, da contatori cumulativi `APERF` (0xE8) / `MPERF` (0xE7):
+  `f = (dAPERF/dMPERF) * 2300`. Le letture cadono **fuori** dalla finestra di misura, dove
+  gia' si leggono `mhz_med` e `tctl`. Scelta obbligata: `rdmsr -p N` forza un IPI verso la
+  CPU N, quindi campionare *durante* il run inietterebbe interruzioni nel task critico e
+  renderebbe il blocco 3 non omogeneo rispetto ai blocchi 1 e 2. I contatori sono cumulativi,
+  quindi due letture bastano: il regime anomalo dura run interi e trascina la media (626
+  contro 2296 MHz attesi). Validato su busy loop noto: 2290 MHz, rapporto 0.9957.
+  L'header del `data_table.csv` passa da 15 a 16 colonne; `run_doe.sh` **migra da solo** il
+  file esistente mettendo `aperf_mhz=NA` sulle righe pre-esistenti, con backup in
+  `data_table.csv.pre-aperf.bak` (le 230 righe di block1+block2 sono state migrate cosi').
+
+  **Campagna diagnostica `diag` — il fenomeno NON si e' riprodotto.** 75 run (3 celle x 25
+  rip.) in condizioni identiche al blocco 2, sulle due celle in cui era comparso piu'
+  AlwaysOn come controllo: **0 run anomali**, `aperf_mhz` fra 2286 e 2298 MHz. L'ipotesi
+  frequenza resta quindi **non verificata, ne' confermata ne' falsificata**: senza un run
+  anomalo da misurare, `aperf_mhz` non ha nulla su cui pronunciarsi. Non e' pero' in
+  contraddizione col tasso osservato — P(0 anomali in 75 run | tasso 1.3 %) = **0.37**, e il
+  limite superiore al 95 % dato 0/75 e' **4.0 %**, compatibile con l'1.3 % misurato su
+  block1+block2 (3/230). Dati in `2-DoE/diag/`, analisi in `2-DoE/diag/NOTES.md`.
+  Il valore acquisito e' che la strumentazione ora c'e': al prossimo run anomalo la risposta
+  arriva subito, senza doverlo riprodurre a comando.
+
+  **Resta da fare**: `hwlatdetect` (pacchetto `rt-tests`, disponibile ma **non installato**),
+  che misura le finestre in cui la CPU sparisce senza che il kernel se ne accorga (SMI del
+  firmware). E' l'unica ipotesi rimasta che spieghi sia il regime a 3.5x sia il deadline miss
+  isolato del blocco 2, e non richiede di aspettare che il fenomeno ricapiti. Da eseguire a
+  sistema fermo, fuori da qualunque campagna.
 
 - [ ] **Task 5** — Analisi: `analyze_doe.py` → `2-DoE/results.csv` (deadline_miss_ratio,
   max_duration_us, period_jitter_std_us, hi/lo_spans_exported). Statistiche

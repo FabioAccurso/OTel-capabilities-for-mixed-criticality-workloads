@@ -23,13 +23,32 @@ TEST="$HERE/test.sh"
 
 DATA_TABLE="$DOE_ROOT/data_table.csv"
 INDEX_FILE="$DOE_ROOT/index.txt"
-HEADER="run_id,block,trace_level,processor_type,sampler_type,sampler_ratio,exporter_type,n_lo,rep,duration_s,mhz_med,tctl_pre_c,tctl_post_c,hi_loops,run_dir"
+HEADER="run_id,block,trace_level,processor_type,sampler_type,sampler_ratio,exporter_type,n_lo,rep,duration_s,mhz_med,aperf_mhz,tctl_pre_c,tctl_post_c,hi_loops,run_dir"
 
 # sudo non interattivo: -n usa le credenziali in cache, -A l'helper SUDO_ASKPASS.
 # Servono entrambi perche' -n disabilita l'askpass per definizione.
 SUDO() { sudo -n "$@" 2>/dev/null || sudo -A "$@"; }
 
 HWMON=/sys/class/hwmon/hwmon3/temp1_input      # k10temp, Tctl
+HI_CPU="${HI_CPU:-2}"                          # CPU del task critico (gen_config.py --hi-cpu)
+F_TSC_MHZ="${F_TSC_MHZ:-2300}"                 # P0 nominale; constant_tsc -> MPERF conta al rate del TSC
+
+# Frequenza EFFETTIVA media di una CPU, da contatori cumulativi APERF/MPERF.
+#   f_media = (dAPERF / dMPERF) * f_TSC
+# Le due letture cadono FUORI dalla finestra di misura, come gia' avviene per
+# mhz_med e tctl: `rdmsr -p N` forza un IPI verso la CPU N, quindi campionare
+# *durante* il run inietterebbe interruzioni nel task critico e cambierebbe la
+# condizione sperimentale rispetto ai blocchi 1 e 2. Il regime anomalo a ~3.5x
+# dura run interi o centinaia di iterazioni consecutive, quindi una media
+# sull'intero run e' piu' che sufficiente a rilevarlo (626 vs 2296 MHz attesi).
+amperf() { echo "$(SUDO rdmsr -p "$HI_CPU" -d 0xE8 2>/dev/null || echo 0) $(SUDO rdmsr -p "$HI_CPU" -d 0xE7 2>/dev/null || echo 0)"; }
+amperf_mhz() {   # $1..$2 = "aperf mperf" pre, post
+    awk -v pre="$1" -v post="$2" -v f="$F_TSC_MHZ" 'BEGIN{
+        split(pre,a," "); split(post,b," ");
+        da=b[1]-a[1]; dm=b[2]-a[2];
+        if (dm <= 0 || da <= 0) { print "NA" } else { printf "%.0f", da/dm*f }
+    }'
+}
 mhz_med() { grep "cpu MHz" /proc/cpuinfo | awk '{print $4}' | sort -n | awk '{v[NR]=$1} END{print (NR%2)?v[(NR+1)/2]:int((v[NR/2]+v[NR/2+1])/2)}'; }
 tctl()    { [ -r "$HWMON" ] && awk '{printf "%.1f", $1/1000}' "$HWMON" || echo "NA"; }
 
@@ -68,6 +87,16 @@ preflight() {
         fail=1
     fi
 
+    # APERF/MPERF: senza questi il regime anomalo a ~3.5x resta non diagnosticabile.
+    local am; am=$(amperf)
+    if [ "${am%% *}" != "0" ] && [ "${am##* }" != "0" ]; then
+        echo "[preflight] OK  APERF/MPERF leggibili su cpu$HI_CPU (f_TSC=$F_TSC_MHZ MHz)"
+    else
+        echo "[preflight] KO  rdmsr non legge APERF/MPERF su cpu$HI_CPU." >&2
+        echo "               sudo modprobe msr; sudo apt install msr-tools" >&2
+        fail=1
+    fi
+
     [ "$fail" -eq 0 ] || { echo "[preflight] interrotto." >&2; exit 1; }
 }
 
@@ -94,9 +123,12 @@ run_one() {
     local run_dir="$cell_dir/run_$(printf '%02d' "$rep")"
 
     local t_pre; t_pre=$(tctl)
+    local am_pre; am_pre=$(amperf)
     bash "$TEST" "$run_dir" "$bin" "$cfg" >/dev/null
+    local am_post; am_post=$(amperf)
     local t_post; t_post=$(tctl)
     local mhz; mhz=$(mhz_med)
+    local af; af=$(amperf_mhz "$am_pre" "$am_post")
 
     # I log di rt-app nascono root: cset shield --exec esegue come root.
     SUDO chown -R "$(id -u):$(id -g)" "$run_dir" >/dev/null 2>&1 || true
@@ -112,10 +144,10 @@ run_one() {
     fi
     hi_loops=$(( $(wc -l < "$hi_log") - 1 ))
 
-    echo "$RUN_COUNTER,$block,$trace,$proc,$samp,$ratio,$exporter,$n_lo,$rep,$dur,$mhz,$t_pre,$t_post,$hi_loops,$run_dir" >> "$DATA_TABLE"
+    echo "$RUN_COUNTER,$block,$trace,$proc,$samp,$ratio,$exporter,$n_lo,$rep,$dur,$mhz,$af,$t_pre,$t_post,$hi_loops,$run_dir" >> "$DATA_TABLE"
     echo "$RUN_COUNTER $run_dir" >> "$INDEX_FILE"
-    printf '  rep %2d  %-28s loops=%-6s MHz=%-6s Tctl %s->%s C\n' \
-        "$rep" "$(basename "$cell_dir")" "$hi_loops" "$mhz" "$t_pre" "$t_post"
+    printf '  rep %2d  %-28s loops=%-6s MHz=%-6s aperf=%-6s Tctl %s->%s C\n' \
+        "$rep" "$(basename "$cell_dir")" "$hi_loops" "$mhz" "$af" "$t_pre" "$t_post"
     RUN_COUNTER=$((RUN_COUNTER + 1))
 }
 
@@ -187,14 +219,44 @@ block3() {
     run_block block3 "${REPS:-15}" "${DURATION:-20}" "${cells[@]}"
 }
 
+# ============================ DIAG ==========================================
+# Non fa parte del DoE: campagna diagnostica per il regime anomalo a ~3.5x visto
+# 1 volta nel blocco 1 e 2 volte nel blocco 2 (2/150 = 1.3 %). Riproduce le
+# CONDIZIONI ESATTE del blocco 2 (stesse celle, stessa durata) sulle due celle in
+# cui il fenomeno e' comparso, piu' AlwaysOn come controllo, con la colonna
+# aperf_mhz ora attiva. Se un run anomalo si ripresenta, aperf_mhz dice subito se
+# la CPU era davvero a ~626 MHz (ipotesi frequenza) o a 2296 (ipotesi falsificata).
+blockdiag() {
+    run_block diag "${REPS:-25}" "${DURATION:-20}" \
+        "2 0 2 0.0 1 4" "2 0 1 0.3 1 4" "2 0 0 0.0 1 4"
+}
+
 mkdir -p "$BIN_CACHE" "$DOE_ROOT"
+# L'header e' cambiato (aggiunta aperf_mhz dopo mhz_med). Un data_table scritto
+# con lo schema vecchio non va appeso in silenzio: le righe nuove avrebbero una
+# colonna in piu' e l'intero file diventerebbe disallineato senza errori.
+if [ -s "$DATA_TABLE" ] && [ "$(head -1 "$DATA_TABLE")" != "$HEADER" ]; then
+    if [ "$(head -1 "$DATA_TABLE")" = "${HEADER/,aperf_mhz/}" ]; then
+        cp "$DATA_TABLE" "${DATA_TABLE}.pre-aperf.bak"
+        awk -F, -v OFS=, 'NR==1{next} {for(i=NF;i>11;i--)$(i+1)=$i; $12="NA"; print}' \
+            "${DATA_TABLE}.pre-aperf.bak" > "${DATA_TABLE}.tmp"
+        { echo "$HEADER"; cat "${DATA_TABLE}.tmp"; } > "$DATA_TABLE"
+        rm -f "${DATA_TABLE}.tmp"
+        echo "[migrazione] data_table: aggiunta colonna aperf_mhz=NA alle righe pre-esistenti"
+        echo "             backup in $(basename "${DATA_TABLE}.pre-aperf.bak")"
+    else
+        echo "[ERRORE] header di $DATA_TABLE non riconosciuto, non lo tocco." >&2
+        exit 1
+    fi
+fi
 [ -s "$DATA_TABLE" ] || echo "$HEADER" > "$DATA_TABLE"
 touch "$INDEX_FILE"
 RUN_COUNTER=$(( $(wc -l < "$INDEX_FILE") + 1 ))
 
 case "${1:-}" in
     block1|block2|block3) preflight; "$1" ;;
-    *) echo "Usage: $0 <block1|block2|block3>"; exit 1 ;;
+    diag) preflight; blockdiag ;;
+    *) echo "Usage: $0 <block1|block2|block3|diag>"; exit 1 ;;
 esac
 
 echo "[run_doe] '$1' completato. Risultati in: $DOE_ROOT"
