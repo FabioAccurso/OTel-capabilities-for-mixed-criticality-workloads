@@ -32,6 +32,10 @@ def summarize(path):
 
 cells=defaultdict(list)
 for r in csv.DictReader(open('2-DoE/data_table.csv')):
+    # Filtro indispensabile: il data_table raccoglie TUTTE le campagne. Senza,
+    # il raggruppamento per trace_level mescolerebbe run con carico e sampler
+    # diversi (es. i 150 run di block2 sono tutti a trace_level 2).
+    if r['block'] != 'block1': continue
     cells[int(r['trace_level'])].append(summarize(find_hi_log(r['run_dir'])))
 
 print("BLOCCO 1 — overhead puro di strumentazione (solo HI, nessun rumore, 20 rip./cella)")
