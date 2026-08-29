@@ -1,0 +1,269 @@
+\title{\vspace{-1.6cm}\textbf{Struttura del repository}\\[.2em]
+\large Valutazione di OpenTelemetry per workload mixed-criticality}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+\vspace{-1.4cm}
+
+\section*{Panoramica}
+\addcontentsline{toc}{section}{Panoramica}
+
+La radice del progetto \`e organizzata seguendo il flusso di lavoro: dal codice sorgente agli
+eseguibili, da questi agli strumenti che li configurano ed eseguono, fino ai dati prodotti e ai
+documenti che li interpretano. Le cartelle numerate rispettano l'ordine in cui il lavoro \`e stato
+svolto.
+
+\begin{center}\small
+\begin{tabular}{p{3.1cm}p{1.3cm}p{9.9cm}}
+\toprule
+\textbf{cartella} & \textbf{peso} & \textbf{ruolo} \\
+\midrule
+\texttt{rt-app/} & 20\,MB & Il generatore di carico real-time strumentato, con i sorgenti e l'infrastruttura di compilazione. \\
+\texttt{otel-installdir/} & 12\,MB & La libreria OpenTelemetry compilata e installata localmente, contro cui il generatore viene collegato. \\
+\texttt{bin/} & 66\,MB & Gli eseguibili gi\`a compilati, uno per ciascuna configurazione di strumentazione. \\
+\texttt{scripts/} & 188\,KB & Gli strumenti sviluppati per il progetto: preparazione della piattaforma, esecuzione delle campagne, analisi. \\
+\texttt{1-configs/} & 24\,KB & Le configurazioni di carico di riferimento, in forma leggibile. \\
+\texttt{2-DoE/} & 204\,MB & Tutti i dati sperimentali grezzi e i risultati dell'analisi. \\
+\texttt{0-explore/} & 2.2\,MB & Le prove preliminari condotte a mano prima di automatizzare le misure. \\
+\texttt{3-report/} & 776\,KB & I documenti di sintesi e i relativi sorgenti. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{-.4em}
+\section{\texttt{rt-app/} --- il generatore di carico}
+
+Contiene il programma che genera il workload periodico e ne registra i tempi. \`E la base di
+partenza fornita per il progetto, gi\`a strumentata con OpenTelemetry.
+
+\begin{center}\small
+\begin{tabular}{p{3.4cm}p{10.9cm}}
+\toprule
+\texttt{src/} & I sorgenti, dodici file fra implementazione e intestazioni. I moduli principali
+riguardano il corpo del programma e l'esecuzione dei task, l'interpretazione del file di
+configurazione, la gestione degli argomenti da riga di comando, la scrittura dei log e i gruppi di
+task. Un'intestazione raccoglie le definizioni che governano la strumentazione. \\
+\addlinespace
+\texttt{libdl/} & Una piccola libreria di supporto che espone le chiamate di sistema per lo
+scheduling con scadenza, non disponibili direttamente nella libreria standard. \\
+\addlinespace
+\texttt{doc/} & Materiale accessorio distribuito con il programma originale. \\
+\addlinespace
+file di build & \texttt{configure.ac}, \texttt{Makefile.am} e \texttt{autogen.sh} sono i sorgenti
+dell'infrastruttura di compilazione; \texttt{configure}, i \texttt{Makefile} e i file di supporto
+sono generati automaticamente e non vanno modificati a mano. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+La compilazione avviene in tre passi (\texttt{./autogen.sh}, \texttt{./configure},
+\texttt{make}) e produce l'eseguibile in \texttt{src/}. I parametri che governano la strumentazione
+vengono passati al compilatore in questa fase, non a esecuzione avviata: \`e la ragione per cui
+esiste la cartella descritta di seguito.
+
+\section{\texttt{bin/} --- gli eseguibili per ciascuna configurazione}
+
+Poich\'e il comportamento della telemetria \`e fissato al momento della compilazione, ogni
+configurazione sperimentale richiede un eseguibile distinto. Ricompilare a ogni esecuzione
+sarebbe stato lento e, soprattutto, avrebbe reso difficile garantire che due esecuzioni della stessa
+cella usassero davvero lo stesso binario. Gli eseguibili vengono quindi costruiti una sola volta e
+conservati qui, indicizzati dalla combinazione di parametri che rappresentano.
+
+Il nome codifica per intero la configurazione:
+
+\begin{center}\ttfamily\large
+rtapp\_t\underline{3}\_p\underline{1}\_s\underline{0}\_r\underline{0.0}\_e\underline{0}
+\end{center}
+
+\begin{center}\small
+\begin{tabular}{clp{8.4cm}}
+\toprule
+\textbf{sigla} & \textbf{parametro} & \textbf{valori} \\
+\midrule
+\texttt{t} & livello di tracciamento & 0 nessuno, 1 esecuzione e thread, 2 anche le fasi, 3 anche ogni iterazione \\
+\texttt{p} & modalit\`a di consegna & 0 differita (thread dedicato), 1 immediata (nel thread stesso) \\
+\texttt{s} & criterio di campionamento & 0 sempre attivo, 1 proporzionale, 2 mai attivo \\
+\texttt{r} & proporzione & valore usato quando il criterio \`e proporzionale \\
+\texttt{e} & destinazione & 0 servizio di raccolta esterno, 1 uscita standard \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+La cartella contiene attualmente quattordici eseguibili: undici corrispondenti alle celle delle tre
+campagne, e tre prodotti durante le prove preliminari, riconoscibili dalla diversa convenzione di
+denominazione.
+
+\section{\texttt{scripts/} --- gli strumenti sviluppati per il progetto}
+
+\`E la parte realizzata da noi. Si divide in due gruppi, secondo la funzione.
+
+\subsection*{\texttt{scripts/utils\_isolation/} --- preparazione della piattaforma}
+
+\begin{center}\small
+\begin{tabular}{p{4.3cm}p{10.0cm}}
+\toprule
+\texttt{pin\_cpu\_freq.sh} & Fissa la frequenza del processore e disabilita la sovra-frequenza
+automatica, agendo sui registri di controllo. Accetta i comandi \texttt{status}, \texttt{fix} e
+\texttt{reset}. \\
+\addlinespace
+\texttt{isolate\_cpus.sh} & Crea la partizione fra CPU di servizio e CPU riservate agli esperimenti,
+sposta su queste prime tutti i processi esistenti e riassegna le affinit\`a degli interrupt.
+Salva lo stato precedente per poterlo ripristinare. \\
+\addlinespace
+\texttt{reset\_isolation.sh} & Annulla l'isolamento e ripristina le affinit\`a salvate,
+riportando il sistema allo stato iniziale. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Accanto ai primi due si trovano file con estensione \texttt{.orig}: conservano la versione di
+partenza degli script, che abbiamo poi corretto ed esteso. Sono mantenuti per rendere tracciabili
+le modifiche.
+
+\subsection*{\texttt{scripts/measurements/} --- esecuzione e analisi}
+
+\begin{center}\small
+\begin{tabular}{p{4.3cm}p{10.0cm}}
+\toprule
+\texttt{gen\_config.py} & Genera la configurazione del carico a partire dai parametri (numero di
+task di disturbo, durata, CPU, costante di calibrazione), garantendo che le celle differiscano solo
+per ci\`o che si intende variare. Avverte se i task venissero collocati su CPU logiche dello stesso
+core fisico. \\
+\addlinespace
+\texttt{test.sh} & Esegue una singola prova all'interno dell'area isolata, in una cartella dedicata
+in cui salva anche la configurazione effettivamente usata. \\
+\addlinespace
+\texttt{run\_doe.sh} & Orchestra una campagna completa: costruisce gli eseguibili necessari, genera
+le configurazioni, esegue le ripetizioni in ordine interlacciato, registra le condizioni ambientali
+e verifica la validit\`a di ciascuna esecuzione. Accetta come argomento la campagna da eseguire. \\
+\addlinespace
+\texttt{analyze\_doe.py} & Percorre tutte le esecuzioni, ne estrae le variabili di risposta e le
+unisce ai livelli dei fattori, producendo le tabelle dei risultati. \\
+\addlinespace
+\texttt{analyze\_block1/2/3.py} & Analisi specifiche di ciascuna campagna, con le tabelle e i
+controlli pertinenti a quel particolare disegno sperimentale. \\
+\addlinespace
+\texttt{report\_doe.py} & Produce le statistiche descrittive e i confronti fra configurazioni in
+forma di documento. \\
+\addlinespace
+\texttt{plot\_doe.py} & Genera le figure a partire dai risultati. \\
+\addlinespace
+\texttt{build\_relazione\_html.py} & Compone la versione consultabile della relazione sulle figure. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{\texttt{1-configs/} --- le configurazioni di riferimento}
+
+Contiene quattro configurazioni di carico in formato JSON, corrispondenti ai livelli di carico
+impiegati negli esperimenti (\texttt{cfg\_n0}, \texttt{cfg\_n1}, \texttt{cfg\_n4},
+\texttt{cfg\_n8}: il numero indica quanti task di disturbo affiancano il task critico), e un
+documento che ne motiva le scelte, in particolare la modalit\`a di attivazione dei due tipi di task
+e il valore della costante di calibrazione.
+
+Queste configurazioni non vengono usate direttamente dalle campagne, che le rigenerano ogni volta a
+partire dagli stessi parametri: servono a poter consultare e verificare il carico impiegato senza
+dover eseguire nulla.
+
+\section{\texttt{2-DoE/} --- dati sperimentali e risultati}
+
+\`E la cartella pi\`u voluminosa e raccoglie l'intera evidenza sperimentale. Si articola in tre
+livelli: le campagne, le celle, le singole esecuzioni.
+
+\begin{center}\small
+\begin{tabular}{p{3.5cm}ccp{7.6cm}}
+\toprule
+\textbf{campagna} & \textbf{celle} & \textbf{esecuzioni} & \textbf{fattore studiato} \\
+\midrule
+\texttt{block1/} & 4 & 80 & granularit\`a del tracciamento \\
+\texttt{block2/} & 6 & 150 & criterio di campionamento \\
+\texttt{block3/} & 12 & 180 & modalit\`a di consegna e carico concorrente \\
+\texttt{diag/} & 3 & 75 & controllo di riproducibilit\`a \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Le celle.} All'interno di ogni campagna, una cartella per combinazione di fattori, il cui
+nome segue la stessa convenzione degli eseguibili con l'aggiunta del carico concorrente. Ad
+esempio \texttt{t2\_p0\_s1\_r0.3\_e1\_n4} indica tracciamento di livello 2, consegna differita,
+campionamento proporzionale al 30\,\%, uscita standard e quattro task di disturbo.
+
+\textbf{Le esecuzioni.} Dentro ogni cella, una cartella \texttt{run\_NN} per ripetizione, che
+contiene:
+
+\begin{center}\small
+\begin{tabular}{p{4.3cm}p{10.0cm}}
+\toprule
+\texttt{config.json} & La configurazione effettivamente eseguita, salvata accanto ai dati che ha
+prodotto: ogni esecuzione \`e cos\`i autocontenuta e verificabile a posteriori. \\
+\addlinespace
+\texttt{rtapp-*.log.gz} & Un log per thread, con una riga per iterazione: durata della fase di
+lavoro, periodo, istanti di inizio e fine, margine residuo rispetto alla scadenza e latenza di
+risveglio. Sono la fonte primaria di tutte le misure. \\
+\addlinespace
+\texttt{stdout.log.gz} & Uscita standard; nelle esecuzioni configurate in tal senso contiene gli
+elementi di traccia emessi, che vengono qui contati. \\
+\addlinespace
+\texttt{stderr.log.gz} & Uscita di errore, da cui si ricava fra l'altro il numero di tentativi di
+trasmissione. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+I log sono conservati compressi: da circa 1.7\,GB complessivi si scende a poco pi\`u di 200\,MB,
+mantenendo l'intera evidenza grezza a disposizione per verifiche successive.
+
+\textbf{Risultati e sintesi}, al primo livello della cartella:
+
+\begin{center}\small
+\begin{tabular}{p{4.3cm}p{10.0cm}}
+\toprule
+\texttt{data\_table.csv} & Una riga per esecuzione con i livelli dei fattori e le condizioni
+ambientali registrate (frequenza osservata, temperatura prima e dopo, esito). \`E il registro
+prodotto durante le campagne. \\
+\addlinespace
+\texttt{results.csv} & Lo stesso registro arricchito con le variabili di risposta estratte dai log:
+485 righe, una per esecuzione. \`E il file su cui si basa tutta l'analisi. \\
+\addlinespace
+\texttt{results\_summary.csv} & Una riga per cella, con le grandezze aggregate. \\
+\addlinespace
+\texttt{figures/} & Le figure prodotte dall'analisi. \\
+\addlinespace
+\texttt{REPORT.md}, \texttt{RELAZIONE\_GRAFICI.md} & Le sintesi discorsive dei risultati e la
+lettura commentata di ciascuna figura. \\
+\addlinespace
+\texttt{NOTES.md} (in ogni campagna) & Le annotazioni specifiche di quella campagna: configurazione
+impiegata, risultati e osservazioni. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Le cartelle rimanenti}
+
+\textbf{\texttt{otel-installdir/}} contiene la libreria OpenTelemetry compilata e installata
+localmente (sedici librerie statiche e le relative intestazioni), contro cui il generatore di carico
+viene collegato. Non fa parte del codice del progetto e non viene versionata: va ricostruita dai
+sorgenti della libreria se assente.
+
+\textbf{\texttt{0-explore/}} raccoglie le prove preliminari eseguite manualmente prima di
+automatizzare le misure, ciascuna con le proprie annotazioni. Sono servite a comprendere il
+funzionamento del generatore e della strumentazione, a verificare l'efficacia dell'isolamento e a
+individuare alcune insidie di misura poi tenute in conto nel disegno degli esperimenti. Non
+contengono dati usati nelle conclusioni, ma documentano il percorso che vi ha condotto.
+
+\textbf{\texttt{3-report/}} contiene i documenti di sintesi in formato PDF e i relativi sorgenti.
+
+\vspace{.8em}
+\hrule
+\vspace{.6em}
+
+\small
+\textbf{In sintesi.} \texttt{rt-app/} e \texttt{otel-installdir/} sono il software sotto esame;
+\texttt{bin/} ne conserva le versioni compilate, una per configurazione; \texttt{scripts/} contiene
+gli strumenti che preparano la piattaforma, eseguono le campagne e ne analizzano i risultati;
+\texttt{1-configs/} documenta i carichi impiegati; \texttt{2-DoE/} custodisce l'evidenza
+sperimentale e le sue elaborazioni.
+
+\end{document}
